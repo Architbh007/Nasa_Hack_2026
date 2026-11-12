@@ -1,0 +1,176 @@
+import { GRAVITY_LABEL, MATERIAL_LABEL, AIRFLOW_LABEL } from "@/lib/constants";
+import type { HabitatAssessment } from "@/lib/habitat";
+import type { ScenarioReadiness } from "@/lib/readiness";
+import { HABITAT_KEYS, type Investigation, type TestRun } from "@/lib/schema";
+import type { SimilarityResult } from "@/lib/similarity";
+
+/**
+ * Compact, grounded context objects sent to the model. Everything the SI may
+ * cite is in here; nothing else is.
+ */
+
+const r2 = (v: number) => Math.round(v * 100) / 100;
+
+function stat(values: number[]) {
+  if (values.length === 0) return null;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  return { n: values.length, mean: r2(mean), min: r2(Math.min(...values)), max: r2(Math.max(...values)) };
+}
+
+export function testStats(tests: readonly TestRun[]) {
+  const outcomes: Record<string, number> = {};
+  for (const t of tests) outcomes[t.outcome] = (outcomes[t.outcome] ?? 0) + 1;
+  const ignited = tests.filter((t) => t.ignited).length;
+  const nums = (f: (t: TestRun) => number | null) => tests.map(f).filter((v): v is number => v !== null);
+  return {
+    runs: tests.length,
+    ignited,
+    ignitionRatePercent: tests.length ? Math.round((100 * ignited) / tests.length) : 0,
+    outcomes,
+    flameSpreadRateMmS: stat(nums((t) => t.flameSpreadRateMmS)),
+    extinctionDiameterMm: stat(nums((t) => t.extinctionDiameterMm)),
+    peakTemperatureK: stat(nums((t) => t.peakTemperatureK)),
+    smokeObscurationPercent: stat(nums((t) => t.smokeObscurationPercent)),
+    groundReferenceRuns: tests.filter((t) => t.gravityLevel === "normal").length,
+  };
+}
+
+export function investigationContext(inv: Investigation, tests: readonly TestRun[]) {
+  return {
+    id: inv.id,
+    name: inv.name,
+    acronym: inv.acronym,
+    project: inv.project,
+    platform: inv.platform,
+    hardware: inv.hardware,
+    yearsActive: `${inv.yearsActive.start}-${inv.yearsActive.end}`,
+    fuelPhase: inv.fuelPhase,
+    fuels: inv.fuels,
+    sampleGeometry: inv.sampleGeometry,
+    oxygenRangePercent: inv.oxygenRange,
+    pressureRangePsi: { min: inv.pressureRange.minPsi, max: inv.pressureRange.maxPsi },
+    flowRangeCmS: inv.flowRange ?? "quiescent",
+    diluents: inv.diluents,
+    gravityLevel: inv.gravityLevel,
+    objectives: inv.objectives,
+    variables: inv.variables,
+    constants: inv.constants,
+    measurements: inv.measurements,
+    keyFindings: inv.keyFindings,
+    safetyPillars: inv.safetyPillars,
+    habitatRelevance: Object.fromEntries(HABITAT_KEYS.map((k) => [k, inv.habitatRelevance[k]])),
+    earthApplications: inv.earthApplications,
+    testStatistics: testStats(tests),
+    dataSource: inv.dataSource,
+  };
+}
+
+/** Lighter record for lists (ranking, comparison, retrieval). */
+export function briefContext(inv: Investigation, tests: readonly TestRun[]) {
+  const s = testStats(tests);
+  return {
+    id: inv.id,
+    acronym: inv.acronym,
+    name: inv.name,
+    project: inv.project,
+    hardware: inv.hardware,
+    fuelPhase: inv.fuelPhase,
+    fuels: inv.fuels,
+    oxygenRangePercent: inv.oxygenRange,
+    pressureRangePsi: { min: inv.pressureRange.minPsi, max: inv.pressureRange.maxPsi },
+    flowRangeCmS: inv.flowRange ?? "quiescent",
+    gravityLevel: inv.gravityLevel,
+    diluents: inv.diluents,
+    measurements: inv.measurements,
+    safetyPillars: inv.safetyPillars,
+    keyFindings: inv.keyFindings,
+    habitatRelevanceScores: Object.fromEntries(HABITAT_KEYS.map((k) => [k, inv.habitatRelevance[k].score])),
+    testStatistics: { runs: s.runs, ignitionRatePercent: s.ignitionRatePercent, outcomes: s.outcomes, flameSpreadRateMmS: s.flameSpreadRateMmS },
+    dataSource: inv.dataSource,
+  };
+}
+
+export function edgeContext(a: Investigation, b: Investigation, sim: SimilarityResult) {
+  return {
+    link: { label: sim.label, similarityScore: r2(sim.score), sharedVariables: sim.sharedVariables },
+    sharedByComponent: Object.fromEntries(
+      Object.entries(sim.components).map(([k, c]) => [k, { jaccard: c.jaccard === null ? null : r2(c.jaccard), shared: c.shared }])
+    ),
+    investigations: [a, b].map((i) => ({
+      id: i.id,
+      acronym: i.acronym,
+      name: i.name,
+      hardware: i.hardware,
+      fuelPhase: i.fuelPhase,
+      fuels: i.fuels,
+      measurements: i.measurements,
+      variables: i.variables,
+      safetyPillars: i.safetyPillars,
+    })),
+    dataSource: a.dataSource,
+  };
+}
+
+export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Investigation; tests: readonly TestRun[]; score: number }>) {
+  return {
+    condition: {
+      o2Percent: r2(a.inputs.o2Percent),
+      pressurePsi: r2(a.inputs.pressurePsi),
+      material: MATERIAL_LABEL[a.inputs.materialClass],
+      fuelPhase: a.fuelPhase,
+      airflow: AIRFLOW_LABEL[a.inputs.airflow],
+      gravity: GRAVITY_LABEL[a.inputs.gravity],
+    },
+    metrics: {
+      o2PartialPressurePsi: r2(a.pO2.psi),
+      o2PartialPressureKPa: r2(a.pO2.kPa),
+      o2ConcentrationChangeVsEarthPercent: Math.round(a.o2IncreasePct),
+      seaLevelReference: "21% O2 at 14.7 psi, pO2 3.09 psi",
+    },
+    model: {
+      predictedIgnitionProbabilityPercent: Math.round(a.ignitionProbability * 100),
+      riskBand: a.riskBand,
+      note: "Logistic regression trained on synthetic test runs; a relative indicator, not a certified limit.",
+      estimatedFlameSpreadRateMmS:
+        a.spread.estimate === null
+          ? null
+          : { estimate: r2(a.spread.estimate), nearestRunsRange: [a.spread.min, a.spread.max], neighbors: a.spread.neighbors.length },
+    },
+    coverage: {
+      gap: a.coverage.gap,
+      coveringSamePhaseInvestigationIds: a.coverage.covering.map((i) => i.id),
+      coveringOtherPhaseInvestigationIds: a.coverage.coveringOtherPhases.map((i) => i.id),
+      nearestSamePhase: a.coverage.nearest.slice(0, 3).map((n) => ({ id: n.investigation.id, normalizedDistance: r2(n.distance) })),
+      samePhaseRunsNearby: a.nearbyTestCount,
+    },
+    partialGravity: a.partialGravity
+      ? "No partial-gravity combustion data exists in PSI; E-FIELD Flames is a simulated partial-gravity proxy; LUCI and FM2 are expected future sources."
+      : null,
+    topRanked: ranked.map((r) => ({ relevanceScore: Math.round(r.score * 100), ...briefContext(r.inv, r.tests) })),
+  };
+}
+
+export function scenarioContext(s: ScenarioReadiness, records: Array<{ inv: Investigation; tests: readonly TestRun[] }>) {
+  return {
+    preset: {
+      id: s.scenario.id,
+      label: s.scenario.label,
+      o2Percent: s.scenario.o2Percent,
+      pressurePsi: s.scenario.pressurePsi,
+      gravity: GRAVITY_LABEL[s.scenario.gravity],
+      typicalAirflow: s.scenario.typicalAirflow,
+      typicalMaterials: s.scenario.typicalMaterials,
+    },
+    readiness: {
+      overallScore: s.overall,
+      pillarScores: Object.fromEntries(s.pillars.map((p) => [p.pillar, { score: p.score, bestIds: p.best.map((b) => b.investigation.id) }])),
+      gaps: s.gaps,
+    },
+    fabricPrediction: {
+      ignitionProbabilityPercent: Math.round(s.assessment.ignitionProbability * 100),
+      o2PartialPressurePsi: r2(s.assessment.pO2.psi),
+      coverageGap: s.assessment.coverage.gap,
+    },
+    supportingInvestigations: records.map((r) => briefContext(r.inv, r.tests)),
+  };
+}

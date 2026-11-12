@@ -86,7 +86,7 @@ function EdgeDetail({ link, byId }: { link: GraphLink; byId: ReadonlyMap<string,
           <span className="tabular text-xs text-muted-foreground">similarity {s.score.toFixed(2)}</span>
         </div>
       </div>
-      <EdgeExplanation edgeId={link.id} />
+      <EdgeExplanation source={link.source} target={link.target} />
       <table className="w-full text-xs">
         <thead>
           <tr className="text-muted-foreground">

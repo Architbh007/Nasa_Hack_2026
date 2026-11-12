@@ -164,7 +164,7 @@ export function HabitatView({
         </Section>
 
         <Section title="SI interpretation" description="Structured risk drivers, evidence, gaps, recommended tests and design implications.">
-          <InterpretationPanel assessment={assessment} />
+          <InterpretationPanel assessment={assessment} weights={weights} />
         </Section>
 
         <div className="grid gap-6 2xl:grid-cols-2">
