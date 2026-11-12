@@ -26,8 +26,8 @@ export type RankingComponentKey = (typeof RANKING_COMPONENTS)[number];
 export type RankingWeights = Record<RankingComponentKey, number>;
 
 export const DEFAULT_RANKING_WEIGHTS: RankingWeights = {
-  rangeOverlap: 0.4,
-  fuelPhaseMatch: 0.3,
+  rangeOverlap: 0.35,
+  fuelPhaseMatch: 0.35,
   flowRegimeMatch: 0.15,
   safetyPillar: 0.15,
 };
