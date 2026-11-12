@@ -5,6 +5,9 @@ import { IdSchema, parseBody } from "@/lib/ai/request";
 
 const Body = z.object({ ids: z.array(IdSchema).min(2).max(4) });
 
+// SI calls can take longer than the default serverless limit.
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { ids } = await parseBody(req, Body);

@@ -77,3 +77,20 @@ export function startAskStream(plan: AskPlan) {
     ...fallbackParams(plan.model),
   });
 }
+
+/** Non-interactive answer (used by the prewarm script): cached if present, otherwise generated and cached. */
+export async function answerOnce(turns: readonly ChatTurn[]): Promise<{ text: string; cached: boolean }> {
+  const plan = planAsk(turns);
+  const hit = await cachedAnswer(plan);
+  if (hit !== null) return { text: hit, cached: true };
+  const final = await startAskStream(plan).finalMessage();
+  if (final.stop_reason === "refusal") throw new SiError("refused", "The SI declined to answer this question.", 422);
+  const text = final.content
+    .filter((b): b is Anthropic.Beta.Messages.BetaTextBlock => b.type === "text")
+    .map((b) => b.text)
+    .join("")
+    .trim();
+  if (!text) throw new SiError("invalid_output", "Empty answer.", 502);
+  await saveAnswer(plan, text, turns.at(-1)?.content ?? "");
+  return { text, cached: false };
+}

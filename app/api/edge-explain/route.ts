@@ -7,6 +7,9 @@ const Body = z.object({ source: IdSchema, target: IdSchema }).refine((b) => b.so
   message: "source and target must differ",
 });
 
+// SI calls can take longer than the default serverless limit.
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { source, target } = await parseBody(req, Body);

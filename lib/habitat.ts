@@ -164,6 +164,15 @@ export function sensitivityCurve(
   return out;
 }
 
+/** Round inputs so near-identical slider positions share an SI cache entry (used by the route and the prewarm script). */
+export function normalizeHabitatInputs(inputs: HabitatInputs): HabitatInputs {
+  return {
+    ...inputs,
+    o2Percent: Math.round(inputs.o2Percent * 2) / 2,
+    pressurePsi: Math.round(inputs.pressurePsi * 10) / 10,
+  };
+}
+
 export function inputsFromScenario(s: Scenario, materialClass?: MaterialClass): HabitatInputs {
   return {
     o2Percent: s.o2Percent,

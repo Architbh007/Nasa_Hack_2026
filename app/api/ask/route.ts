@@ -36,6 +36,9 @@ function replay(text: string): ReadableStream<Uint8Array> {
   });
 }
 
+// SI calls can take longer than the default serverless limit.
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { messages } = await parseBody(req, Body, 40_000);

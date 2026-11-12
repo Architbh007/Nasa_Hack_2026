@@ -13,7 +13,8 @@
     "generate": "tsx scripts/generate-data.ts",
     "train": "tsx scripts/train-model.ts",
     "validate:data": "tsx scripts/validate-data.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prewarm": "tsx scripts/prewarm-cache.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
@@ -47,5 +48,8 @@
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }
