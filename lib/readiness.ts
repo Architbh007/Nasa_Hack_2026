@@ -1,6 +1,6 @@
 import { GRAVITY_LABEL, PILLAR_LABEL } from "@/lib/constants";
 import { assessHabitat, inputsFromScenario, type HabitatAssessment, type HabitatData } from "@/lib/habitat";
-import { datasetScales } from "@/lib/metrics";
+import { datasetScales, rangeContains } from "@/lib/metrics";
 import { scoreInvestigation, type RankedInvestigation } from "@/lib/ranking";
 import { SAFETY_PILLARS, type Investigation, type SafetyPillar, type Scenario } from "@/lib/schema";
 
@@ -27,6 +27,7 @@ export type ScenarioReadiness = {
 
 /** Evidence strength ignores the pillar component: it asks how well a record matches this atmosphere and material. */
 const EVIDENCE_WEIGHTS = { rangeOverlap: 0.5, fuelPhaseMatch: 0.35, flowRegimeMatch: 0.15, safetyPillar: 0 };
+export const OUTSIDE_RANGE_FACTOR = 0.75;
 
 export function scenarioReadiness(scenario: Scenario, data: HabitatData): ScenarioReadiness {
   const inputs = inputsFromScenario(scenario, "fabric");
@@ -34,7 +35,12 @@ export function scenarioReadiness(scenario: Scenario, data: HabitatData): Scenar
   const scales = datasetScales(data.investigations);
   const query = { o2Percent: inputs.o2Percent, pressurePsi: inputs.pressurePsi, materialClass: inputs.materialClass, airflow: inputs.airflow };
   const scored = data.investigations
-    .map((inv: Investigation) => scoreInvestigation(inv, query, EVIDENCE_WEIGHTS, scales))
+    .map((inv: Investigation) => {
+      const r = scoreInvestigation(inv, query, EVIDENCE_WEIGHTS, scales);
+      // Near-misses are useful evidence, but a record that does not bracket the atmosphere counts at 75%.
+      const brackets = rangeContains(inv, query);
+      return brackets ? r : { ...r, score: r.score * OUTSIDE_RANGE_FACTOR };
+    })
     .sort((a, b) => b.score - a.score || a.investigation.id.localeCompare(b.investigation.id));
 
   const pillars: PillarScore[] = SAFETY_PILLARS.map((pillar) => {

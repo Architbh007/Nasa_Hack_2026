@@ -16,7 +16,22 @@ export function SiSkeleton({ lines = 3, className }: { lines?: number; className
   );
 }
 
-export function SiError({ message, onRetry }: { message: string; onRetry?: () => void }) {
+export function SiError({ message, onRetry, compact = false }: { message: string; onRetry?: () => void; compact?: boolean }) {
+  if (compact) {
+    return (
+      <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+        <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-[#ec835a]" aria-hidden />
+        <span>
+          {message}
+          {onRetry && (
+            <button type="button" onClick={onRetry} className="ml-1.5 text-link hover:underline">
+              Retry
+            </button>
+          )}
+        </span>
+      </p>
+    );
+  }
   return (
     <Alert className="border-[#ec835a]/40 bg-[#ec835a]/10">
       <AlertTriangle className="text-[#ec835a]" aria-hidden />
