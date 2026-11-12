@@ -1,0 +1,1744 @@
+[
+  {
+    "id": "bre",
+    "name": "Burning Rate Emulator",
+    "acronym": "BRE",
+    "project": "ACME",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "ACME modular hardware",
+      "ACME BRE porous plate burner"
+    ],
+    "yearsActive": {
+      "start": 2018,
+      "end": 2021
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "ethylene",
+      "methane",
+      "ethane"
+    ],
+    "sampleGeometry": "Porous flat-plate gas burner emulating a burning solid surface",
+    "oxygenRange": {
+      "min": 16.6,
+      "max": 30.6
+    },
+    "pressureRange": {
+      "minPsi": 7.3,
+      "maxPsi": 14.8,
+      "minKPa": 50.3,
+      "maxKPa": 102
+    },
+    "flowRange": null,
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Emulate the burning of solid materials with gaseous fuels",
+      "Measure heat flux and extinction limits in still atmospheres",
+      "Inform material flammability screening for spacecraft"
+    ],
+    "variables": [
+      "oxygen concentration",
+      "ambient pressure",
+      "fuel type",
+      "fuel flow rate",
+      "diluent concentration"
+    ],
+    "constants": [
+      "quiescent ambient",
+      "burner diameter",
+      "microgravity"
+    ],
+    "measurements": [
+      "Heat flux gauge",
+      "Radiometer",
+      "Thermocouple array",
+      "Color video camera"
+    ],
+    "keyFindings": [
+      "Ignition in 45 of 52 runs; the lowest O2 partial pressure that ignited was 1.39 psi (19.1% O2 at 7.3 psi).",
+      "Peak flame temperature rose from ~1484 K to ~1633 K between the lowest and highest third of tested O2."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range sits close to 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Material flammability standards: a gas-fed emulator for screening solid fuels",
+      "Fire modelling of burning surfaces for building codes"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "cld-flame",
+    "name": "Coflow Laminar Diffusion Flame",
+    "acronym": "CLD Flame",
+    "project": "ACME",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "ACME modular hardware",
+      "ACME coflow burner"
+    ],
+    "yearsActive": {
+      "start": 2017,
+      "end": 2019
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "methane",
+      "ethylene"
+    ],
+    "sampleGeometry": "Round fuel jet surrounded by coflowing oxidizer",
+    "oxygenRange": {
+      "min": 20.4,
+      "max": 30.3
+    },
+    "pressureRange": {
+      "minPsi": 7.3,
+      "maxPsi": 14.75,
+      "minKPa": 50.3,
+      "maxKPa": 101.7
+    },
+    "flowRange": {
+      "min": 4.5,
+      "max": 53.5
+    },
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Characterize soot formation in laminar coflow flames",
+      "Validate combustion models without buoyancy",
+      "Map flame stability against coflow velocity and fuel dilution"
+    ],
+    "variables": [
+      "flow velocity",
+      "fuel dilution",
+      "ambient pressure",
+      "oxygen concentration"
+    ],
+    "constants": [
+      "burner geometry",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Soot pyrometry camera",
+      "Thermocouple array",
+      "Mass flow controller"
+    ],
+    "keyFindings": [
+      "Blowoff ended 69% of ignited runs with coflow above 35 cm/s versus 6% at or below it.",
+      "With 15% or more nitrogen dilution, 19% of runs failed to ignite or were quenched, versus 3% undiluted.",
+      "Peak flame temperature rose from ~1839 K to ~1906 K between the lowest and highest third of tested O2.",
+      "Ignition in 50 of 56 runs; the lowest O2 partial pressure that ignited was 1.54 psi (20.8% O2 at 7.4 psi)."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range sits close to 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 4,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Cleaner, lower-soot burner design for furnaces and engines",
+      "Improved soot models for wildfire smoke prediction"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "e-field-flames",
+    "name": "Electric-Field Effects on Laminar Diffusion Flames",
+    "acronym": "E-FIELD Flames",
+    "project": "ACME",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "ACME modular hardware",
+      "ACME coflow burner"
+    ],
+    "yearsActive": {
+      "start": 2018,
+      "end": 2020
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "methane",
+      "ethylene"
+    ],
+    "sampleGeometry": "Coflow jet flame between a burner and a mesh electrode",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 25.5
+    },
+    "pressureRange": {
+      "minPsi": 10.15,
+      "maxPsi": 14.82,
+      "minKPa": 70,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 4.5,
+      "max": 33
+    },
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "simulated-partial",
+    "objectives": [
+      "Use ion-driven body forces to emulate partial-gravity buoyancy",
+      "Measure flame shape and soot response to applied electric fields",
+      "Assess electric fields as a flame-control lever"
+    ],
+    "variables": [
+      "electric field strength",
+      "flow velocity",
+      "fuel dilution",
+      "ambient pressure"
+    ],
+    "constants": [
+      "burner geometry",
+      "electrode spacing",
+      "microgravity"
+    ],
+    "measurements": [
+      "Ion current probe",
+      "Color video camera",
+      "Thermocouple array",
+      "Mass flow controller"
+    ],
+    "keyFindings": [
+      "Blowoff ended 9% of ignited runs with coflow above 10 cm/s versus 0% at or below it.",
+      "Peak flame temperature rose from ~1813 K to ~1865 K between the lowest and highest third of tested O2.",
+      "Ignition in 44 of 44 runs; the lowest O2 partial pressure that ignited was 2.12 psi (20.8% O2 at 10.2 psi)."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "suppression"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; simulated partial gravity is the closest available proxy."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range sits close to 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; simulated partial gravity is the closest available proxy."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range sits close to 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios."
+      }
+    },
+    "earthApplications": [
+      "Electric-field flame control for cleaner industrial combustion"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "s-flame",
+    "name": "Flame Design, Structure and Response of Spherical Diffusion Flames",
+    "acronym": "s-Flame",
+    "project": "ACME",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "ACME modular hardware",
+      "ACME spherical porous burner"
+    ],
+    "yearsActive": {
+      "start": 2017,
+      "end": 2020
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "ethylene",
+      "methane",
+      "hydrogen"
+    ],
+    "sampleGeometry": "Spherical porous burner issuing fuel into a quiescent oxidizer",
+    "oxygenRange": {
+      "min": 14.7,
+      "max": 50.4
+    },
+    "pressureRange": {
+      "minPsi": 7.3,
+      "maxPsi": 14.81,
+      "minKPa": 50.3,
+      "maxKPa": 102.1
+    },
+    "flowRange": null,
+    "diluents": [
+      "nitrogen",
+      "carbon dioxide",
+      "helium"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Measure growth and radiative extinction of spherical diffusion flames",
+      "Compare inert diluents as flame suppressants",
+      "Design flames that are both soot-free and robust"
+    ],
+    "variables": [
+      "oxygen concentration",
+      "ambient pressure",
+      "diluent type",
+      "diluent concentration",
+      "fuel type"
+    ],
+    "constants": [
+      "quiescent ambient",
+      "burner diameter",
+      "microgravity"
+    ],
+    "measurements": [
+      "Radiometer",
+      "Thermocouple array",
+      "Color video camera"
+    ],
+    "keyFindings": [
+      "At matched diluent levels (10 to 30%), carbon dioxide prevented ignition or quenched the flame in 41% of runs versus 27% with helium.",
+      "Mean flame growth rate increased about 427% between ~18% and ~50% O2 (0.60 to 3.18 mm/s, sustained runs).",
+      "Ignition in 46 of 60 runs; the lowest O2 partial pressure that ignited was 1.29 psi (17.4% O2 at 7.4 psi)."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "suppression"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 4,
+        "rationale": "Lunar base: tested range brackets 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 4,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Inert-gas fire suppression design for enclosed spaces",
+      "Cleaner, lower-soot burner design for furnaces and engines"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "cfi-g",
+    "name": "Cool Flames Investigation with Gases",
+    "acronym": "CFI-G",
+    "project": "ACME",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "ACME modular hardware",
+      "ACME spherical porous burner"
+    ],
+    "yearsActive": {
+      "start": 2020,
+      "end": 2023
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "n-butane",
+      "dimethyl ether"
+    ],
+    "sampleGeometry": "Inside-out spherical burner: oxygen issued into a gaseous fuel ambient",
+    "oxygenRange": {
+      "min": 29.7,
+      "max": 85.2
+    },
+    "pressureRange": {
+      "minPsi": 5.06,
+      "maxPsi": 14.82,
+      "minKPa": 34.9,
+      "maxKPa": 102.2
+    },
+    "flowRange": null,
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Establish steady gaseous cool flames in microgravity",
+      "Map hot-to-cool flame transition against oxygen and pressure",
+      "Provide low-temperature chemistry data for engine knock models"
+    ],
+    "variables": [
+      "oxygen concentration",
+      "ambient pressure",
+      "fuel type",
+      "fuel flow rate"
+    ],
+    "constants": [
+      "quiescent ambient",
+      "burner diameter",
+      "microgravity"
+    ],
+    "measurements": [
+      "Thermocouple array",
+      "Radiometer",
+      "Chemiluminescence imaging"
+    ],
+    "keyFindings": [
+      "Cool flames made up 64% of ignited runs at or below 59.7% O2 versus 5% above it (17 cool-flame runs in total). Cool flames peaked near 671 K versus 1972 K for hot flames.",
+      "Ignition in 47 of 48 runs; the lowest O2 partial pressure that ignited was 1.51 psi (29.7% O2 at 5.1 psi)."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 3,
+        "rationale": "ISS: tested range sits close to 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 3,
+        "rationale": "Lunar base: tested range brackets 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range sits close to 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Low-temperature combustion chemistry for cleaner, knock-resistant engines"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "flex",
+    "name": "Flame Extinguishment Experiment",
+    "acronym": "FLEX",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "Multi-user Droplet Combustion Apparatus (MDCA)"
+    ],
+    "yearsActive": {
+      "start": 2009,
+      "end": 2012
+    },
+    "fuelPhase": "liquid",
+    "fuels": [
+      "n-heptane",
+      "methanol"
+    ],
+    "sampleGeometry": "Free-floating fuel droplet, 1.5 to 5 mm initial diameter",
+    "oxygenRange": {
+      "min": 11.5,
+      "max": 40.4
+    },
+    "pressureRange": {
+      "minPsi": 7.3,
+      "maxPsi": 14.82,
+      "minKPa": 50.3,
+      "maxKPa": 102.2
+    },
+    "flowRange": null,
+    "diluents": [
+      "carbon dioxide",
+      "helium"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Find the minimum diluent concentration that extinguishes droplet flames",
+      "Compare carbon dioxide and helium as suppressants",
+      "Measure droplet burning rates and extinction diameters"
+    ],
+    "variables": [
+      "oxygen concentration",
+      "ambient pressure",
+      "diluent type",
+      "diluent concentration",
+      "droplet diameter"
+    ],
+    "constants": [
+      "quiescent ambient",
+      "ignition energy",
+      "microgravity"
+    ],
+    "measurements": [
+      "Backlit droplet camera",
+      "Radiometer",
+      "Chemiluminescence imaging"
+    ],
+    "keyFindings": [
+      "Flame extinction diameter fell from 56% of initial droplet size at ~20.2% O2 to 2% at ~40.1% O2 (undiluted runs).",
+      "At matched diluent levels (10 to 40%), carbon dioxide prevented ignition or quenched the flame in 73% of runs versus 54% with helium.",
+      "Ignition in 40 of 60 runs; the lowest O2 partial pressure that ignited was 1.58 psi (15.6% O2 at 10.2 psi)."
+    ],
+    "safetyPillars": [
+      "suppression",
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; liquid fuels apply to stored propellants and fluids; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 4,
+        "rationale": "Lunar base: tested range brackets 34% O2 at 8.2 psi; liquid fuels apply to stored propellants and fluids; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 4,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; liquid fuels apply to stored propellants and fluids; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; liquid fuels apply to stored propellants and fluids; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Water mist and inert-gas suppression design for enclosed spaces",
+      "Liquid fuel spray combustion models for engines"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "flex-2",
+    "name": "Flame Extinguishment Experiment 2",
+    "acronym": "FLEX-2",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "Multi-user Droplet Combustion Apparatus (MDCA)"
+    ],
+    "yearsActive": {
+      "start": 2012,
+      "end": 2016
+    },
+    "fuelPhase": "liquid",
+    "fuels": [
+      "n-heptane",
+      "n-decane",
+      "heptane/hexadecane mixture"
+    ],
+    "sampleGeometry": "Single droplets and droplet pairs, 2 to 5 mm initial diameter",
+    "oxygenRange": {
+      "min": 14.7,
+      "max": 30.5
+    },
+    "pressureRange": {
+      "minPsi": 10.15,
+      "maxPsi": 14.81,
+      "minKPa": 70,
+      "maxKPa": 102.1
+    },
+    "flowRange": null,
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Measure burning of multicomponent and surrogate fuels",
+      "Study droplet-droplet interaction and soot shell formation"
+    ],
+    "variables": [
+      "fuel type",
+      "oxygen concentration",
+      "ambient pressure",
+      "droplet diameter"
+    ],
+    "constants": [
+      "quiescent ambient",
+      "ignition energy",
+      "microgravity"
+    ],
+    "measurements": [
+      "Backlit droplet camera",
+      "Radiometer",
+      "Color video camera"
+    ],
+    "keyFindings": [
+      "Flame extinction diameter fell from 59% of initial droplet size at ~18.3% O2 to 31% at ~28.4% O2 (undiluted runs).",
+      "Ignition in 44 of 54 runs; the lowest O2 partial pressure that ignited was 1.79 psi (17.6% O2 at 10.2 psi)."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; liquid fuels apply to stored propellants and fluids; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 1,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; liquid fuels apply to stored propellants and fluids; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; liquid fuels apply to stored propellants and fluids; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; liquid fuels apply to stored propellants and fluids; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Liquid fuel spray combustion models for engines"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "cfi",
+    "name": "Cool Flames Investigation",
+    "acronym": "CFI",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Combustion Integrated Rack (CIR)",
+      "Multi-user Droplet Combustion Apparatus (MDCA)"
+    ],
+    "yearsActive": {
+      "start": 2016,
+      "end": 2019
+    },
+    "fuelPhase": "liquid",
+    "fuels": [
+      "n-heptane",
+      "n-decane",
+      "n-dodecane"
+    ],
+    "sampleGeometry": "Free-floating fuel droplet, 2 to 5 mm initial diameter",
+    "oxygenRange": {
+      "min": 11.8,
+      "max": 30.5
+    },
+    "pressureRange": {
+      "minPsi": 7.3,
+      "maxPsi": 14.74,
+      "minKPa": 50.3,
+      "maxKPa": 101.6
+    },
+    "flowRange": null,
+    "diluents": [
+      "helium"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Characterize droplet cool flames after hot-flame radiative extinction",
+      "Map cool-flame existence limits against oxygen and pressure"
+    ],
+    "variables": [
+      "oxygen concentration",
+      "ambient pressure",
+      "fuel type",
+      "droplet diameter"
+    ],
+    "constants": [
+      "quiescent ambient",
+      "ignition energy",
+      "microgravity"
+    ],
+    "measurements": [
+      "Backlit droplet camera",
+      "Radiometer",
+      "Chemiluminescence imaging"
+    ],
+    "keyFindings": [
+      "Flame extinction diameter fell from 48% of initial droplet size at ~18.5% O2 to 33% at ~27.5% O2 (undiluted runs).",
+      "Cool flames made up 43% of ignited runs at or below 21.0% O2 versus 8% above it (7 cool-flame runs in total). Cool flames peaked near 710 K versus 1565 K for hot flames.",
+      "Ignition in 27 of 52 runs; the lowest O2 partial pressure that ignited was 1.42 psi (13.8% O2 at 10.3 psi)."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; liquid fuels apply to stored propellants and fluids; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range sits close to 34% O2 at 8.2 psi; liquid fuels apply to stored propellants and fluids; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; liquid fuels apply to stored propellants and fluids; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; liquid fuels apply to stored propellants and fluids; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Low-temperature combustion chemistry for cleaner, knock-resistant engines"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "bass",
+    "name": "Burning and Suppression of Solids",
+    "acronym": "BASS",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Microgravity Science Glovebox (MSG)",
+      "SPICE fan-driven flow duct"
+    ],
+    "yearsActive": {
+      "start": 2011,
+      "end": 2012
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "PMMA",
+      "cotton-fiberglass fabric (SIBAL)",
+      "Delrin"
+    ],
+    "sampleGeometry": "Flat and cylindrical samples, 1 to 10 cm long, in a forced-flow duct",
+    "oxygenRange": {
+      "min": 15.7,
+      "max": 28.5
+    },
+    "pressureRange": {
+      "minPsi": 7.95,
+      "maxPsi": 14.82,
+      "minKPa": 54.8,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 1,
+      "max": 42.4
+    },
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Measure flame spread over solids in low-speed concurrent and opposed flow",
+      "Determine flow and nitrogen conditions that extinguish burning solids"
+    ],
+    "variables": [
+      "flow velocity",
+      "oxygen concentration",
+      "ambient pressure",
+      "sample material",
+      "diluent concentration"
+    ],
+    "constants": [
+      "duct cross-section",
+      "igniter wire",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Thermocouple array",
+      "Radiometer",
+      "Flow anemometer"
+    ],
+    "keyFindings": [
+      "Mean flame spread rate increased about 36% between ~24% and ~28% O2 (1.24 to 1.70 mm/s, sustained runs).",
+      "Below 5 cm/s, 100% of ignited microgravity runs self-extinguished (oxygen starvation) versus 18% at 5 to 30 cm/s. Above 30 cm/s, 33% blew off.",
+      "cotton-fiberglass fabric (SIBAL) spread fastest (1.92 mm/s mean) and PMMA slowest (0.68 mm/s), a 2.8x difference across 3 materials.",
+      "With 15% or more nitrogen dilution, 92% of runs failed to ignite or were quenched, versus 43% undiluted."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "suppression"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 3,
+        "rationale": "Lunar base: tested range sits close to 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range sits close to 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 5,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Material flammability standards: flow-dependent limits for test methods",
+      "Ventilation shutdown guidance for fires in enclosed spaces"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "bass-ii",
+    "name": "Burning and Suppression of Solids II",
+    "acronym": "BASS-II",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Microgravity Science Glovebox (MSG)",
+      "SPICE fan-driven flow duct"
+    ],
+    "yearsActive": {
+      "start": 2014,
+      "end": 2016
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "Nomex fabric",
+      "cotton-fiberglass fabric (SIBAL)",
+      "PMMA",
+      "Kydex"
+    ],
+    "sampleGeometry": "Thin fabric strips and thick plastic slabs, 5 to 10 cm long",
+    "oxygenRange": {
+      "min": 16.3,
+      "max": 45.3
+    },
+    "pressureRange": {
+      "minPsi": 10.55,
+      "maxPsi": 14.8,
+      "minKPa": 72.7,
+      "maxKPa": 102
+    },
+    "flowRange": {
+      "min": 1.9,
+      "max": 47.9
+    },
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Extend BASS to fabrics and plastics at elevated oxygen",
+      "Compare microgravity flammability against 1 g ground reference tests",
+      "Identify limiting flow for flame spread at each oxygen level"
+    ],
+    "variables": [
+      "oxygen concentration",
+      "flow velocity",
+      "sample material",
+      "ambient pressure",
+      "diluent concentration"
+    ],
+    "constants": [
+      "duct cross-section",
+      "igniter wire",
+      "sample width"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Thermocouple array",
+      "Radiometer",
+      "Flow anemometer"
+    ],
+    "keyFindings": [
+      "Mean flame spread rate increased about 106% between ~25% and ~45% O2 (1.03 to 2.12 mm/s, sustained runs).",
+      "Below 5 cm/s, 22% of ignited microgravity runs self-extinguished (oxygen starvation) versus 5% at 5 to 30 cm/s. Above 30 cm/s, 33% blew off.",
+      "cotton-fiberglass fabric (SIBAL) spread fastest (2.74 mm/s mean) and Nomex fabric slowest (1.00 mm/s), a 2.7x difference across 4 materials.",
+      "At matched O2 levels, spread at reduced pressure (11 psi or lower) averaged about 30% slower than at 14.7 psi."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "suppression"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 3,
+        "rationale": "Pressurized rover: tested range sits close to 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 4,
+        "rationale": "Mars transit: tested range sits close to 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Firefighter gear: flame-resistant fabric performance at elevated oxygen",
+      "Material flammability standards: microgravity correction to upward-burning tests"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "spice",
+    "name": "Smoke Point In Co-flow Experiment",
+    "acronym": "SPICE",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Microgravity Science Glovebox (MSG)",
+      "SPICE fan-driven flow duct"
+    ],
+    "yearsActive": {
+      "start": 2010,
+      "end": 2012
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "ethylene",
+      "propane",
+      "ethane"
+    ],
+    "sampleGeometry": "Round gas jet burners, 0.4 to 2 mm nozzle, in coflowing air",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 30.3
+    },
+    "pressureRange": {
+      "minPsi": 10.15,
+      "maxPsi": 14.82,
+      "minKPa": 70,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 4.6,
+      "max": 43.2
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Measure smoke points of gas jet flames without buoyancy",
+      "Relate soot emission to flame residence time"
+    ],
+    "variables": [
+      "fuel type",
+      "fuel flow rate",
+      "flow velocity",
+      "ambient pressure"
+    ],
+    "constants": [
+      "coflow composition",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Soot pyrometry camera",
+      "Mass flow controller"
+    ],
+    "keyFindings": [
+      "Blowoff ended 38% of ignited runs with coflow above 35 cm/s versus 0% at or below it.",
+      "Ignition in 48 of 48 runs; the lowest O2 partial pressure that ignited was 2.11 psi (20.8% O2 at 10.2 psi)."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 4,
+        "rationale": "Pressurized rover: tested range brackets 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 5,
+        "rationale": "Mars transit: tested range brackets 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Smoke detection: soot emission data for smoke detector design",
+      "Cleaner, lower-soot burner design for furnaces and engines"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "slice",
+    "name": "Structure and Liftoff In Combustion Experiment",
+    "acronym": "SLICE",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Microgravity Science Glovebox (MSG)",
+      "SPICE fan-driven flow duct"
+    ],
+    "yearsActive": {
+      "start": 2012,
+      "end": 2012
+    },
+    "fuelPhase": "gas",
+    "fuels": [
+      "methane",
+      "ethylene"
+    ],
+    "sampleGeometry": "Round gas jet burners in coflowing air",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 21.4
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.82,
+      "minKPa": 101,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 9.7,
+      "max": 85.1
+    },
+    "diluents": [
+      "nitrogen"
+    ],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Measure liftoff height and blowoff limits of jet flames",
+      "Test liftoff theory in the absence of buoyancy"
+    ],
+    "variables": [
+      "flow velocity",
+      "fuel dilution",
+      "fuel type"
+    ],
+    "constants": [
+      "coflow composition",
+      "ambient pressure",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Mass flow controller"
+    ],
+    "keyFindings": [
+      "Blowoff ended 81% of ignited runs with coflow above 35 cm/s versus 17% at or below it.",
+      "Ignition in 44 of 44 runs; the lowest O2 partial pressure that ignited was 3.00 psi (20.5% O2 at 14.7 psi)."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 4,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 1,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 1,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 2,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; gaseous fuels apply to leak scenarios; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Flame stability limits for gas turbine and burner design"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "same",
+    "name": "Smoke Aerosol Measurement Experiment",
+    "acronym": "SAME",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Microgravity Science Glovebox (MSG)",
+      "SAME smoke generator carousel"
+    ],
+    "yearsActive": {
+      "start": 2007,
+      "end": 2008
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "PTFE wire insulation",
+      "Kapton wire insulation",
+      "silicone rubber",
+      "Pyrell polyurethane foam",
+      "cellulose lamp wick"
+    ],
+    "sampleGeometry": "Small material samples heated to pyrolysis without flaming",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 21.5
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.8,
+      "minKPa": 101,
+      "maxKPa": 102
+    },
+    "flowRange": {
+      "min": 4.6,
+      "max": 10.6
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Measure the particle size distribution of smoke from spacecraft materials",
+      "Evaluate ionization and photoelectric smoke detectors in microgravity"
+    ],
+    "variables": [
+      "sample material",
+      "heater temperature"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "aging chamber volume"
+    ],
+    "measurements": [
+      "TSI P-Trak ultrafine particle counter",
+      "Thermal precipitator",
+      "Ionization smoke detector",
+      "Photoelectric smoke detector",
+      "Smoke obscuration photometer"
+    ],
+    "keyFindings": [
+      "Mean smoke obscuration was 17.5% (max 45.8%) across 5 materials; Pyrell polyurethane foam produced the densest smoke (24.0% mean)."
+    ],
+    "safetyPillars": [
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Smoke detection: particle-size-aware detectors for aircraft cargo bays",
+      "Smoke detection: reduced false alarms in cleanrooms and data centers"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "same-r",
+    "name": "Smoke Aerosol Measurement Experiment Refurbishment",
+    "acronym": "SAME-R",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "Microgravity Science Glovebox (MSG)",
+      "SAME smoke generator carousel"
+    ],
+    "yearsActive": {
+      "start": 2015,
+      "end": 2016
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "PTFE wire insulation",
+      "Kapton wire insulation",
+      "silicone rubber",
+      "Pyrell polyurethane foam",
+      "cellulose lamp wick",
+      "Nomex fabric",
+      "Delrin"
+    ],
+    "sampleGeometry": "Small material samples heated to pyrolysis without flaming",
+    "oxygenRange": {
+      "min": 20.3,
+      "max": 21.5
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.82,
+      "minKPa": 101,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 4.6,
+      "max": 10.5
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Re-fly SAME with refurbished detectors and added materials",
+      "Quantify smoke aging in a quiescent chamber"
+    ],
+    "variables": [
+      "sample material",
+      "heater temperature"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "aging chamber volume"
+    ],
+    "measurements": [
+      "TSI P-Trak ultrafine particle counter",
+      "Thermal precipitator",
+      "Ionization smoke detector",
+      "Photoelectric smoke detector",
+      "Smoke obscuration photometer"
+    ],
+    "keyFindings": [
+      "Mean smoke obscuration was 16.6% (max 36.9%) across 7 materials; Pyrell polyurethane foam produced the densest smoke (26.4% mean)."
+    ],
+    "safetyPillars": [
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Smoke detection: particle-size-aware detectors for aircraft cargo bays"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "daft",
+    "name": "Dust and Aerosol Measurement Feasibility Test",
+    "acronym": "DAFT",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "DAFT dust injection module"
+    ],
+    "yearsActive": {
+      "start": 2008,
+      "end": 2008
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "Arizona test dust",
+      "polystyrene latex spheres"
+    ],
+    "sampleGeometry": "Calibrated dust and particle aerosols injected into a sample bag",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 21.5
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.8,
+      "minKPa": 101,
+      "maxKPa": 102
+    },
+    "flowRange": {
+      "min": 4.5,
+      "max": 5.5
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Check that a SAME particle counter can be reused for dust monitoring",
+      "Characterize background cabin aerosol for smoke detector design"
+    ],
+    "variables": [
+      "particle type"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "sample volume"
+    ],
+    "measurements": [
+      "TSI P-Trak ultrafine particle counter",
+      "TSI DustTrak aerosol monitor"
+    ],
+    "keyFindings": [
+      "Reused the TSI P-Trak ultrafine particle counter from SAME across 28 injection runs of 2 particle types, giving a common calibration between smoke and dust measurements."
+    ],
+    "safetyPillars": [
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Smoke detection: nuisance-dust rejection for smoke alarms"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "daft-2",
+    "name": "Dust and Aerosol Measurement Feasibility Test 2",
+    "acronym": "DAFT-2",
+    "project": "Standalone",
+    "platform": "International Space Station",
+    "hardware": [
+      "DAFT dust injection module"
+    ],
+    "yearsActive": {
+      "start": 2010,
+      "end": 2010
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "Arizona test dust",
+      "lunar regolith simulant (JSC-1A)"
+    ],
+    "sampleGeometry": "Calibrated dust aerosols injected into a sample bag",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 21.5
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.78,
+      "minKPa": 101,
+      "maxKPa": 101.9
+    },
+    "flowRange": {
+      "min": 4.6,
+      "max": 5.3
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Extend DAFT to lunar regolith simulant",
+      "Assess dust interference with smoke detection for lunar habitats"
+    ],
+    "variables": [
+      "particle type"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "sample volume"
+    ],
+    "measurements": [
+      "TSI P-Trak ultrafine particle counter",
+      "TSI DustTrak aerosol monitor"
+    ],
+    "keyFindings": [
+      "Reused the TSI P-Trak ultrafine particle counter from SAME across 28 injection runs of 2 particle types, giving a common calibration between smoke and dust measurements."
+    ],
+    "safetyPillars": [
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Smoke detection: nuisance-dust rejection for smoke alarms"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "saffire-i",
+    "name": "Spacecraft Fire Safety Experiment I",
+    "acronym": "Saffire-I",
+    "project": "Saffire",
+    "platform": "Cygnus",
+    "hardware": [
+      "Saffire flow tunnel",
+      "Cygnus cargo vehicle"
+    ],
+    "yearsActive": {
+      "start": 2016,
+      "end": 2016
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "cotton-fiberglass fabric (SIBAL)"
+    ],
+    "sampleGeometry": "Large fabric sheet, 0.4 by 0.94 m, in concurrent flow",
+    "oxygenRange": {
+      "min": 20.6,
+      "max": 21.6
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.8,
+      "minKPa": 101,
+      "maxKPa": 102
+    },
+    "flowRange": {
+      "min": 17.2,
+      "max": 23.2
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Burn a large sample in a spacecraft-scale volume",
+      "Measure flame growth and spread over a meter-scale fabric"
+    ],
+    "variables": [
+      "flow velocity"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "sample geometry",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Thermocouple array",
+      "Radiometer",
+      "Combustion product monitor (O2, CO2, CO)"
+    ],
+    "keyFindings": [
+      "20 sustained flames spread at 1.56 mm/s on average (range 1.24 to 2.19 mm/s) over ~940 mm samples.",
+      "Ignition in 21 of 24 runs; the lowest O2 partial pressure that ignited was 3.02 psi (20.6% O2 at 14.7 psi)."
+    ],
+    "safetyPillars": [
+      "prevention"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 2,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Material flammability standards: large-scale validation of small-sample tests"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "saffire-ii",
+    "name": "Spacecraft Fire Safety Experiment II",
+    "acronym": "Saffire-II",
+    "project": "Saffire",
+    "platform": "Cygnus",
+    "hardware": [
+      "Saffire flow tunnel",
+      "Cygnus cargo vehicle"
+    ],
+    "yearsActive": {
+      "start": 2016,
+      "end": 2016
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "Nomex fabric",
+      "Kydex",
+      "PMMA",
+      "silicone rubber",
+      "cotton-fiberglass fabric (SIBAL)"
+    ],
+    "sampleGeometry": "Nine material coupons, 5 by 29 cm, in concurrent flow",
+    "oxygenRange": {
+      "min": 20.5,
+      "max": 21.5
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.82,
+      "minKPa": 101,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 14.1,
+      "max": 27.2
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Rank ignition and flammability of common spacecraft materials",
+      "Measure smoke and combustion products in a spacecraft-scale volume"
+    ],
+    "variables": [
+      "sample material",
+      "flow velocity"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Thermocouple array",
+      "Radiometer",
+      "Combustion product monitor (O2, CO2, CO)",
+      "Smoke obscuration photometer"
+    ],
+    "keyFindings": [
+      "25 sustained flames spread at 0.71 mm/s on average (range 0.38 to 1.84 mm/s) over ~290 mm samples.",
+      "cotton-fiberglass fabric (SIBAL) spread fastest (1.52 mm/s mean) and silicone rubber slowest (0.41 mm/s), a 3.7x difference across 5 materials.",
+      "Mean smoke obscuration was 18.4% (max 33.2%) across 5 materials; Kydex produced the densest smoke (24.8% mean).",
+      "Ignition in 29 of 36 runs; the lowest O2 partial pressure that ignited was 3.01 psi (20.5% O2 at 14.7 psi)."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Material flammability standards: ranking of common cabin materials",
+      "Smoke detection: smoke yield data for transport vehicle fires"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  },
+  {
+    "id": "saffire-iii",
+    "name": "Spacecraft Fire Safety Experiment III",
+    "acronym": "Saffire-III",
+    "project": "Saffire",
+    "platform": "Cygnus",
+    "hardware": [
+      "Saffire flow tunnel",
+      "Cygnus cargo vehicle"
+    ],
+    "yearsActive": {
+      "start": 2017,
+      "end": 2017
+    },
+    "fuelPhase": "solid",
+    "fuels": [
+      "cotton-fiberglass fabric (SIBAL)",
+      "PMMA"
+    ],
+    "sampleGeometry": "Large fabric sheet and plastic slab in concurrent flow",
+    "oxygenRange": {
+      "min": 20.7,
+      "max": 21.6
+    },
+    "pressureRange": {
+      "minPsi": 14.65,
+      "maxPsi": 14.82,
+      "minKPa": 101,
+      "maxKPa": 102.2
+    },
+    "flowRange": {
+      "min": 9.6,
+      "max": 26.5
+    },
+    "diluents": [],
+    "gravityLevel": "microgravity",
+    "objectives": [
+      "Repeat large-scale fabric burning at several flow speeds",
+      "Track smoke and product concentrations over a long burn"
+    ],
+    "variables": [
+      "flow velocity",
+      "sample material"
+    ],
+    "constants": [
+      "cabin atmosphere (21% O2, 14.7 psi)",
+      "microgravity"
+    ],
+    "measurements": [
+      "Color video camera",
+      "Thermocouple array",
+      "Radiometer",
+      "Combustion product monitor (O2, CO2, CO)",
+      "Smoke obscuration photometer"
+    ],
+    "keyFindings": [
+      "23 sustained flames spread at 1.00 mm/s on average (range 0.46 to 2.04 mm/s) over ~940 mm samples.",
+      "cotton-fiberglass fabric (SIBAL) spread fastest (1.55 mm/s mean) and PMMA slowest (0.57 mm/s), a 2.7x difference across 2 materials.",
+      "Mean smoke obscuration was 25.2% (max 38.4%) across 2 materials; cotton-fiberglass fabric (SIBAL) produced the densest smoke (27.2% mean).",
+      "Ignition in 25 of 30 runs; the lowest O2 partial pressure that ignited was 3.03 psi (20.7% O2 at 14.7 psi)."
+    ],
+    "safetyPillars": [
+      "prevention",
+      "detection"
+    ],
+    "habitatRelevance": {
+      "iss": {
+        "score": 5,
+        "rationale": "ISS: tested range brackets 21% O2 at 14.7 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      },
+      "lunarBase": {
+        "score": 2,
+        "rationale": "Lunar base: tested range does not reach 34% O2 at 8.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "rover": {
+        "score": 2,
+        "rationale": "Pressurized rover: tested range does not reach 30% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity data only bounds partial-gravity behavior."
+      },
+      "marsTransit": {
+        "score": 3,
+        "rationale": "Mars transit: tested range does not reach 26.5% O2 at 10.2 psi; solid materials match cabin fabrics, plastics and wiring; microgravity matches."
+      }
+    },
+    "earthApplications": [
+      "Material flammability standards: large-scale validation of small-sample tests",
+      "Firefighter gear: heat release data for protective clothing tests"
+    ],
+    "sourceUrls": [
+      "https://psi.nasa.gov"
+    ],
+    "dataSource": "synthetic"
+  }
+]

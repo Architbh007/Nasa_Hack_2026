@@ -1,0 +1,86 @@
+{
+  "kind": "logistic-regression",
+  "featureKeys": [
+    "pO2",
+    "o2",
+    "flow",
+    "quiescent",
+    "solid",
+    "liquid",
+    "gas",
+    "diluent"
+  ],
+  "weights": [
+    3.3257665117702415,
+    1.8377154200769035,
+    0.1263103763719752,
+    0.3311130718030691,
+    1.7892181294488194,
+    3.723275814227786,
+    4.534877454438702,
+    -0.24007088702295806
+  ],
+  "means": [
+    3.026076826758143,
+    25.73241852487133,
+    11.515608919382496,
+    0,
+    0,
+    0,
+    0,
+    7.830703259005144
+  ],
+  "stds": [
+    1.420027213109516,
+    11.549982163439894,
+    16.250791138352483,
+    1,
+    1,
+    1,
+    1,
+    11.161149262069484
+  ],
+  "hyperparameters": {
+    "iterations": 4000,
+    "learningRate": 0.3,
+    "l2": 0.001,
+    "holdoutFraction": 0.2
+  },
+  "metrics": {
+    "trainAccuracy": 0.9056603773584906,
+    "holdoutAccuracy": 0.896551724137931,
+    "trainLogLoss": 0.22744640158913107,
+    "holdoutLogLoss": 0.19996673910946078,
+    "holdoutBaselineAccuracy": 0.7724137931034483,
+    "nTrain": 583,
+    "nHoldout": 145,
+    "positiveRate": 0.8010291595197255
+  },
+  "trainedOn": {
+    "investigationIds": [
+      "bre",
+      "cld-flame",
+      "e-field-flames",
+      "s-flame",
+      "cfi-g",
+      "flex",
+      "flex-2",
+      "cfi",
+      "bass",
+      "bass-ii",
+      "spice",
+      "slice",
+      "saffire-i",
+      "saffire-ii",
+      "saffire-iii"
+    ],
+    "excludedInvestigationIds": [
+      "same",
+      "same-r",
+      "daft",
+      "daft-2"
+    ],
+    "testCount": 728
+  },
+  "dataSource": "synthetic"
+}
