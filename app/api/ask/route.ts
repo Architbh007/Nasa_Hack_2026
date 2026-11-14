@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { aiConfig } from "@/lib/ai/client";
+import { aiConfig, isRefusal, textDelta } from "@/lib/ai/client";
 import { cachedAnswer, planAsk, saveAnswer, startAskStream } from "@/lib/ai/ask";
 import { errorResponse, SiError, toSiError } from "@/lib/ai/errors";
 import { parseBody } from "@/lib/ai/request";
@@ -71,12 +71,12 @@ export async function POST(req: Request) {
         try {
           let step = first;
           while (!step.done) {
-            const event = step.value;
-            if (event.type === "content_block_delta" && event.delta.type === "text_delta") emit(event.delta.text);
+            const delta = textDelta(step.value);
+            if (delta) emit(delta);
             step = await iterator.next();
           }
-          const final = await stream.finalMessage();
-          if (final.stop_reason === "refusal") {
+          const final = await stream.finalResponse();
+          if (isRefusal(final)) {
             controller.enqueue(encoder.encode(`${STREAM_ERROR_MARKER}The SI declined to answer this question. Try rephrasing it.`));
           } else if (full.trim()) {
             await saveAnswer(plan, full, question);

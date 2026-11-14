@@ -93,7 +93,7 @@ async function main() {
   const secs = ((Date.now() - started) / 1000).toFixed(0);
   console.log(`\nDone in ${secs}s: ${fresh} generated, ${cached} already cached, ${failures.length} failed.`);
   if (stop) {
-    console.log("\nNo API credentials found. Set ANTHROPIC_API_KEY in .env.local and run npm run prewarm again.");
+    console.log("\nNo API credentials found. Set OPENAI_API_KEY in .env.local and run npm run prewarm again.");
   }
   if (failures.length) {
     for (const f of failures.slice(0, 10)) console.log(`  - ${f}`);

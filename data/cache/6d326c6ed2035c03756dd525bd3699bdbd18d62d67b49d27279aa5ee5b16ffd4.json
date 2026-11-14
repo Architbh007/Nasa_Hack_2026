@@ -1,0 +1,10 @@
+{
+  "key": "6d326c6ed2035c03756dd525bd3699bdbd18d62d67b49d27279aa5ee5b16ffd4",
+  "kind": "lesson",
+  "model": "gpt-6-luna",
+  "label": "lesson:bass-2012",
+  "createdAt": "2026-11-14T12:47:31.503Z",
+  "output": {
+    "lesson": "BASS and BASS-II burned small solid-material samples in microgravity while varying oxygen, airflow, and fuel type; the event description reports no specific failure. The tests help show how these conditions affect whether a flame on a solid survives, informing material flammability limits and suppression guidance. BASS studies how realistic materials burn and how an inert gas can extinguish flames, while BASS-II examines ignition, flame spread, and extinction in low-speed flows [bass] [bass-ii]. That knowledge can help crews design safer vehicles and fire responses for future Moon and Mars missions."
+  }
+}

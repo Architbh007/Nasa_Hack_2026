@@ -1,5 +1,4 @@
-import type Anthropic from "@anthropic-ai/sdk";
-import { aiConfig, anthropic, fallbackParams } from "@/lib/ai/client";
+import { aiConfig, generate, generateStream, type ChatMessage } from "@/lib/ai/client";
 import { cacheKey, readCache, writeCache } from "@/lib/ai/cache";
 import { briefContext, runContext, runStats } from "@/lib/ai/context";
 import { SiError } from "@/lib/ai/errors";
@@ -15,7 +14,7 @@ export type AskPlan = {
   key: string;
   model: string;
   sourceIds: string[];
-  messages: Anthropic.Beta.Messages.BetaMessageParam[];
+  messages: ChatMessage[];
 };
 
 /** Retrieval plus prompt assembly for a chat turn. The last turn must be the user's question. */
@@ -45,10 +44,10 @@ export function planAsk(turns: readonly ChatTurn[]): AskPlan {
     note: "Only the retrieved records below include details. Other ids are listed for orientation only.",
   };
   const context = `Dataset overview (JSON):\n${JSON.stringify(overview)}\n\nRetrieved records (JSON):\n${JSON.stringify(records, null, 1)}\n\nQuestion: ${question.content}`;
-  const history: Anthropic.Beta.Messages.BetaMessageParam[] = turns
+  const history: ChatMessage[] = turns
     .slice(0, -1)
     .map((t) => ({ role: t.role, content: t.content }));
-  const messages: Anthropic.Beta.Messages.BetaMessageParam[] = [...history, { role: "user", content: context }];
+  const messages: ChatMessage[] = [...history, { role: "user", content: context }];
   const model = aiConfig().modelMain;
   return {
     key: cacheKey({ kind: "ask", model, v: PROMPT_VERSION, system: ASK_SYSTEM, messages }),
@@ -75,14 +74,7 @@ export async function saveAnswer(plan: AskPlan, text: string, question: string):
 }
 
 export function startAskStream(plan: AskPlan) {
-  return anthropic().beta.messages.stream({
-    model: plan.model,
-    max_tokens: 8000,
-    system: ASK_SYSTEM,
-    messages: plan.messages,
-    output_config: { effort: "low" },
-    ...fallbackParams(plan.model),
-  });
+  return generateStream({ model: plan.model, system: ASK_SYSTEM, messages: plan.messages, effort: "low" });
 }
 
 /** Non-interactive answer (used by the prewarm script): cached if present, otherwise generated and cached. */
@@ -90,13 +82,8 @@ export async function answerOnce(turns: readonly ChatTurn[]): Promise<{ text: st
   const plan = planAsk(turns);
   const hit = await cachedAnswer(plan);
   if (hit !== null) return { text: hit, cached: true };
-  const final = await startAskStream(plan).finalMessage();
-  if (final.stop_reason === "refusal") throw new SiError("refused", "The SI declined to answer this question.", 422);
-  const text = final.content
-    .filter((b): b is Anthropic.Beta.Messages.BetaTextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
+  const { text, refused } = await generate({ model: plan.model, system: ASK_SYSTEM, messages: plan.messages, effort: "low" });
+  if (refused) throw new SiError("refused", "The SI declined to answer this question.", 422);
   if (!text) throw new SiError("invalid_output", "Empty answer.", 502);
   await saveAnswer(plan, text, turns.at(-1)?.content ?? "");
   return { text, cached: false };

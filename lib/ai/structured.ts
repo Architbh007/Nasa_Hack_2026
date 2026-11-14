@@ -1,11 +1,8 @@
-import type Anthropic from "@anthropic-ai/sdk";
 import type { z } from "zod";
-import { aiConfig, anthropic, fallbackParams, textOf } from "@/lib/ai/client";
+import { aiConfig, generate, type ChatMessage, type Effort } from "@/lib/ai/client";
 import { cacheKey, readCache, writeCache } from "@/lib/ai/cache";
 import { SiError } from "@/lib/ai/errors";
 import { PROMPT_VERSION, retryNote } from "@/lib/ai/prompts";
-
-type Effort = "low" | "medium" | "high";
 
 export type StructuredRequest<S extends z.ZodType> = {
   kind: string;
@@ -42,22 +39,15 @@ function describeIssues(err: z.ZodError): string {
 async function callModel(
   model: string,
   system: string,
-  messages: Anthropic.Beta.Messages.BetaMessageParam[],
+  messages: ChatMessage[],
   effort: Effort,
   maxTokens: number
 ): Promise<string> {
-  const response = await anthropic().beta.messages.create({
-    model,
-    max_tokens: maxTokens,
-    system,
-    messages,
-    output_config: { effort },
-    ...fallbackParams(model),
-  });
-  if (response.stop_reason === "refusal") {
+  const { text, refused } = await generate({ model, system, messages, effort, maxTokens });
+  if (refused) {
     throw new SiError("refused", "The SI declined to answer this request. Try rephrasing or a different input.", 422);
   }
-  return textOf(response);
+  return text;
 }
 
 /**
@@ -76,7 +66,7 @@ export async function structuredCall<S extends z.ZodType>(req: StructuredRequest
   }
 
   const userText = `Data (JSON):\n${JSON.stringify(req.input, null, 1)}`;
-  const messages: Anthropic.Beta.Messages.BetaMessageParam[] = [{ role: "user", content: userText }];
+  const messages: ChatMessage[] = [{ role: "user", content: userText }];
   const effort = req.effort ?? "low";
   const maxTokens = req.maxTokens ?? 8000;
 

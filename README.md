@@ -43,7 +43,7 @@ Prerequisites: Node.js 20.9 or newer (22 recommended), npm.
 
 ```bash
 npm install
-cp .env.example .env.local      # then add ANTHROPIC_API_KEY (optional; see below)
+cp .env.example .env.local      # then add OPENAI_API_KEY (optional; see below)
 npm run dev                     # http://localhost:3000
 ```
 
@@ -53,9 +53,9 @@ The built dataset and any precomputed SI outputs are committed, so the app runs 
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | (none) | Used only by server-side route handlers; never sent to the browser. |
-| `MODEL_MAIN` | `claude-sonnet-5-5` | Summaries, comparisons, habitat interpretation, readiness notes, Q&A. |
-| `MODEL_FAST` | `claude-haiku-5-5` | Graph edge explanations. |
+| `OPENAI_API_KEY` | (none) | Used only by server-side route handlers; never sent to the browser. |
+| `MODEL_MAIN` | `gpt-6.1-sol` | Summaries, comparisons, habitat interpretation, readiness notes, Q&A. |
+| `MODEL_FAST` | `gpt-6-luna` | Graph edge explanations. |
 | `USE_CACHE_ONLY` | `false` | When `true`, never call the API; serve cached outputs only (demo safety). |
 
 ### Scripts
@@ -100,7 +100,7 @@ flowchart LR
   LOAD --> CORE --> PAGES --> UI["Browser<br/>Recharts · TanStack Table · force graph · chat"]
   UI -- "POST JSON" --> API --> CORE
   API --> AI <--> CACHE
-  AI -- "only on cache miss" --> CLAUDE["Anthropic API"]
+  AI -- "only on cache miss" --> CLAUDE["OpenAI API"]
 ```
 
 - **No database.** Data lives in versioned JSON, is imported statically and validated once with zod.
@@ -142,7 +142,7 @@ Sources and reuse terms are listed in `data/real/source-registry.json` and on th
 ## Deploying to Vercel
 
 1. Import the repo in Vercel. `vercel.json` pins `npm ci` and `npm run build`; `prebuild` rebuilds and validates the dataset from `data/real`.
-2. Add `ANTHROPIC_API_KEY`, `MODEL_MAIN`, `MODEL_FAST`, and for a public demo `USE_CACHE_ONLY=true`.
+2. Add `OPENAI_API_KEY`, `MODEL_MAIN`, `MODEL_FAST`, and for a public demo `USE_CACHE_ONLY=true`.
 3. Commit `data/cache/*.json` after `npm run prewarm`. `next.config.ts` traces those files into the API functions.
 
 ---
@@ -175,4 +175,4 @@ Never say "nothing has been tested": say "in the data we examined".
 - **Saffire IV–VI.** Hand-transcribed from papers; a second-person check against the PDFs is still open.
 - **SI output.** Constrained to the provided records but can still be wrong. Check the cited ids.
 
-Built with Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, react-force-graph-2d, zod, fuse.js and the Anthropic TypeScript SDK.
+Built with Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, react-force-graph-2d, zod, fuse.js and the OpenAI TypeScript SDK.
