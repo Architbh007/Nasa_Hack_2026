@@ -79,7 +79,7 @@ export function DataLevelBadge({ level, className }: { level: DataLevel; classNa
 export function SourceTag({ source, className }: { source: DataSource; className?: string }) {
   if (source === "psi") return null;
   return (
-    <Badge variant="outline" className={cn("border-warning/40 text-[10px] font-medium uppercase tracking-wide text-warning", className)}>
+    <Badge variant="outline" className={cn("border-warning/40 text-[11px] font-medium text-warning", className)}>
       Published paper
     </Badge>
   );
@@ -88,7 +88,7 @@ export function SourceTag({ source, className }: { source: DataSource; className
 /** Small "team assessment" marker for labels that are our classification, not NASA's. */
 export function TeamTag({ className }: { className?: string }) {
   return (
-    <span className={cn("text-[10px] uppercase tracking-wide text-muted-foreground", className)} title="The team's own classification, not a NASA statement">
+    <span className={cn("text-[11px] text-muted-foreground", className)} title="The team's own classification, not a NASA statement">
       team assessment
     </span>
   );

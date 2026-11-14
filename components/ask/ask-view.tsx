@@ -33,7 +33,7 @@ function Sources({ ids }: { ids: readonly string[] }) {
     <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
       <span>Records retrieved:</span>
       {ids.map((id) => (
-        <Link key={id} href={`/explore?id=${id}`} className="rounded border border-border px-1.5 py-0.5 hover:border-link hover:text-link">
+        <Link key={id} href={`/explore?id=${id}`} className="rounded-sm border border-border px-1.5 py-0.5 hover:border-link hover:text-link">
           {acronym(id)}
         </Link>
       ))}

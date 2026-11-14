@@ -8,7 +8,6 @@ export default function AskPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Display 05 · Ask"
         title="Ask the Data"
         description="Grounded answers over the investigation records. Each question retrieves the six most relevant records with their aggregate test statistics; the SI answers only from those and cites them by id."
       />

@@ -3,7 +3,6 @@ import { FUEL_CATEGORIES, type HabitatAssessment } from "@/lib/habitat";
 import type { NearRun } from "@/lib/metrics";
 import type { ScenarioReadiness } from "@/lib/readiness";
 import type { Investigation, Run, Summary } from "@/lib/schema";
-import type { SimilarityResult } from "@/lib/similarity";
 
 /**
  * Compact, grounded context objects sent to the model. Everything the SI may cite is in here;
@@ -123,26 +122,6 @@ export function runContext(n: Pick<NearRun, "run" | "assumedPressure"> & { dista
     source: `${r.source.file}, ${r.source.ref}`,
     ...(n.distance === undefined ? {} : { runDistance: r2(n.distance) }),
     caveats: r.flags.slice(0, 3),
-  };
-}
-
-export function edgeContext(a: Investigation, b: Investigation, sim: SimilarityResult) {
-  return {
-    link: { label: sim.label, similarityScore: r2(sim.score) },
-    sharedByComponent: Object.fromEntries(
-      Object.entries(sim.components).map(([k, c]) => [k, { jaccard: c.jaccard === null ? null : r2(c.jaccard), shared: c.shared }])
-    ),
-    investigations: [a, b].map((i) => ({
-      id: i.id,
-      accession: i.accession,
-      acronym: i.acronym,
-      name: i.name,
-      hardware: i.hardware.map((h) => h.name),
-      relatedAccessionsListedByPsi: i.relatedAccessions,
-      teamCategory: i.category,
-      objectivesExcerpt: clip(i.objectives, 400),
-    })),
-    dataSource: a.dataSource,
   };
 }
 

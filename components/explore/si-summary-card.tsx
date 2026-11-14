@@ -25,11 +25,11 @@ export function SiSummaryCard({ investigationId }: { investigationId: string }) 
           </ul>
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="rounded-lg bg-background/40 p-2.5">
-              <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Habitat relevance</p>
+              <p className="mb-1 text-[0.8125rem] font-medium text-muted-foreground">Habitat relevance</p>
               <SiMarkdown text={state.data.habitatRelevance} className="text-xs" />
             </div>
             <div className="rounded-lg bg-background/40 p-2.5">
-              <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Caveats</p>
+              <p className="mb-1 text-[0.8125rem] font-medium text-muted-foreground">Caveats</p>
               <SiMarkdown text={state.data.caveats} className="text-xs" />
             </div>
           </div>

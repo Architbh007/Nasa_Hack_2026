@@ -19,9 +19,6 @@ export const ComparisonSchema = z.object({
 });
 export type Comparison = z.infer<typeof ComparisonSchema>;
 
-export const EdgeExplanationSchema = z.object({ explanation: z.string().trim().min(1).max(700) });
-export type EdgeExplanationResult = z.infer<typeof EdgeExplanationSchema>;
-
 export const ScenarioSummarySchema = z.object({ paragraph: z.string().trim().min(1).max(1500) });
 export type ScenarioSummary = z.infer<typeof ScenarioSummarySchema>;
 

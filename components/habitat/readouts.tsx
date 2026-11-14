@@ -25,9 +25,9 @@ function Tile({ label, children, hint, className }: { label: ReactNode; children
   return (
     <Card className={cn("gap-1 py-4", className)}>
       <CardContent className="space-y-1 px-4">
-        <p className="eyebrow !tracking-[0.1em]">{label}</p>
+        <p className="eyebrow">{label}</p>
         {children}
-        {hint && <div className="text-[11px] leading-snug text-muted-foreground">{hint}</div>}
+        {hint && <div className="text-xs leading-snug text-muted-foreground">{hint}</div>}
       </CardContent>
     </Card>
   );
@@ -73,7 +73,7 @@ export function HabitatReadouts({ a }: { a: HabitatAssessment }) {
               </span>
             }
             hint={v.reason}
-            className={cn(c === a.category && "ring-1 ring-primary/60 shadow-[0_0_28px_-10px_rgb(255_122_61/0.7)]")}
+            className={cn(c === a.category && "ring-1 ring-primary/60")}
           >
             <VerdictLine v={v} />
           </Tile>

@@ -36,7 +36,7 @@ function Lessons({ eventId }: { eventId: string }) {
       {state.status === "error" && <SiError message={state.message} onRetry={go} compact />}
       {state.status === "success" && (
         <div className="space-y-1 rounded-lg border border-primary/30 bg-primary/5 p-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">SI lesson</p>
+          <p className="text-[0.8125rem] font-medium text-primary">SI lesson</p>
           <SiMarkdown text={state.data.lesson} />
           <SiMeta cached={state.cached} model={state.model} />
         </div>
@@ -60,13 +60,13 @@ function EventCard({ event, byId, onOpen }: { event: FireHistoryEvent; byId: Rea
         <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <span className="tabular text-lg font-semibold text-foreground">{event.year}</span>
           <h3 className="text-base font-semibold">{event.title}</h3>
-          <span className={cn("rounded px-1.5 py-0.5 text-[11px] font-medium", KIND_STYLE[event.kind])}>{KIND_LABEL[event.kind]}</span>
+          <span className={cn("rounded-sm px-1.5 py-0.5 text-[11px] font-medium", KIND_STYLE[event.kind])}>{KIND_LABEL[event.kind]}</span>
           <span className="text-xs text-muted-foreground">{event.dateLabel}</span>
         </header>
 
         <div className="grid gap-4 md:grid-cols-2">
           <section className="space-y-2">
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Then</h4>
+            <h4 className="text-[0.8125rem] font-medium text-muted-foreground">Then</h4>
             <p className="text-sm leading-relaxed">{event.then}</p>
             {event.atmosphere && (
               <p className="rounded-md bg-secondary px-2.5 py-1.5 text-xs">
@@ -82,7 +82,7 @@ function EventCard({ event, byId, onOpen }: { event: FireHistoryEvent; byId: Rea
             )}
           </section>
           <section className="space-y-2 md:border-l md:border-border md:pl-4">
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Now</h4>
+            <h4 className="text-[0.8125rem] font-medium text-muted-foreground">Now</h4>
             <p className="text-sm leading-relaxed">{event.now}</p>
             {related.length > 0 && (
               <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -92,7 +92,7 @@ function EventCard({ event, byId, onOpen }: { event: FireHistoryEvent; byId: Rea
                     key={inv.id}
                     type="button"
                     onClick={() => onOpen(inv.id)}
-                    className="rounded bg-link/10 px-1.5 py-0.5 text-xs font-medium text-link hover:bg-link/20"
+                    className="rounded-sm bg-link/10 px-1.5 py-0.5 text-xs font-medium text-link hover:bg-link/20"
                     title={inv.name}
                   >
                     {inv.acronym}

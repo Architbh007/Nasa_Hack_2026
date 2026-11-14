@@ -16,7 +16,7 @@ export function SourceList({ investigations, note }: { investigations: readonly 
           <li key={inv.id} className="grid gap-1 sm:grid-cols-[6.5rem_1fr] sm:gap-3">
             <Link
               href={`/explore?id=${inv.id}`}
-              className="h-fit w-fit rounded bg-link/10 px-1.5 py-0.5 text-sm font-medium text-link hover:bg-link/20"
+              className="h-fit w-fit rounded-sm bg-link/10 px-1.5 py-0.5 text-sm font-medium text-link hover:bg-link/20"
             >
               {inv.acronym}
             </Link>

@@ -18,7 +18,7 @@ import { useSiMutation } from "@/lib/si-client";
 function Block({ title, children, icon }: { title: string; children: ReactNode; icon?: ReactNode }) {
   return (
     <section className="space-y-2 rounded-lg border border-border bg-background/40 p-3.5">
-      <h4 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <h4 className="flex items-center gap-1.5 text-[0.8125rem] font-medium text-muted-foreground">
         {icon}
         {title}
       </h4>
@@ -46,7 +46,7 @@ function InterpretationView({ data }: { data: HabitatInterpretation }) {
   return (
     <div className="space-y-4">
       <div className="rounded-lg border border-primary/30 bg-primary/5 p-3.5">
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">In plain words</p>
+        <p className="mb-1 text-[0.8125rem] font-medium text-primary">In plain words</p>
         <SiMarkdown text={data.plainSummary} className="text-[15px]" />
       </div>
       <SiMarkdown text={data.summary} />
@@ -64,7 +64,7 @@ function InterpretationView({ data }: { data: HabitatInterpretation }) {
             <li key={`${e.investigationId}-${e.evidence}`} className="grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-3">
               <Link
                 href={`/explore?id=${e.investigationId}`}
-                className="h-fit w-fit rounded bg-link/10 px-1.5 py-0.5 text-sm font-medium text-link hover:bg-link/20"
+                className="h-fit w-fit rounded-sm bg-link/10 px-1.5 py-0.5 text-sm font-medium text-link hover:bg-link/20"
               >
                 {acronym(e.investigationId)}
               </Link>

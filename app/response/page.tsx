@@ -21,7 +21,6 @@ export default function ResponsePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Display 02 · Crew response"
         title="Crew Response Evidence"
         description="When a fire starts on a spacecraft, the first step is to stop the ventilation. This page collects every time a NASA crew turned the airflow down or off, or used a nitrogen jet, on a real flame in orbit, and what the test notes say happened next."
       />

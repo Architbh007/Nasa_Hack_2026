@@ -114,7 +114,7 @@ function FlameShapeInset({ gravity }: { gravity: HabitatGravity }) {
 function Toggle({ label, value, onChange, on, off }: { label: string; value: boolean; onChange: (v: boolean) => void; on: string; off: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="text-[0.8125rem] font-medium text-muted-foreground">{label}</span>
       <div role="radiogroup" aria-label={label} className="flex gap-1 rounded-lg border border-border bg-background/40 p-0.5">
         {[true, false].map((v) => (
           <button
@@ -479,7 +479,7 @@ export function FireTwin({
         <Toggle label="Vents" value={ventsOn} onChange={setVentsOn} on="On" off="Off" />
         <Toggle label="Crew response" value={crewResponse} onChange={setCrewResponse} on="On" off="Off" />
         <div className="flex items-center gap-2">
-          <label htmlFor="ft-start" className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Fire starts at</label>
+          <label htmlFor="ft-start" className="text-[0.8125rem] font-medium text-muted-foreground">Fire starts at</label>
           <select id="ft-start" value={startItemId} onChange={(e) => pickItem(e.target.value)} className="h-8 rounded-md border border-border bg-background/40 px-2 text-xs">
             {ROOM_ITEMS.map((i) => (
               <option key={i.id} value={i.id}>
@@ -491,7 +491,7 @@ export function FireTwin({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Same fire, other habitat</span>
+        <span className="text-[0.8125rem] font-medium text-muted-foreground">Same fire, other habitat</span>
         {presetChips.map((s) => (
           <button
             key={s.id}
@@ -528,12 +528,12 @@ export function FireTwin({
 
         <div className="min-w-0 space-y-3">
           <div className="rounded-lg border border-border bg-background/40 p-3.5" aria-live="polite">
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">Narrator</p>
+            <p className="mb-1 text-[0.8125rem] font-medium text-primary">Narrator</p>
             {current ? (
               <>
                 <p className="text-sm font-medium">
                   <span className="tabular text-muted-foreground">{formatClock(current.t)}</span> {eventTitle(current)}
-                  {current.illustrative && <span className="ml-2 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">illustrative timing</span>}
+                  {current.illustrative && <span className="ml-2 rounded-sm bg-secondary px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">illustrative timing</span>}
                 </p>
                 <SiMarkdown text={eventCaption(plan, current)} className="mt-1" />
               </>
@@ -559,11 +559,11 @@ export function FireTwin({
 
           {finished && (
             <div className="space-y-2.5 rounded-lg border border-border bg-card p-3.5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">How sure are we?</p>
+              <p className="text-[0.8125rem] font-medium text-muted-foreground">How sure are we?</p>
               <p className="text-sm">
                 <span
                   className={cn(
-                    "mr-2 rounded px-1.5 py-0.5 text-xs font-medium",
+                    "mr-2 rounded-sm px-1.5 py-0.5 text-xs font-medium",
                     confidence.level === "tested" && "bg-[#199e70]/20 text-[#5fd3a6]",
                     confidence.level === "near" && "bg-warning/15 text-warning",
                     confidence.level === "untested" && "bg-destructive/15 text-destructive"
@@ -573,7 +573,7 @@ export function FireTwin({
                 </span>
                 {confidence.text}
               </p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">What NASA should test next</p>
+              <p className="text-[0.8125rem] font-medium text-muted-foreground">What NASA should test next</p>
               <ul className="list-disc space-y-1 pl-5 text-sm">
                 {testNext(plan).map((x) => (
                   <li key={x}>{x}</li>
@@ -584,7 +584,7 @@ export function FireTwin({
 
           <div className="space-y-2 rounded-lg border border-border bg-background/40 p-3.5">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">SI narration</p>
+              <p className="text-[0.8125rem] font-medium text-muted-foreground">SI narration</p>
               <Button size="sm" variant="outline" onClick={runSi} disabled={si.status === "loading"}>
                 <Sparkles /> {si.status === "success" ? "Regenerate" : "Explain this fire"}
               </Button>

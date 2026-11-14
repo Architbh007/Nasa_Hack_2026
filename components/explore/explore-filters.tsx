@@ -27,7 +27,7 @@ function FilterSelect<T extends string>({
   options: ReadonlyArray<{ value: T; label: string }>;
 }) {
   return (
-    <label className="flex min-w-36 flex-col gap-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+    <label className="flex min-w-36 flex-col gap-1 text-[0.8125rem] font-medium text-muted-foreground">
       {label}
       <Select value={value} onValueChange={(v) => onChange(v as T | "all")}>
         <SelectTrigger className="w-full normal-case tracking-normal" aria-label={label}>
@@ -66,7 +66,7 @@ export function ExploreFiltersBar({
   return (
     <div className="space-y-3 rounded-xl border border-border bg-card/70 p-4">
       <div className="flex flex-wrap items-end gap-3">
-        <label className="flex min-w-56 flex-1 flex-col gap-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <label className="flex min-w-56 flex-1 flex-col gap-1 text-[0.8125rem] font-medium text-muted-foreground">
           Search
           <span className="relative normal-case tracking-normal">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -106,7 +106,7 @@ export function ExploreFiltersBar({
       </div>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex min-w-64 flex-1 items-center gap-3">
-          <span className="shrink-0 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="shrink-0 text-[0.8125rem] font-medium text-muted-foreground">
             O2 in real runs
           </span>
           <Slider

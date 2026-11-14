@@ -44,13 +44,6 @@ ${JSON_RULES}
   "differences": ["up to 4 short bullets"]
 }`;
 
-export const EDGE_SYSTEM = `${GROUNDING}
-
-Task: explain in exactly two sentences why two investigations are linked in a similarity network. The first sentence names what they share (a PSI-listed relation, hardware, project or material class). The second says why that link matters for interpreting their results together. Cite both by [id].
-
-${JSON_RULES}
-{ "explanation": "two sentences" }`;
-
 export const HABITAT_SYSTEM = `${GROUNDING}
 
 Task: interpret a proposed crewed-habitat cabin condition. You receive the condition, derived metrics, a coverage verdict per fuel category with the nearest real runs, a list of what was never tested, and the top-ranked investigation records. Explain what real evidence exists near this atmosphere, what is untested, and what to test next.

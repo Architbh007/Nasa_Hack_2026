@@ -51,49 +51,50 @@
 }
 
 /*
- * FireSight mission-control theme. One dark surface for the whole app: deep-space navy,
- * hairline borders, flame orange for actions and fire, cyan for links and telemetry.
- * Data colours live in lib/chart-colors.ts.
+ * FireSight theme. A black canvas like a NASA mission page or an Apple product page:
+ * content sits on soft, borderless surfaces, sections fade into one another, and colour
+ * comes from photography, data and the flame-orange accent. Data colours live in lib/chart-colors.ts.
  */
 :root,
 .dark {
-  --background: #060910;
-  --foreground: #e8edf5;
-  --card: #0c111b;
-  --card-foreground: #e8edf5;
-  --popover: #111827;
-  --popover-foreground: #e8edf5;
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --card: #111113;
+  --card-foreground: #f5f5f7;
+  --popover: #1c1c1f;
+  --popover-foreground: #f5f5f7;
   --primary: #ff7a3d;
-  --primary-foreground: #160803;
-  --secondary: #18202f;
-  --secondary-foreground: #e8edf5;
-  --muted: #131a27;
-  --muted-foreground: #95a2b6;
-  --accent: #1b2637;
-  --accent-foreground: #f3f6fb;
+  --primary-foreground: #1a0a03;
+  --secondary: #1c1c1f;
+  --secondary-foreground: #f5f5f7;
+  --muted: #18181b;
+  --muted-foreground: #a1a1a6;
+  --accent: #232327;
+  --accent-foreground: #f5f5f7;
   --destructive: #ff6b6b;
-  --border: rgb(148 170 204 / 0.14);
-  --input: rgb(148 170 204 / 0.24);
-  --ring: #ff7a3d;
-  --link: #6cc9ff;
+  --border: rgb(255 255 255 / 0.09);
+  --input: rgb(255 255 255 / 0.16);
+  --ring: #5eb1ff;
+  --link: #5eb1ff;
   --warning: #fab219;
-  --telemetry: #6cc9ff;
+  --telemetry: #5eb1ff;
   --nominal: #3fcf8e;
-  --panel-highlight: rgb(190 215 255 / 0.07);
+  --surface-raised: #18181b;
   --chart-1: #3987e5;
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-5: #9085e9;
-  --radius: 0.375rem;
-  --sidebar: #0a0f18;
-  --sidebar-foreground: #d5dce8;
+  --radius: 0.875rem;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --sidebar: #0b0b0d;
+  --sidebar-foreground: #e8e8ed;
   --sidebar-primary: #ff7a3d;
-  --sidebar-primary-foreground: #160803;
-  --sidebar-accent: #1b2637;
-  --sidebar-accent-foreground: #f3f6fb;
-  --sidebar-border: rgb(148 170 204 / 0.12);
-  --sidebar-ring: #ff7a3d;
+  --sidebar-primary-foreground: #1a0a03;
+  --sidebar-accent: #232327;
+  --sidebar-accent-foreground: #f5f5f7;
+  --sidebar-border: rgb(255 255 255 / 0.08);
+  --sidebar-ring: #5eb1ff;
 }
 
 @layer base {
@@ -103,25 +104,33 @@
   html {
     @apply font-sans;
     color-scheme: dark;
-    scrollbar-color: #2a3446 transparent;
+    scrollbar-color: #3a3a3f transparent;
+    -webkit-font-smoothing: antialiased;
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: clip;
+    font-size: 1rem;
+    line-height: 1.55;
   }
   ::selection {
-    background: rgb(255 122 61 / 0.35);
+    background: rgb(94 177 255 / 0.35);
     color: #fff;
   }
-  /* Instrument panel: a faint top-lit surface with a hairline of light along the upper edge. */
+  /* Surfaces are soft and borderless; separation comes from tone, not lines. */
   [data-slot="card"] {
-    background-image: linear-gradient(180deg, rgb(160 190 235 / 0.035), transparent 7rem);
-    box-shadow: inset 0 1px 0 var(--panel-highlight), 0 18px 40px -24px rgb(0 0 0 / 0.8);
+    box-shadow: none;
+    background-image: none;
   }
   h1,
   h2,
   h3 {
     text-wrap: balance;
-    font-weight: 700;
+    font-weight: 600;
+    letter-spacing: -0.022em;
+  }
+  p {
+    text-wrap: pretty;
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -130,137 +139,50 @@
 
 .tabular { font-variant-numeric: tabular-nums; }
 
-/* Telemetry label: small mono capitals, used for eyebrows and table column heads. */
+/* Small label: quiet, sentence case. Used above readouts and as table column heads. */
 .eyebrow,
 [data-slot="table-head"] {
-  font-family: var(--font-dm-mono), ui-monospace, monospace;
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .eyebrow { color: var(--muted-foreground); }
 
-/* Section heading with a short flame-orange rule above it. */
-.rule-heading::before {
-  content: "";
-  display: block;
-  width: 2rem;
-  height: 2px;
-  margin-bottom: 0.875rem;
-  background: var(--primary);
-  box-shadow: 0 0 12px rgb(255 122 61 / 0.7);
+/* Breaks a block out of the centred page column to the full viewport width. */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
 }
 
 /* ---------- Backdrop (components/shell/space-backdrop.tsx) ---------- */
 .space-backdrop {
-  background:
-    radial-gradient(ellipse 70% 50% at 78% -8%, rgb(57 135 229 / 0.2), transparent 70%),
-    radial-gradient(ellipse 50% 40% at -6% 30%, rgb(255 122 61 / 0.06), transparent 70%),
-    radial-gradient(ellipse 60% 45% at 50% 115%, rgb(57 135 229 / 0.12), transparent 70%),
-    linear-gradient(180deg, #070b14 0%, #060910 45%, #04060b 100%);
-}
-/* Faint plotting grid that fades out towards the bottom of the screen. */
-.space-grid {
-  background-image:
-    linear-gradient(rgb(148 170 204 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(148 170 204 / 0.05) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 20%, transparent 75%);
-}
-
-/* ---------- HUD panel: hairline frame with bracketed corners ---------- */
-.hud-panel {
-  position: relative;
-  border: 1px solid var(--border);
-  background:
-    linear-gradient(180deg, rgb(160 190 235 / 0.04), transparent 8rem),
-    var(--card);
-  box-shadow: inset 0 1px 0 var(--panel-highlight);
-  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-.hud-panel::before,
-.hud-panel::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 1px solid rgb(108 201 255 / 0.55);
-  pointer-events: none;
-  transition: border-color 0.25s ease, width 0.25s ease, height 0.25s ease;
-}
-.hud-panel::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
-.hud-panel::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
-a.hud-panel:hover,
-a.hud-panel:focus-visible {
-  border-color: rgb(255 122 61 / 0.5);
-  transform: translateY(-2px);
-  box-shadow: inset 0 1px 0 var(--panel-highlight), 0 20px 44px -22px rgb(255 122 61 / 0.35);
-}
-a.hud-panel:hover::before,
-a.hud-panel:hover::after,
-a.hud-panel:focus-visible::before,
-a.hud-panel:focus-visible::after {
-  border-color: var(--primary);
-  width: 22px;
-  height: 22px;
+  background: #000;
 }
 
 /* ---------- Motion ---------- */
-@keyframes fs-rise {
-  from { opacity: 0; transform: translateY(14px); }
+/* Page content settles in once on load: a short fade with a slight lift, eased out. */
+@keyframes fs-enter {
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
-/* Page content rises in, one block after another. */
-.fs-rise,
 main > * {
-  animation: fs-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: fs-enter 0.6s var(--ease-out-expo) both;
 }
-main > *:nth-child(2) { animation-delay: 0.08s; }
-main > *:nth-child(3) { animation-delay: 0.16s; }
-.fs-stagger > * { animation: fs-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.fs-stagger > *:nth-child(1) { animation-delay: 0.1s; }
-.fs-stagger > *:nth-child(2) { animation-delay: 0.18s; }
-.fs-stagger > *:nth-child(3) { animation-delay: 0.26s; }
-.fs-stagger > *:nth-child(4) { animation-delay: 0.34s; }
-.fs-stagger > *:nth-child(5) { animation-delay: 0.42s; }
-.fs-stagger > *:nth-child(6) { animation-delay: 0.5s; }
+/* Hero photography eases in from a slight zoom, like a camera settling. */
+@keyframes fs-settle {
+  from { opacity: 0; transform: scale(1.04); }
+  to { opacity: 1; transform: none; }
+}
+.fs-settle { animation: fs-settle 1.6s var(--ease-out-expo) both; }
 
-@keyframes fs-pulse-dot {
-  0% { box-shadow: 0 0 0 0 rgb(63 207 142 / 0.6); }
-  100% { box-shadow: 0 0 0 7px rgb(63 207 142 / 0); }
-}
-.fs-live-dot {
-  background: var(--nominal);
-  animation: fs-pulse-dot 2s ease-out infinite;
-}
-@keyframes fs-spin { to { transform: rotate(360deg); } }
-.fs-spin { transform-box: view-box; transform-origin: center; animation: fs-spin var(--fs-dur, 90s) linear infinite; }
-.fs-spin-rev { transform-box: view-box; transform-origin: center; animation: fs-spin var(--fs-dur, 90s) linear infinite reverse; }
-@keyframes fs-breathe {
-  from { transform: scale(0.96); opacity: 0.86; }
-  to { transform: scale(1.05); opacity: 1; }
-}
-.fs-breathe { transform-box: fill-box; transform-origin: center; animation: fs-breathe 2.8s ease-in-out infinite alternate; }
-@keyframes fs-dash { to { stroke-dashoffset: -200; } }
-.fs-dash { animation: fs-dash 14s linear infinite; }
-/* A thin light that travels along the top edge of the header. */
-@keyframes fs-scan {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100vw); }
-}
-.fs-scan { animation: fs-scan 9s linear infinite; }
+.fs-live-dot { background: var(--nominal); }
 
 @media (prefers-reduced-motion: reduce) {
-  .fs-rise,
   main > *,
-  .fs-stagger > *,
-  .fs-live-dot,
-  .fs-spin,
-  .fs-spin-rev,
-  .fs-breathe,
-  .fs-dash,
-  .fs-scan {
+  .fs-settle {
     animation: none;
   }
 }

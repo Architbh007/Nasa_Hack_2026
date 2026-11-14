@@ -93,7 +93,7 @@ function CellDetails({
   return (
     <div className="space-y-3 text-sm" aria-live="polite">
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-[0.8125rem] font-medium text-muted-foreground">
           {isCabin ? "Your cabin's square" : "Selected square"}
         </p>
         <p className="tabular font-medium">
@@ -122,11 +122,11 @@ function CellDetails({
                 : `Untested: no real ${scopeLabel} run in or near this square.`}
           </p>
           <div className="space-y-1.5">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Nearest real runs (evidence)</p>
+            <p className="text-[0.8125rem] font-medium text-muted-foreground">Nearest real runs (evidence)</p>
             <ul className="space-y-1">
               {near.map(({ run, o2Percent, pressurePsi, assumedPressure }) => (
                 <li key={run.id} className="flex items-center justify-between gap-2 text-xs">
-                  <Link href={`/explore?id=${run.investigationId}`} className="rounded bg-link/10 px-1.5 py-0.5 font-medium text-link hover:bg-link/20">
+                  <Link href={`/explore?id=${run.investigationId}`} className="rounded-sm bg-link/10 px-1.5 py-0.5 font-medium text-link hover:bg-link/20">
                     {acronym(run.investigationId)}
                   </Link>
                   <span className="tabular text-muted-foreground" title={assumedPressure ? "Pressure not recorded; placed at the cited ISS nominal" : undefined}>
@@ -252,7 +252,7 @@ export function FlammabilityGrid({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Compare material</span>
+        <span className="text-[0.8125rem] font-medium text-muted-foreground">Compare material</span>
         <div role="radiogroup" aria-label="Material" className="flex flex-wrap gap-1 rounded-lg border border-border bg-background/40 p-1">
           <button
             type="button"

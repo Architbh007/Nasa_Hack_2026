@@ -1,7 +1,6 @@
 import { aiConfig } from "@/lib/ai/client";
 import {
   briefContext,
-  edgeContext,
   habitatContext,
   investigationContext,
   scenarioContext,
@@ -9,7 +8,6 @@ import {
 import { SiError } from "@/lib/ai/errors";
 import {
   COMPARE_SYSTEM,
-  EDGE_SYSTEM,
   FIRE_TWIN_SYSTEM,
   HABITAT_SYSTEM,
   LESSON_SYSTEM,
@@ -18,7 +16,6 @@ import {
 } from "@/lib/ai/prompts";
 import {
   ComparisonSchema,
-  EdgeExplanationSchema,
   fireTwinNarrationSchema,
   habitatInterpretationSchema,
   lessonSchema,
@@ -33,7 +30,6 @@ import { assessHabitat, type HabitatInputs } from "@/lib/habitat";
 import type { RankingWeights } from "@/lib/ranking";
 import { scenarioReadiness } from "@/lib/readiness";
 import type { Investigation } from "@/lib/schema";
-import { edgeId, similarity } from "@/lib/similarity";
 
 /** SI operations shared by the API routes and the prewarm script. */
 
@@ -73,22 +69,6 @@ export function compareInvestigations(ids: readonly string[]) {
     input: { investigations: records },
     schema: ComparisonSchema,
     effort: "low",
-  });
-}
-
-export function explainEdge(source: string, target: string) {
-  const a = requireInvestigation(source);
-  const b = requireInvestigation(target);
-  const [x, y] = a.id < b.id ? [a, b] : [b, a];
-  return structuredCall({
-    kind: "edge",
-    label: `edge:${edgeId(x.id, y.id)}`,
-    model: aiConfig().modelFast,
-    system: EDGE_SYSTEM,
-    input: edgeContext(x, y, similarity(x, y)),
-    schema: EdgeExplanationSchema,
-    effort: "low",
-    maxTokens: 2000,
   });
 }
 

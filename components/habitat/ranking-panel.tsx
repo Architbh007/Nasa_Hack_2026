@@ -121,7 +121,7 @@ export function RankingPanel({
     <div className="grid gap-5 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)]">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Score weights</p>
+          <p className="text-xs font-medium text-muted-foreground">Score weights</p>
           {changed && (
             <Button variant="ghost" size="xs" onClick={() => onWeights(DEFAULT_RANKING_WEIGHTS)}>
               <RotateCcw /> Reset

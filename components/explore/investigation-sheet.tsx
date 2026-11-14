@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 function Section({ title, children, className, aside }: { title: string; children: React.ReactNode; className?: string; aside?: React.ReactNode }) {
   return (
     <section className={cn("space-y-2", className)}>
-      <h3 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+      <h3 className="flex items-center gap-2 text-[0.8125rem] font-medium text-muted-foreground">
         {title}
         {aside}
       </h3>
@@ -224,7 +224,7 @@ export function InvestigationDetail({ inv, runs, summaries }: { inv: Investigati
         </div>
       </Section>
       <div className="space-y-1.5">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Original NASA sources</p>
+        <p className="text-[0.8125rem] font-medium text-muted-foreground">Original NASA sources</p>
         <ul className="space-y-1 text-xs">
           {sourcesForInvestigation(inv.id).map((s) => (
             <li key={s.url}>

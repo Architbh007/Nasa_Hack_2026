@@ -9,7 +9,7 @@ function Bullets({ title, items }: { title: string; items: readonly string[] }) 
   if (items.length === 0) return null;
   return (
     <div className="rounded-lg bg-background/40 p-3">
-      <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{title}</p>
+      <p className="mb-1.5 text-[0.8125rem] font-medium text-muted-foreground">{title}</p>
       <ul className="space-y-1.5">
         {items.map((t) => (
           <li key={t} className="flex gap-2">

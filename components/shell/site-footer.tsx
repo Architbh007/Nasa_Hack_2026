@@ -1,21 +1,56 @@
 import Link from "next/link";
+import { NAV_ITEMS } from "@/lib/nav";
 
-/** Footer band: who built this, what it is for, and how much data is loaded. */
+/** Footer: what the data is, where to go, and who made it, in small print on a quiet surface. */
 export function SiteFooter({ status }: { status: { investigations: number; runs: number } }) {
   return (
-    <footer className="mt-12 border-t border-border bg-[#04060b]/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-[1500px] flex-wrap items-center justify-between gap-x-8 gap-y-3 px-4 py-6 text-sm text-muted-foreground sm:px-6 lg:px-8">
-        <p className="max-w-[80ch]">
-          <span className="font-bold uppercase tracking-[0.18em] text-foreground">
-            Fire<span className="text-primary">Sight</span>
-          </span>{" "}
-          · Built by team MicroVibe for NASA Space Apps 2026. Supports engineering judgment; does not replace NASA-STD-6001.
+    <footer className="bg-[#0b0b0d] text-[0.8125rem] leading-relaxed text-muted-foreground">
+      <div className="mx-auto w-full max-w-[1280px] px-5 py-12 sm:px-8 lg:px-10">
+        <p className="max-w-[90ch] border-b border-white/[0.08] pb-6">
+          FireSight shows only real NASA data: {status.investigations} investigations from NASA Physical Science Informatics plus
+          published Saffire IV–VI results, {status.runs} test runs in all. Missing values are shown as missing and nothing is
+          predicted. It supports engineering judgment and does not replace NASA-STD-6001.
         </p>
-        <p className="tabular font-mono text-xs uppercase tracking-[0.1em]">
-          {status.investigations} investigations · {status.runs} real test runs ·{" "}
-          <Link href="/about#data-policy" className="text-link hover:underline">
-            Sources and data policy
-          </Link>
+
+        <div className="grid gap-8 py-8 sm:grid-cols-[1fr_1fr_2fr]">
+          <div>
+            <h2 className="mb-3 text-[0.8125rem] font-semibold text-foreground">Explore</h2>
+            <ul className="space-y-2">
+              {NAV_ITEMS.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="hover:text-foreground hover:underline">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="mb-3 text-[0.8125rem] font-semibold text-foreground">Data</h2>
+            <ul className="space-y-2">
+              <li>
+                <a href="https://psi.nasa.gov" target="_blank" rel="noreferrer" className="hover:text-foreground hover:underline">
+                  NASA Physical Science Informatics
+                </a>
+              </li>
+              <li>
+                <a href="https://ntrs.nasa.gov" target="_blank" rel="noreferrer" className="hover:text-foreground hover:underline">
+                  NASA Technical Reports Server
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="mb-3 text-[0.8125rem] font-semibold text-foreground">Images</h2>
+            <p className="max-w-[60ch]">
+              Photographs courtesy of NASA (images.nasa.gov): orbital sunrise from the ISS (iss071e439624), a candle flame in
+              microgravity (9902615) and Earth at night with an aurora (iss058e005282).
+            </p>
+          </div>
+        </div>
+
+        <p className="border-t border-white/[0.08] pt-6">
+          Built by team MicroVibe for NASA Space Apps 2026 · Flame in Freefall. Not an official NASA website.
         </p>
       </div>
     </footer>

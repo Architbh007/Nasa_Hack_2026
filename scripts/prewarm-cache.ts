@@ -3,7 +3,7 @@
  * Generates and caches SI outputs so the demo works offline with USE_CACHE_ONLY=true:
  *  - core: every investigation summary, every scenario readiness note, and a
  *    habitat interpretation for each preset
- *  - extras (skipped with --core): graph insight edges, Ask starter questions,
+ *  - extras (skipped with --core): Ask starter questions
  *    and the demo comparison
  * Already-cached results are reused, so re-running is cheap.
  */
@@ -16,13 +16,12 @@ process.env.USE_CACHE_ONLY = "false";
 type Task = { label: string; run: () => Promise<{ cached: boolean }> };
 
 async function main() {
-  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { INSIGHTS }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }, { FIRE_EVENTS }] =
+  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }, { FIRE_EVENTS }] =
     await Promise.all([
       import("@/lib/data"),
       import("@/lib/ai/operations"),
       import("@/lib/ai/ask"),
       import("@/lib/habitat"),
-      import("@/lib/graph"),
       import("@/lib/ask"),
       import("@/lib/ai/errors"),
       import("@/lib/ai/client"),
@@ -51,11 +50,6 @@ async function main() {
     });
   }
   if (!core) {
-    const edges = new Set(INSIGHTS.flatMap((i) => i.edgeIds));
-    for (const id of edges) {
-      const [a, b] = id.split("__");
-      if (a && b) tasks.push({ label: `edge      ${id}`, run: () => ops.explainEdge(a, b) });
-    }
     for (const q of STARTER_QUESTIONS) {
       tasks.push({ label: `ask       ${q.slice(0, 48)}`, run: () => answerOnce([{ role: "user", content: q }]) });
     }

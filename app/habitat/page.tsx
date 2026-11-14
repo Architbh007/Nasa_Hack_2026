@@ -34,7 +34,6 @@ export default function HabitatPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Display 01 · Habitat"
         title="Habitat Flammability Explorer"
         description="Pick a cabin air. See which real NASA tests cover it and which do not, read the SI's explanation with its sources, then watch a fire play out in a cabin module."
       />
