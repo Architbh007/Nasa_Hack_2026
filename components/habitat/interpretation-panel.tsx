@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { BellRing, FlaskConical, ShieldCheck, Sparkles, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiError, SiMeta, SiSkeleton } from "@/components/si/si-states";
 import { SiMarkdown } from "@/components/si/si-markdown";
 import { useInvestigationIds } from "@/components/si/investigation-ids";
+import { SourceList } from "@/components/si/source-list";
+import { citedIds } from "@/lib/citations";
 import type { HabitatInterpretation } from "@/lib/ai/schemas";
 import type { HabitatAssessment } from "@/lib/habitat";
 import type { RankingWeights } from "@/lib/ranking";
+import type { Investigation } from "@/lib/schema";
 import { useSiMutation } from "@/lib/si-client";
 
 function Block({ title, children, icon }: { title: string; children: ReactNode; icon?: ReactNode }) {
@@ -42,7 +45,11 @@ function InterpretationView({ data }: { data: HabitatInterpretation }) {
   const { acronym } = useInvestigationIds();
   return (
     <div className="space-y-4">
-      <SiMarkdown text={data.summary} className="text-[15px]" />
+      <div className="rounded-lg border border-primary/30 bg-primary/5 p-3.5">
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">In plain words</p>
+        <SiMarkdown text={data.plainSummary} className="text-[15px]" />
+      </div>
+      <SiMarkdown text={data.summary} />
       <div className="grid gap-4 lg:grid-cols-2">
         <Block title="Atmosphere factors">
           <Bullets items={data.riskDrivers} />
@@ -97,7 +104,23 @@ function InterpretationView({ data }: { data: HabitatInterpretation }) {
   );
 }
 
-export function InterpretationPanel({ assessment, weights }: { assessment: HabitatAssessment; weights: RankingWeights }) {
+/** Ids cited anywhere in an interpretation, in order of first appearance. */
+function interpretationIds(data: HabitatInterpretation, known: ReadonlySet<string>): string[] {
+  const text = [data.plainSummary, data.summary, ...data.riskDrivers, ...data.knowledgeGaps].join(" ");
+  return [...new Set([...citedIds(text, known), ...data.relevantEvidence.map((e) => e.investigationId)])];
+}
+
+export function InterpretationPanel({
+  assessment,
+  weights,
+  investigations,
+}: {
+  assessment: HabitatAssessment;
+  weights: RankingWeights;
+  investigations: readonly Investigation[];
+}) {
+  const byId = useMemo(() => new Map(investigations.map((i) => [i.id, i] as const)), [investigations]);
+  const known = useMemo(() => new Set(byId.keys()), [byId]);
   const { state: raw, run } = useSiMutation<HabitatInterpretation>("/api/habitat-interpret");
   const { o2Percent, pressurePsi, materialClass, airflow, gravity } = assessment.inputs;
   const conditionKey = JSON.stringify([o2Percent, pressurePsi, materialClass, airflow, gravity, weights]);
@@ -129,6 +152,21 @@ export function InterpretationPanel({ assessment, weights }: { assessment: Habit
           <SiMeta cached={state.cached} model={state.model} />
         </>
       )}
+      <Block title={state.status === "success" ? "Sources cited above" : "Where the evidence comes from"}>
+        <SourceList
+          investigations={(state.status === "success"
+            ? interpretationIds(state.data, known)
+            : assessment.ranked.slice(0, 4).map((r) => r.investigation.id)
+          )
+            .map((id) => byId.get(id))
+            .filter((i): i is Investigation => Boolean(i))}
+          note={
+            state.status === "success"
+              ? "Links open the original NASA pages and reports. Run values on this page come from the PSI tables and papers listed in the Explorer; these links are the NASA pages behind them."
+              : "The most relevant investigations for this cabin, with links to their original NASA pages. Run the SI for a plain-words explanation."
+          }
+        />
+      </Block>
     </div>
   );
 }

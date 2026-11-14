@@ -12,7 +12,6 @@ export default function GraphPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Network"
         title="Investigation Network"
         description="Investigations linked by weighted Jaccard similarity over hardware, fuels, fuel phase, instruments, diluents and safety pillars. Raise the threshold to keep only the strongest links."
       />

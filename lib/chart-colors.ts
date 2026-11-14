@@ -1,15 +1,15 @@
 import type { Category, Outcome } from "@/lib/schema";
 
 /**
- * Chart palette (dark surface #0d1422). Hues validated with the dataviz palette checker.
- * Assign categorical slots in this fixed order, never cycled.
+ * Chart palette (dark surface #16171b). Hues validated with the dataviz
+ * palette checker. Assign categorical slots in this fixed order, never cycled.
  */
 export const SERIES_COLORS = ["#3987e5", "#d95926", "#199e70", "#c98500"] as const;
 /** Recharts marker shapes paired with series slots (secondary encoding). */
 export const SERIES_SHAPES = ["circle", "triangle", "diamond", "square"] as const;
 export type MarkerShape = (typeof SERIES_SHAPES)[number] | "cross" | "wye" | "star";
 
-export const NEUTRAL_MARK = "#5d6a7e";
+export const NEUTRAL_MARK = "#62666e";
 
 /** Fuel category identity colors; the first three pass all-pairs CVD checks, smoke/dust is neutral. */
 export const CATEGORY_COLOR: Record<Category, string> = {
@@ -51,9 +51,9 @@ export const OUTCOME_GROUP_ORDER: readonly OutcomeGroup[] = ["burned", "extingui
 
 /** Chart chrome on the dark card surface. */
 export const CHART_INK = {
-  grid: "#1f2a3d",
-  axis: "#334155",
-  tick: "#8d9ab0",
-  label: "#a9b4c6",
-  surface: "#0d1422",
+  grid: "#25272c",
+  axis: "#3a3d44",
+  tick: "#9a9fa9",
+  label: "#b4b8c0",
+  surface: "#16171b",
 };

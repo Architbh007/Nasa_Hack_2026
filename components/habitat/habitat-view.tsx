@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HabitatControls } from "@/components/habitat/controls";
-import { FlammabilityMap } from "@/components/habitat/flammability-map";
+import { FlammabilityGrid } from "@/components/habitat/flammability-grid";
+import { FireTwin } from "@/components/habitat/fire-twin";
+import { CabinAsk } from "@/components/habitat/cabin-ask";
 import { HabitatReadouts } from "@/components/habitat/readouts";
 import { NearestRuns } from "@/components/habitat/nearest-runs";
 import { RankingPanel } from "@/components/habitat/ranking-panel";
@@ -18,6 +20,7 @@ import {
   HabitatGravitySchema,
   MaterialClassSchema,
   type Investigation,
+  type MaterialClass,
   type Run,
   type Scenario,
 } from "@/lib/schema";
@@ -48,9 +51,21 @@ function initialState(params: URLSearchParams, scenarios: readonly Scenario[]): 
   return { presetId: matchingScenario(scenarios, inputs)?.id ?? "custom", inputs };
 }
 
-function Section({ title, description, children, action }: { title: string; description?: ReactNode; children: ReactNode; action?: ReactNode }) {
+function Section({
+  id,
+  title,
+  description,
+  children,
+  action,
+}: {
+  id?: string;
+  title: string;
+  description?: ReactNode;
+  children: ReactNode;
+  action?: ReactNode;
+}) {
   return (
-    <Card>
+    <Card id={id} className="scroll-mt-20">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle className="text-base">{title}</CardTitle>
@@ -86,10 +101,16 @@ export function HabitatView({
       p.set("m", inputs.materialClass);
       p.set("a", inputs.airflow);
       p.set("g", inputs.gravity);
-      window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}`);
+      window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}${window.location.hash}`);
     }, 300);
     return () => window.clearTimeout(id);
   }, [presetId, inputs]);
+
+  // This view renders on the client, after the browser's own hash scroll, so honour #fire-twin etc. here.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) document.getElementById(hash)?.scrollIntoView({ block: "start" });
+  }, []);
 
   const data = useMemo(() => ({ investigations, runs }), [investigations, runs]);
   const assessment = useMemo(() => assessHabitat(inputs, data, weights), [inputs, data, weights]);
@@ -97,8 +118,6 @@ export function HabitatView({
   const acronym = (id: string) => acronyms.get(id) ?? id;
 
   const verdict = assessment.verdicts[assessment.category];
-  const chartRuns = useMemo(() => runs.filter((r) => r.category === assessment.category), [runs, assessment.category]);
-  const highlightIds = useMemo(() => verdict.nearest.map((n) => n.run.id), [verdict]);
 
   const onPreset = (id: string) => {
     const s = scenarios.find((x) => x.id === id);
@@ -115,6 +134,10 @@ export function HabitatView({
   const onChange = (next: HabitatInputs) => setState({ presetId: matchingScenario(scenarios, next)?.id ?? "custom", inputs: next });
 
   const categoryLabel = CATEGORY_LABEL[assessment.category].toLowerCase();
+  const snap = (v: number, step: number) => Math.round(v / step) * step;
+  const onMove = (o2Percent: number, pressurePsi: number) =>
+    onChange({ ...inputs, o2Percent: snap(o2Percent, O2_SLIDER.step), pressurePsi: Math.round(snap(pressurePsi, PRESSURE_SLIDER.step) * 10) / 10 });
+  const onMaterial = (materialClass: MaterialClass) => onChange({ ...inputs, materialClass });
 
   return (
     <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
@@ -126,15 +149,16 @@ export function HabitatView({
         <HabitatReadouts a={assessment} />
 
         <Section
-          title="Where this atmosphere sits among real tests"
-          description={`${MATERIAL_LABEL[inputs.materialClass]} is compared with ${categoryLabel}. Each point is one real run from a NASA file or paper; the large marker is your cabin.`}
+          title="Is this air covered by real tests?"
+          description={`Each square is one possible cabin air. Colour shows what the real ${MATERIAL_LABEL[inputs.materialClass].toLowerCase()} runs inside it recorded; stripes mean nobody has tested it there. No prediction is made.`}
         >
-          <FlammabilityMap
-            runs={chartRuns}
-            category={assessment.category}
+          <FlammabilityGrid
+            inputs={inputs}
+            investigations={investigations}
+            runs={runs}
             scenarios={scenarios}
-            point={{ o2Percent: inputs.o2Percent, pressurePsi: inputs.pressurePsi }}
-            highlightIds={highlightIds}
+            onMove={onMove}
+            onMaterial={onMaterial}
           />
         </Section>
 
@@ -161,8 +185,22 @@ export function HabitatView({
           </Section>
         </div>
 
-        <Section title="SI interpretation" description="Grounded in the records above; cites investigation and run ids, and says which fields are missing.">
-          <InterpretationPanel assessment={assessment} weights={weights} />
+        <Section title="SI explanation and sources" description="Plain-words reading of this cabin, with links to the original NASA pages behind it.">
+          <div className="space-y-6">
+            <InterpretationPanel assessment={assessment} weights={weights} investigations={investigations} />
+            <div className="space-y-2 border-t border-border pt-5">
+              <h3 className="text-sm font-medium">Ask about this cabin</h3>
+              <CabinAsk inputs={inputs} />
+            </div>
+          </div>
+        </Section>
+
+        <Section
+          id="fire-twin"
+          title="Fire Twin: what would a fire look like?"
+          description="A top-down cabin module running this exact air. Whether an item burns comes from what the nearest real runs of that material recorded; spread speed, detection and crew response times are illustrative."
+        >
+          <FireTwin inputs={inputs} scenarios={scenarios} presetId={presetId} onPreset={onPreset} runs={runs} />
         </Section>
 
         <Section title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">

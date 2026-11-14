@@ -30,9 +30,8 @@ export default function HabitatPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Main feature"
         title="Habitat Flammability Explorer"
-        description="Set a proposed cabin atmosphere and see which real NASA tests are near it, for solids, liquids and gases, and what was never tested."
+        description="Pick a cabin air. See which real NASA tests cover it and which do not, read the SI's explanation with its sources, then watch a fire play out in a cabin module."
       />
       <Suspense fallback={<HabitatSkeleton />}>
         <HabitatView investigations={investigations} runs={runs} scenarios={scenarios} />

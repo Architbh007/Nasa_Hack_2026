@@ -55,7 +55,6 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader
-        eyebrow="About"
         title="About and Sources"
         description="Where every number comes from, how coverage is judged, and what the data cannot tell you."
       />

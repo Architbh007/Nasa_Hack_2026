@@ -1,21 +1,11 @@
-import {
-  Gauge,
-  Globe2,
-  Info,
-  MessagesSquare,
-  Network,
-  Rocket,
-  TableProperties,
-  type LucideProps,
-} from "lucide-react";
+import { Gauge, Globe2, Info, MessageSquareText, Network, TableProperties, type LucideProps } from "lucide-react";
 import type { NavItem } from "@/lib/nav";
 
 const ICONS: Record<NavItem["icon"], React.ComponentType<LucideProps>> = {
   habitat: Gauge,
   explore: TableProperties,
   graph: Network,
-  ask: MessagesSquare,
-  scenarios: Rocket,
+  ask: MessageSquareText,
   earth: Globe2,
   about: Info,
 };

@@ -1,0 +1,17 @@
+{
+  "key": "07e94af39df177d8e34bdfbd598ac1a448aab4b998bda7a40999a7302e88fbdf",
+  "kind": "summary",
+  "model": "gpt-6.1-sol",
+  "label": "summary:bass-ii",
+  "createdAt": "2026-11-14T09:14:12.052Z",
+  "output": {
+    "overview": "The synthetic BASS-II record describes microgravity burning tests of Nomex, cotton-fiberglass fabric, PMMA and Kydex using the ISS Microgravity Science Glovebox and SPICE fan-driven flow duct [bass-ii]. In the synthetic dataset, 41 of 60 runs ignited, and 24 sustained runs had a mean flame spread rate of 1.76 mm/s; mean spread increased about 106% between approximately 25% and 45% oxygen [bass-ii].",
+    "keyTakeaways": [
+      "In the synthetic runs, cotton-fiberglass fabric spread fastest at a mean 2.74 mm/s, versus 1.00 mm/s for Nomex; these are condition-dependent comparisons, not material certifications [bass-ii].",
+      "In the synthetic findings, 22% of ignited runs below 5 cm/s self-extinguished, versus 5% at 5–30 cm/s; above 30 cm/s, 33% blew off [bass-ii].",
+      "At matched oxygen levels in the synthetic findings, spread at pressures of 11 psi or lower averaged about 30% slower than at 14.7 psi [bass-ii]."
+    ],
+    "habitatRelevance": "The synthetic record assigns relevance scores of 5 for ISS and 4 for Mars transit, reflecting matching microgravity and relevant solid fuels, with atmospheric coverage strongest for ISS [bass-ii]. Scores of 3 for pressurized rovers and 2 for lunar bases reflect pressure-coverage gaps and the limited transfer of microgravity behavior to partial gravity [bass-ii].",
+    "caveats": "All runs and findings are synthetic, partial-gravity conditions were not tested, and this record supports engineering judgment rather than replacing NASA flammability standards or certified material testing [bass-ii]."
+  }
+}

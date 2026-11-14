@@ -14,6 +14,7 @@ import { SiSummaryCard } from "@/components/explore/si-summary-card";
 import { DATA_LEVEL_LABEL, OUTCOME_LABEL } from "@/lib/constants";
 import { formatFlowRange, formatO2Range, formatPressureRange, formatRunFlow, formatRunO2, formatRunPressure, formatYears } from "@/lib/format";
 import type { Investigation, Run, Summary } from "@/lib/schema";
+import { sourcesForInvestigation } from "@/lib/sources";
 import { cn } from "@/lib/utils";
 
 function Section({ title, children, className, aside }: { title: string; children: React.ReactNode; className?: string; aside?: React.ReactNode }) {
@@ -222,6 +223,18 @@ export function InvestigationDetail({ inv, runs, summaries }: { inv: Investigati
           )}
         </div>
       </Section>
+      <div className="space-y-1.5">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Original NASA sources</p>
+        <ul className="space-y-1 text-xs">
+          {sourcesForInvestigation(inv.id).map((s) => (
+            <li key={s.url}>
+              <a href={s.url} target="_blank" rel="noreferrer" className="inline-flex items-start gap-1 text-link hover:underline">
+                {s.label} <ExternalLink className="mt-0.5 size-3 shrink-0" aria-hidden />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

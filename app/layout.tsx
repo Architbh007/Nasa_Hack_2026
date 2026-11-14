@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/shell/app-sidebar";
 import { MobileNav } from "@/components/shell/mobile-nav";
 import { DataBanner } from "@/components/shell/data-banner";
+import { Starfield } from "@/components/shell/starfield";
 import { InvestigationIdsProvider } from "@/components/si/investigation-ids";
 import { getDataset } from "@/lib/data";
 import "./globals.css";
@@ -28,7 +29,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  const ids = getDataset().investigations.map((i) => ({ id: i.id, acronym: i.acronym }));
+  const { investigations, runs } = getDataset();
+  const ids = investigations.map((i) => ({ id: i.id, acronym: i.acronym }));
+  const status = { investigations: investigations.length, runs: runs.length };
   return (
     <html
       lang="en"
@@ -36,11 +39,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       style={{ colorScheme: "dark" }}
     >
       <body className="min-h-full">
+        <Starfield />
         <InvestigationIdsProvider entries={ids}>
           <TooltipProvider delayDuration={150}>
             <DataBanner />
             <div className="flex min-h-[calc(100svh-30px)]">
-              <AppSidebar />
+              <AppSidebar status={status} />
               <div className="flex min-w-0 flex-1 flex-col">
                 <MobileNav />
                 <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-6 sm:px-6 lg:px-8">

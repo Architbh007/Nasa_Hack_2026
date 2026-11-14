@@ -16,7 +16,7 @@ process.env.USE_CACHE_ONLY = "false";
 type Task = { label: string; run: () => Promise<{ cached: boolean }> };
 
 async function main() {
-  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { INSIGHTS }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }] =
+  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { INSIGHTS }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }, { FIRE_EVENTS }] =
     await Promise.all([
       import("@/lib/data"),
       import("@/lib/ai/operations"),
@@ -26,6 +26,7 @@ async function main() {
       import("@/lib/ask"),
       import("@/lib/ai/errors"),
       import("@/lib/ai/client"),
+      import("@/lib/fire-history"),
     ]);
 
   const core = process.argv.includes("--core");
@@ -38,6 +39,16 @@ async function main() {
   for (const s of scenarios) {
     tasks.push({ label: `scenario  ${s.id}`, run: () => ops.summarizeScenario(s.id) });
     tasks.push({ label: `habitat   ${s.id}`, run: () => ops.interpretHabitat(normalizeHabitatInputs(inputsFromScenario(s))) });
+  }
+  for (const e of FIRE_EVENTS) {
+    tasks.push({ label: `lesson    ${e.id}`, run: () => ops.explainFireEvent(e.id) });
+  }
+  for (const s of scenarios) {
+    const inputs = normalizeHabitatInputs(inputsFromScenario(s));
+    tasks.push({
+      label: `fire-twin ${s.id}`,
+      run: () => ops.narrateFireTwin(inputs, { startItemId: "stowage-bag", ventsOn: inputs.airflow !== "quiescent", crewResponse: true }),
+    });
   }
   if (!core) {
     const edges = new Set(INSIGHTS.flatMap((i) => i.edgeIds));

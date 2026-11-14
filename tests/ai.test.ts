@@ -102,6 +102,7 @@ describe("structuredCall", () => {
 describe("habitat interpretation schema", () => {
   const schema = habitatInterpretationSchema(new Set(["bass", "bass-ii"]));
   const base = {
+    plainSummary: "p",
     summary: "s",
     riskDrivers: ["r"],
     relevantEvidence: [{ investigationId: "bass", evidence: "e", relevance: "r" }],

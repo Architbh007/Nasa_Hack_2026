@@ -10,19 +10,25 @@ import { SiError } from "@/lib/ai/errors";
 import {
   COMPARE_SYSTEM,
   EDGE_SYSTEM,
+  FIRE_TWIN_SYSTEM,
   HABITAT_SYSTEM,
+  LESSON_SYSTEM,
   SCENARIO_SYSTEM,
   SUMMARY_SYSTEM,
 } from "@/lib/ai/prompts";
 import {
   ComparisonSchema,
   EdgeExplanationSchema,
+  fireTwinNarrationSchema,
   habitatInterpretationSchema,
+  lessonSchema,
   InvestigationSummarySchema,
   ScenarioSummarySchema,
 } from "@/lib/ai/schemas";
 import { structuredCall } from "@/lib/ai/structured";
 import { getDataset } from "@/lib/data";
+import { FIRE_EVENTS } from "@/lib/fire-history";
+import { EVENT_LABEL, ILLUSTRATIVE, itemLabel, planFire, ROOM_ITEMS } from "@/lib/fire-twin";
 import { assessHabitat, type HabitatInputs } from "@/lib/habitat";
 import type { RankingWeights } from "@/lib/ranking";
 import { scenarioReadiness } from "@/lib/readiness";
@@ -129,5 +135,79 @@ export function summarizeScenario(scenarioId: string) {
     input: scenarioContext(readiness, records),
     schema: ScenarioSummarySchema,
     effort: "low",
+  });
+}
+
+/** Investigations every Fire Twin narration may cite, besides the start item's nearest evidence. */
+export const FIRE_TWIN_BASE_IDS = ["bass", "bass-ii", "flex", "same", "same-r", "daft"] as const;
+
+export type FireTwinOptions = { startItemId: string; ventsOn: boolean; crewResponse: boolean };
+
+export function narrateFireTwin(inputs: HabitatInputs, opts: FireTwinOptions) {
+  const { runs } = getDataset();
+  if (!ROOM_ITEMS.some((i) => i.id === opts.startItemId)) throw new SiError("bad_request", `Unknown item "${opts.startItemId}".`, 400);
+  // Recompute server-side so the SI only sees numbers derived from the dataset.
+  const plan = planFire(inputs, opts.startItemId, opts, { runs });
+  const ids = [...new Set([...plan.evidenceIds, ...FIRE_TWIN_BASE_IDS])];
+  return structuredCall({
+    kind: "fire-twin",
+    label: `fire-twin:${inputs.o2Percent}%/${inputs.pressurePsi}psi/${inputs.airflow}/${inputs.gravity}/${opts.startItemId}/${opts.ventsOn ? "vents" : "still"}/${opts.crewResponse ? "crew" : "nocrew"}`,
+    model: aiConfig().modelFast,
+    system: FIRE_TWIN_SYSTEM,
+    input: {
+      atmosphere: { o2Percent: inputs.o2Percent, pressurePsi: inputs.pressurePsi, gravity: inputs.gravity, airflow: inputs.airflow, ventsOn: opts.ventsOn },
+      crewResponds: opts.crewResponse,
+      fireStartsAt: itemLabel(opts.startItemId),
+      items: Object.values(plan.risks).map((r) => ({
+        item: r.item.label,
+        material: r.item.material,
+        noNearbyRunStatesAnOutcome: !r.tested,
+        nearestRunsThatStateAnOutcome: r.evidence?.considered ?? 0,
+        ofWhichBurned: r.evidence?.burned ?? null,
+        ofWhichWentOutOrNeverLit: r.evidence?.wentOut ?? null,
+        burnsInSimulation: r.ignites,
+        nearestRunIds: r.evidence?.runIds ?? [],
+      })),
+      timeline: plan.events.map((e) => ({
+        atSeconds: Math.round(e.t),
+        event: EVENT_LABEL[e.kind],
+        item: e.itemId ? itemLabel(e.itemId) : null,
+        illustrative: e.illustrative,
+      })),
+      illustrativeAssumptions: ILLUSTRATIVE,
+      records: ids.map((id) => briefContext(requireInvestigation(id), runsOf(id))),
+    },
+    schema: fireTwinNarrationSchema(new Set(ids)),
+    effort: "low",
+    maxTokens: 3000,
+  });
+}
+
+export function explainFireEvent(eventId: string) {
+  const event = FIRE_EVENTS.find((e) => e.id === eventId);
+  if (!event) throw new SiError("not_found", `Unknown event "${eventId}".`, 404);
+  const ids = event.relatedInvestigationIds;
+  return structuredCall({
+    kind: "lesson",
+    label: `lesson:${eventId}`,
+    model: aiConfig().modelFast,
+    system: LESSON_SYSTEM,
+    input: {
+      event: {
+        title: event.title,
+        when: event.dateLabel,
+        then: event.then,
+        atmosphere: event.atmosphere,
+        whatWentWrong: event.whatWentWrong,
+        now: event.now,
+      },
+      relatedInvestigations: ids.map((id) => {
+        const inv = requireInvestigation(id);
+        return { id: inv.id, acronym: inv.acronym, name: inv.name, platform: inv.platform, objectives: inv.objectives };
+      }),
+    },
+    schema: lessonSchema(new Set(ids)),
+    effort: "low",
+    maxTokens: 1500,
   });
 }

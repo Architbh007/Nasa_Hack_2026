@@ -22,7 +22,6 @@ export default function EarthPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Earth"
         title="Earth Benefits"
         description={`What each investigation's PSI record says it means on Earth, quoted from the "Research Impacts/Earth Benefits" field of ${total} records. We grouped them by keyword; the words are NASA's.`}
       />
