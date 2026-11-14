@@ -25,6 +25,9 @@ export function MarkerGlyph({ shape, color, size = 10 }: { shape: MarkerShape; c
         />
       );
       break;
+    case "wye":
+      el = <path d={`M${h},${h} L${h},${s - 0.5} M${h},${h} L1,1.5 M${h},${h} L${s - 1},1.5`} stroke={color} strokeWidth={1.8} fill="none" />;
+      break;
     default:
       el = <circle cx={h} cy={h} r={h - 0.5} fill={color} />;
   }

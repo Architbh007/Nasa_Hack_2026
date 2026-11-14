@@ -18,16 +18,16 @@ function ExploreSkeleton() {
 }
 
 export default function ExplorePage() {
-  const { investigations, tests } = getDataset();
+  const { investigations, runs, summaries } = getDataset();
   return (
     <>
       <PageHeader
         eyebrow="Explore"
         title="Investigation Explorer"
-        description={`${investigations.length} PSI combustion investigations and ${tests.length} test runs. Filter by fuel phase, hardware, safety pillar, habitat relevance and tested oxygen range.`}
+        description={`${investigations.length} combustion investigations (PSI records plus published Saffire IV–VI) and ${runs.length} real run-level tests. Filter by fuel category, data held, hardware, pillar and the O2 range of real runs.`}
       />
       <Suspense fallback={<ExploreSkeleton />}>
-        <ExploreView investigations={investigations} tests={tests} />
+        <ExploreView investigations={investigations} runs={runs} summaries={summaries} />
       </Suspense>
     </>
   );

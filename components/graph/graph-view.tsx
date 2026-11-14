@@ -9,11 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { FuelPhaseBadge, PillarBadges } from "@/components/common/badges";
+import { CategoryBadge, DataLevelBadge } from "@/components/common/badges";
 import { EdgeExplanation } from "@/components/graph/edge-explanation";
 import { EDGE_COLOR_SOLID, EDGE_DASH } from "@/lib/graph-style";
-import { FUEL_PHASE_COLOR } from "@/lib/chart-colors";
-import { FUEL_PHASE_LABEL } from "@/lib/constants";
+import { CATEGORY_COLOR } from "@/lib/chart-colors";
+import { CATEGORY_LABEL } from "@/lib/constants";
 import { formatO2Range, formatPressureRange } from "@/lib/format";
 import {
   buildLinks,
@@ -23,8 +23,8 @@ import {
   type GraphLink,
   type Insight,
 } from "@/lib/graph";
-import { FUEL_PHASES, type Investigation } from "@/lib/schema";
-import { similarity, SIMILARITY_KEYS, type EdgeLabel, type SimilarityKey } from "@/lib/similarity";
+import { CATEGORIES, type Investigation } from "@/lib/schema";
+import { similarity, SIMILARITY_KEYS, SIMILARITY_LABEL, type EdgeLabel } from "@/lib/similarity";
 import { cn } from "@/lib/utils";
 
 const ForceGraphCanvas = dynamic(
@@ -33,15 +33,7 @@ const ForceGraphCanvas = dynamic(
 );
 
 const GRAPH_HEIGHT = 620;
-const EDGE_LABELS: readonly EdgeLabel[] = ["shared hardware", "shared instrument", "shared fuel", "shared variable"];
-const COMPONENT_LABEL: Record<SimilarityKey, string> = {
-  hardware: "Hardware",
-  fuels: "Fuels",
-  fuelPhase: "Fuel phase",
-  measurements: "Instruments",
-  diluents: "Diluents",
-  safetyPillars: "Safety pillars",
-};
+const EDGE_LABELS: readonly EdgeLabel[] = ["PSI-listed relation", "shared hardware", "same project", "shared material"];
 
 function DashSample({ dash }: { dash: number[] | null }) {
   return (
@@ -91,7 +83,7 @@ function EdgeDetail({ link, byId }: { link: GraphLink; byId: ReadonlyMap<string,
         <thead>
           <tr className="text-muted-foreground">
             <th className="py-1 text-left font-normal">Component</th>
-            <th className="py-1 text-right font-normal">Jaccard</th>
+            <th className="py-1 text-right font-normal">Score</th>
             <th className="py-1 pl-3 text-left font-normal">Shared</th>
           </tr>
         </thead>
@@ -100,17 +92,12 @@ function EdgeDetail({ link, byId }: { link: GraphLink; byId: ReadonlyMap<string,
             const c = s.components[k];
             return (
               <tr key={k} className="border-t border-border/60 align-top">
-                <td className="py-1.5">{COMPONENT_LABEL[k]}</td>
+                <td className="py-1.5">{SIMILARITY_LABEL[k]}</td>
                 <td className="tabular py-1.5 text-right">{c.jaccard === null ? "–" : c.jaccard.toFixed(2)}</td>
                 <td className="py-1.5 pl-3 text-muted-foreground">{c.shared.length ? c.shared.join(", ") : "none"}</td>
               </tr>
             );
           })}
-          <tr className="border-t border-border/60 align-top">
-            <td className="py-1.5">Variables</td>
-            <td className="py-1.5 text-right">–</td>
-            <td className="py-1.5 pl-3 text-muted-foreground">{s.sharedVariables.length ? s.sharedVariables.join(", ") : "none"}</td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -126,13 +113,13 @@ function NodeDetail({ inv, degree }: { inv: Investigation; degree: number }) {
         <p className="text-sm text-muted-foreground">{inv.name}</p>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <FuelPhaseBadge phase={inv.fuelPhase} />
-        <PillarBadges pillars={inv.safetyPillars} />
+        <CategoryBadge category={inv.category} />
+        <DataLevelBadge level={inv.dataLevel} />
       </div>
       <dl className="grid grid-cols-2 gap-2 text-xs">
-        <div><dt className="text-muted-foreground">O2 tested</dt><dd className="tabular">{formatO2Range(inv)}</dd></div>
-        <div><dt className="text-muted-foreground">Pressure</dt><dd className="tabular">{formatPressureRange(inv)}</dd></div>
-        <div className="col-span-2"><dt className="text-muted-foreground">Hardware</dt><dd>{inv.hardware.join(", ")}</dd></div>
+        <div><dt className="text-muted-foreground">O2 in runs</dt><dd className="tabular">{formatO2Range(inv)}</dd></div>
+        <div><dt className="text-muted-foreground">Pressure in runs</dt><dd className="tabular">{formatPressureRange(inv)}</dd></div>
+        <div className="col-span-2"><dt className="text-muted-foreground">Hardware</dt><dd>{inv.hardware.map((h) => h.name).join("; ") || "Not listed"}</dd></div>
         <div><dt className="text-muted-foreground">Links shown</dt><dd className="tabular">{degree}</dd></div>
       </dl>
       <Link href={`/explore?id=${inv.id}`} className="inline-block text-sm text-link hover:underline">
@@ -154,7 +141,7 @@ function insightView(ins: Insight, allLinks: readonly GraphLink[], threshold: nu
 
 export function GraphView({ investigations }: { investigations: Investigation[] }) {
   const allLinks = useMemo(() => buildLinks(investigations, 0), [investigations]);
-  // ?insight=same-daft opens a callout on load (used by the demo script).
+  // ?insight=daft-same opens a callout on load (used by the demo script).
   const searchParams = useSearchParams();
   const [initial] = useState(() => {
     const ins = INSIGHTS.find((i) => i.id === searchParams.get("insight")) ?? null;
@@ -211,10 +198,10 @@ export function GraphView({ investigations }: { investigations: Investigation[] 
             <span className="text-xs text-muted-foreground">{links.length} links</span>
           </div>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            {FUEL_PHASES.map((p) => (
-              <li key={p} className="flex items-center gap-1.5">
-                <span className="size-2.5 rounded-full" style={{ backgroundColor: FUEL_PHASE_COLOR[p] }} aria-hidden />
-                {FUEL_PHASE_LABEL[p]}
+            {CATEGORIES.map((c) => (
+              <li key={c} className="flex items-center gap-1.5">
+                <span className="size-2.5 rounded-full" style={{ backgroundColor: CATEGORY_COLOR[c] }} aria-hidden />
+                {CATEGORY_LABEL[c]}
               </li>
             ))}
           </ul>
@@ -251,11 +238,11 @@ export function GraphView({ investigations }: { investigations: Investigation[] 
             {EDGE_LABELS.map((l) => (
               <span key={l} className="flex items-center gap-1.5">
                 <DashSample dash={EDGE_DASH[l]} />
-                <span className="capitalize">{l}</span>
+                <span>{l}</span>
                 <span className="tabular">({labelCounts.get(l) ?? 0})</span>
               </span>
             ))}
-            <span>Node size = average habitat relevance. Line width = similarity.</span>
+            <span>Node size = run-level tests held. Line width = similarity. Category colours are the team&apos;s classification.</span>
           </div>
         </CardContent>
       </Card>
@@ -295,6 +282,7 @@ export function GraphView({ investigations }: { investigations: Investigation[] 
               >
                 <p className="text-sm font-medium">{ins.title}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{ins.body}</p>
+                <p className="mt-1 text-[10px] leading-snug text-muted-foreground/80">Source: {ins.source}</p>
                 <p className="mt-2 text-xs text-link">Highlight in graph →</p>
               </button>
             ))}

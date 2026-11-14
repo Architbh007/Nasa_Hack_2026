@@ -1,123 +1,158 @@
-import { GRAVITY_LABEL, MATERIAL_LABEL, AIRFLOW_LABEL } from "@/lib/constants";
-import type { HabitatAssessment } from "@/lib/habitat";
+import { AIRFLOW_LABEL, CATEGORY_SHORT, GRAVITY_LABEL, MATERIAL_LABEL } from "@/lib/constants";
+import { FUEL_CATEGORIES, type HabitatAssessment } from "@/lib/habitat";
+import type { NearRun } from "@/lib/metrics";
 import type { ScenarioReadiness } from "@/lib/readiness";
-import { HABITAT_KEYS, type Investigation, type TestRun } from "@/lib/schema";
+import type { Investigation, Run, Summary } from "@/lib/schema";
 import type { SimilarityResult } from "@/lib/similarity";
 
 /**
- * Compact, grounded context objects sent to the model. Everything the SI may
- * cite is in here; nothing else is.
+ * Compact, grounded context objects sent to the model. Everything the SI may cite is in here;
+ * nothing else is. Missing values are sent as null and listed under `missingFields` so the SI can
+ * say what is not recorded instead of guessing.
  */
 
 const r2 = (v: number) => Math.round(v * 100) / 100;
 
 function stat(values: number[]) {
   if (values.length === 0) return null;
-  const mean = values.reduce((a, b) => a + b, 0) / values.length;
-  return { n: values.length, mean: r2(mean), min: r2(Math.min(...values)), max: r2(Math.max(...values)) };
+  return { n: values.length, min: r2(Math.min(...values)), max: r2(Math.max(...values)) };
 }
 
-export function testStats(tests: readonly TestRun[]) {
+/** Aggregate facts about an investigation's runs. Counts only; no rates or predictions. */
+export function runStats(runs: readonly Run[]) {
   const outcomes: Record<string, number> = {};
-  for (const t of tests) outcomes[t.outcome] = (outcomes[t.outcome] ?? 0) + 1;
-  const ignited = tests.filter((t) => t.ignited).length;
-  const nums = (f: (t: TestRun) => number | null) => tests.map(f).filter((v): v is number => v !== null);
+  const outcomeBasis: Record<string, number> = {};
+  for (const r of runs) {
+    outcomes[r.outcome] = (outcomes[r.outcome] ?? 0) + 1;
+    outcomeBasis[r.outcomeBasis] = (outcomeBasis[r.outcomeBasis] ?? 0) + 1;
+  }
+  const missing = (f: (r: Run) => unknown) => runs.filter((r) => f(r) === null).length;
   return {
-    runs: tests.length,
-    ignited,
-    ignitionRatePercent: tests.length ? Math.round((100 * ignited) / tests.length) : 0,
+    runs: runs.length,
     outcomes,
-    flameSpreadRateMmS: stat(nums((t) => t.flameSpreadRateMmS)),
-    extinctionDiameterMm: stat(nums((t) => t.extinctionDiameterMm)),
-    peakTemperatureK: stat(nums((t) => t.peakTemperatureK)),
-    smokeObscurationPercent: stat(nums((t) => t.smokeObscurationPercent)),
-    groundReferenceRuns: tests.filter((t) => t.gravityLevel === "normal").length,
+    outcomeBasis,
+    o2Percent: stat(runs.flatMap((r) => (r.o2Percent === null ? [] : [r.o2Percent]))),
+    pressurePsi: stat(runs.flatMap((r) => (r.pressurePsi === null ? [] : [r.pressurePsi]))),
+    runsMissing: {
+      o2Percent: missing((r) => r.o2Percent),
+      pressurePsi: missing((r) => r.pressurePsi),
+      flowCmS: missing((r) => r.flowMinCmS),
+      outcome: runs.filter((r) => r.outcome === "unknown").length,
+    },
+    pressureAssumedRuns: runs.filter((r) => r.pressureAssumedPsi !== null).length,
   };
 }
 
-export function investigationContext(inv: Investigation, tests: readonly TestRun[]) {
+/** Field names that are empty for this investigation, so the SI can state them as missing. */
+function missingFields(inv: Investigation): string[] {
+  const out: string[] = [];
+  if (inv.dataLevel !== "runs") out.push("run-level test data");
+  if (!inv.ranges.o2Percent) out.push("O2 range");
+  if (!inv.ranges.pressurePsi) out.push("pressure range");
+  if (!inv.ranges.flowCmS) out.push("airflow");
+  for (const k of ["objectives", "approach", "hypothesis", "earthBenefits", "startDate", "endDate"] as const) {
+    if (!inv[k]) out.push(k);
+  }
+  return out;
+}
+
+const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s);
+
+export function investigationContext(inv: Investigation, runs: readonly Run[], summaries: readonly Summary[] = []) {
   return {
     id: inv.id,
-    name: inv.name,
+    accession: inv.accession,
     acronym: inv.acronym,
-    project: inv.project,
+    name: inv.name,
     platform: inv.platform,
-    hardware: inv.hardware,
-    yearsActive: `${inv.yearsActive.start}-${inv.yearsActive.end}`,
-    fuelPhase: inv.fuelPhase,
-    fuels: inv.fuels,
-    sampleGeometry: inv.sampleGeometry,
-    oxygenRangePercent: inv.oxygenRange,
-    pressureRangePsi: { min: inv.pressureRange.minPsi, max: inv.pressureRange.maxPsi },
-    flowRangeCmS: inv.flowRange ?? "quiescent",
-    diluents: inv.diluents,
-    gravityLevel: inv.gravityLevel,
-    objectives: inv.objectives,
-    variables: inv.variables,
-    constants: inv.constants,
-    measurements: inv.measurements,
-    keyFindings: inv.keyFindings,
-    safetyPillars: inv.safetyPillars,
-    habitatRelevance: Object.fromEntries(HABITAT_KEYS.map((k) => [k, inv.habitatRelevance[k]])),
-    earthApplications: inv.earthApplications,
-    testStatistics: testStats(tests),
+    hardware: inv.hardware.map((h) => h.name),
+    dates: { start: inv.startDate || null, end: inv.endDate || null },
+    psiSubResearchArea: inv.subResearchArea || null,
+    objectives: clip(inv.objectives, 1800),
+    approach: clip(inv.approach, 1000),
+    earthBenefits: clip(inv.earthBenefits, 900),
+    teamCategory: { category: inv.category, basis: inv.categoryBasis },
+    teamSafetyPillars: inv.teamAssessment,
+    dataLevel: inv.dataLevel,
+    fuelsAsWritten: inv.fuels,
+    rangesFromRuns: inv.ranges,
+    runStatistics: runStats(runs),
+    exampleRunIds: runs.slice(0, 5).map((r) => r.id),
+    summaries: summaries.map((s) => ({ kind: s.kind, title: s.title, note: s.note })),
+    knownIssues: inv.knownIssues,
+    missingFields: missingFields(inv),
     dataSource: inv.dataSource,
   };
 }
 
 /** Lighter record for lists (ranking, comparison, retrieval). */
-export function briefContext(inv: Investigation, tests: readonly TestRun[]) {
-  const s = testStats(tests);
+export function briefContext(inv: Investigation, runs: readonly Run[]) {
+  const s = runStats(runs);
   return {
     id: inv.id,
+    accession: inv.accession,
     acronym: inv.acronym,
     name: inv.name,
-    project: inv.project,
-    hardware: inv.hardware,
-    fuelPhase: inv.fuelPhase,
-    fuels: inv.fuels,
-    oxygenRangePercent: inv.oxygenRange,
-    pressureRangePsi: { min: inv.pressureRange.minPsi, max: inv.pressureRange.maxPsi },
-    flowRangeCmS: inv.flowRange ?? "quiescent",
-    gravityLevel: inv.gravityLevel,
-    diluents: inv.diluents,
-    measurements: inv.measurements,
-    safetyPillars: inv.safetyPillars,
-    keyFindings: inv.keyFindings,
-    habitatRelevanceScores: Object.fromEntries(HABITAT_KEYS.map((k) => [k, inv.habitatRelevance[k].score])),
-    testStatistics: { runs: s.runs, ignitionRatePercent: s.ignitionRatePercent, outcomes: s.outcomes, flameSpreadRateMmS: s.flameSpreadRateMmS },
+    hardware: inv.hardware.map((h) => h.name),
+    teamCategory: inv.category,
+    dataLevel: inv.dataLevel,
+    fuelsAsWritten: inv.fuels.slice(0, 8),
+    rangesFromRuns: inv.ranges,
+    objectivesExcerpt: clip(inv.objectives, 500),
+    teamSafetyPillars: inv.teamAssessment.safetyPillars,
+    runStatistics: { runs: s.runs, outcomes: s.outcomes, outcomeBasis: s.outcomeBasis, runsMissing: s.runsMissing },
+    missingFields: missingFields(inv),
     dataSource: inv.dataSource,
+  };
+}
+
+/** A real run as the SI sees it: values, outcome with its basis, and where it came from. */
+export function runContext(n: Pick<NearRun, "run" | "assumedPressure"> & { distance?: number }) {
+  const r = n.run;
+  return {
+    runId: r.id,
+    investigationId: r.investigationId,
+    material: r.material,
+    o2Percent: r.o2Percent,
+    pressurePsi: r.pressurePsi,
+    pressureStatus: r.pressureStatus,
+    pressurePlacedAtCitedNominal: n.assumedPressure ? r.pressureAssumedPsi : null,
+    flowCmS: r.flowMinCmS === null ? null : [r.flowMinCmS, r.flowMaxCmS],
+    outcome: r.outcome,
+    outcomeBasis: r.outcomeBasis,
+    source: `${r.source.file}, ${r.source.ref}`,
+    ...(n.distance === undefined ? {} : { runDistance: r2(n.distance) }),
+    caveats: r.flags.slice(0, 3),
   };
 }
 
 export function edgeContext(a: Investigation, b: Investigation, sim: SimilarityResult) {
   return {
-    link: { label: sim.label, similarityScore: r2(sim.score), sharedVariables: sim.sharedVariables },
+    link: { label: sim.label, similarityScore: r2(sim.score) },
     sharedByComponent: Object.fromEntries(
       Object.entries(sim.components).map(([k, c]) => [k, { jaccard: c.jaccard === null ? null : r2(c.jaccard), shared: c.shared }])
     ),
     investigations: [a, b].map((i) => ({
       id: i.id,
+      accession: i.accession,
       acronym: i.acronym,
       name: i.name,
-      hardware: i.hardware,
-      fuelPhase: i.fuelPhase,
-      fuels: i.fuels,
-      measurements: i.measurements,
-      variables: i.variables,
-      safetyPillars: i.safetyPillars,
+      hardware: i.hardware.map((h) => h.name),
+      relatedAccessionsListedByPsi: i.relatedAccessions,
+      teamCategory: i.category,
+      objectivesExcerpt: clip(i.objectives, 400),
     })),
     dataSource: a.dataSource,
   };
 }
 
-export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Investigation; tests: readonly TestRun[]; score: number }>) {
+export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Investigation; runs: readonly Run[]; score: number }>) {
   return {
     condition: {
       o2Percent: r2(a.inputs.o2Percent),
       pressurePsi: r2(a.inputs.pressurePsi),
       material: MATERIAL_LABEL[a.inputs.materialClass],
-      fuelPhase: a.fuelPhase,
+      category: a.category,
       airflow: AIRFLOW_LABEL[a.inputs.airflow],
       gravity: GRAVITY_LABEL[a.inputs.gravity],
     },
@@ -127,30 +162,28 @@ export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Invest
       o2ConcentrationChangeVsEarthPercent: Math.round(a.o2IncreasePct),
       seaLevelReference: "21% O2 at 14.7 psi, pO2 3.09 psi",
     },
-    model: {
-      predictedIgnitionProbabilityPercent: Math.round(a.ignitionProbability * 100),
-      riskBand: a.riskBand,
-      note: "Logistic regression trained on synthetic test runs; a relative indicator, not a certified limit.",
-      estimatedFlameSpreadRateMmS:
-        a.spread.estimate === null
-          ? null
-          : { estimate: r2(a.spread.estimate), nearestRunsRange: [a.spread.min, a.spread.max], neighbors: a.spread.neighbors.length },
-    },
-    coverage: {
-      gap: a.coverage.gap,
-      coveringSamePhaseInvestigationIds: a.coverage.covering.map((i) => i.id),
-      coveringOtherPhaseInvestigationIds: a.coverage.coveringOtherPhases.map((i) => i.id),
-      nearestSamePhase: a.coverage.nearest.slice(0, 3).map((n) => ({ id: n.investigation.id, normalizedDistance: r2(n.distance) })),
-      samePhaseRunsNearby: a.nearbyTestCount,
-    },
-    partialGravity: a.partialGravity
-      ? "No partial-gravity combustion data exists in PSI; E-FIELD Flames is a simulated partial-gravity proxy; LUCI and FM2 are expected future sources."
-      : null,
-    topRanked: ranked.map((r) => ({ relevanceScore: Math.round(r.score * 100), ...briefContext(r.inv, r.tests) })),
+    coverageByCategory: Object.fromEntries(
+      FUEL_CATEGORIES.map((c) => {
+        const v = a.verdicts[c];
+        return [
+          c,
+          {
+            verdict: v.verdict,
+            reason: v.reason,
+            runsWithinTolerance: v.withinTolerance,
+            nearestRuns: v.nearest.slice(0, 4).map(runContext),
+          },
+        ];
+      })
+    ),
+    neverTested: a.neverTested,
+    method:
+      "Coverage compares the condition with real run-level tests only. 'Tested' means a same-category run within ±2% O2 and ±1 psi. Nothing here is a prediction.",
+    topRanked: ranked.map((r) => ({ relevanceScore: Math.round(r.score * 100), ...briefContext(r.inv, r.runs) })),
   };
 }
 
-export function scenarioContext(s: ScenarioReadiness, records: Array<{ inv: Investigation; tests: readonly TestRun[] }>) {
+export function scenarioContext(s: ScenarioReadiness, records: Array<{ inv: Investigation; runs: readonly Run[] }>) {
   return {
     preset: {
       id: s.scenario.id,
@@ -158,19 +191,18 @@ export function scenarioContext(s: ScenarioReadiness, records: Array<{ inv: Inve
       o2Percent: s.scenario.o2Percent,
       pressurePsi: s.scenario.pressurePsi,
       gravity: GRAVITY_LABEL[s.scenario.gravity],
-      typicalAirflow: s.scenario.typicalAirflow,
-      typicalMaterials: s.scenario.typicalMaterials,
+      atmosphereSource: s.scenario.source ? `${s.scenario.source.label}: ${s.scenario.source.detail}` : "citation needed",
     },
-    readiness: {
-      overallScore: s.overall,
-      pillarScores: Object.fromEntries(s.pillars.map((p) => [p.pillar, { score: p.score, bestIds: p.best.map((b) => b.investigation.id) }])),
-      gaps: s.gaps,
-    },
-    fabricPrediction: {
-      ignitionProbabilityPercent: Math.round(s.assessment.ignitionProbability * 100),
-      o2PartialPressurePsi: r2(s.assessment.pO2.psi),
-      coverageGap: s.assessment.coverage.gap,
-    },
-    supportingInvestigations: records.map((r) => briefContext(r.inv, r.tests)),
+    coverageByCategory: s.verdicts.map((v) => ({
+      category: CATEGORY_SHORT[v.category],
+      verdict: v.verdict,
+      reason: v.reason,
+      nearestRuns: v.nearest.slice(0, 3).map(runContext),
+    })),
+    teamPillarEvidence: Object.fromEntries(
+      s.pillars.map((p) => [p.pillar, { investigationIds: p.investigations.map((i) => i.investigation.id), withRunData: p.withRuns }])
+    ),
+    gaps: s.gaps,
+    supportingInvestigations: records.map((r) => briefContext(r.inv, r.runs)),
   };
 }

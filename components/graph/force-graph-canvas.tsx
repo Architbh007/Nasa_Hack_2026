@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import ForceGraph2D, { type ForceGraphMethods, type LinkObject, type NodeObject } from "react-force-graph-2d";
-import { FUEL_PHASE_COLOR } from "@/lib/chart-colors";
+import { CATEGORY_COLOR } from "@/lib/chart-colors";
 import type { GraphLink, GraphNode } from "@/lib/graph";
 import type { EdgeLabel } from "@/lib/similarity";
 import { EDGE_COLOR, EDGE_DASH, EDGE_DIM, HIGHLIGHT } from "@/lib/graph-style";
@@ -98,7 +98,7 @@ export function ForceGraphCanvas({
       height={height}
       backgroundColor="rgba(0,0,0,0)"
       nodeRelSize={4}
-      nodeVal={(n) => 1.5 + (n.avgRelevance ?? 0) ** 2 * 0.9}
+      nodeVal={(n) => 1.5 + Math.sqrt(n.runCount ?? 0) * 0.6}
       nodeLabel={(n) => `${n.acronym} · ${n.name}`}
       linkLabel={(l) => `${l.label} · similarity ${Number(l.score).toFixed(2)}`}
       linkColor={(l) => (highlightEdges.has(String(l.id)) || l.id === selectedEdgeId ? HIGHLIGHT : anyHighlight ? EDGE_DIM : EDGE_COLOR)}
@@ -121,12 +121,12 @@ export function ForceGraphCanvas({
       onBackgroundClick={onBackgroundClick}
       nodeCanvasObject={(n, ctx, scale) => {
         const id = String(n.id);
-        const r = Math.sqrt(1.5 + (n.avgRelevance ?? 0) ** 2 * 0.9) * 4;
+        const r = Math.sqrt(1.5 + Math.sqrt(n.runCount ?? 0) * 0.6) * 4;
         const lit = nodeIsLit(id);
         ctx.globalAlpha = lit ? 1 : 0.25;
         ctx.beginPath();
         ctx.arc(n.x ?? 0, n.y ?? 0, r, 0, 2 * Math.PI);
-        ctx.fillStyle = FUEL_PHASE_COLOR[n.fuelPhase as GraphNode["fuelPhase"]];
+        ctx.fillStyle = CATEGORY_COLOR[n.category as GraphNode["category"]];
         ctx.fill();
         ctx.lineWidth = id === selectedNodeId || highlightNodes.has(id) ? 2.5 / scale + 1 : 1.5 / scale;
         ctx.strokeStyle = id === selectedNodeId || highlightNodes.has(id) ? HIGHLIGHT : "#0a101c";
@@ -140,7 +140,7 @@ export function ForceGraphCanvas({
         ctx.globalAlpha = 1;
       }}
       nodePointerAreaPaint={(n, color, ctx) => {
-        const r = Math.sqrt(1.5 + (n.avgRelevance ?? 0) ** 2 * 0.9) * 4 + 3;
+        const r = Math.sqrt(1.5 + Math.sqrt(n.runCount ?? 0) * 0.6) * 4 + 3;
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.arc(n.x ?? 0, n.y ?? 0, r, 0, 2 * Math.PI);

@@ -1,59 +1,53 @@
-import type { FuelPhase, Outcome } from "@/lib/schema";
+import type { Category, Outcome } from "@/lib/schema";
 
 /**
- * Chart palette (dark surface #0d1422). Hues validated with the dataviz
- * palette checker. Assign categorical slots in this fixed order, never cycled.
+ * Chart palette (dark surface #0d1422). Hues validated with the dataviz palette checker.
+ * Assign categorical slots in this fixed order, never cycled.
  */
 export const SERIES_COLORS = ["#3987e5", "#d95926", "#199e70", "#c98500"] as const;
 /** Recharts marker shapes paired with series slots (secondary encoding). */
 export const SERIES_SHAPES = ["circle", "triangle", "diamond", "square"] as const;
-export type MarkerShape = (typeof SERIES_SHAPES)[number] | "cross";
-
-/** Fuel phase identity colors; this trio passes all-pairs CVD checks. */
-export const FUEL_PHASE_COLOR: Record<FuelPhase, string> = {
-  solid: "#3987e5",
-  liquid: "#c98500",
-  gas: "#199e70",
-};
+export type MarkerShape = (typeof SERIES_SHAPES)[number] | "cross" | "wye" | "star";
 
 export const NEUTRAL_MARK = "#5d6a7e";
 
-export type OutcomeGroup = "sustained" | "extinguished" | "cool-flame" | "no-ignition";
+/** Fuel category identity colors; the first three pass all-pairs CVD checks, smoke/dust is neutral. */
+export const CATEGORY_COLOR: Record<Category, string> = {
+  solid: "#3987e5",
+  liquid: "#c98500",
+  gas: "#199e70",
+  "smoke-dust": "#8d9ab0",
+};
+
+export const CATEGORY_SHAPE: Record<Category, MarkerShape> = {
+  solid: "circle",
+  liquid: "diamond",
+  gas: "triangle",
+  "smoke-dust": "square",
+};
+
+export type OutcomeGroup = "burned" | "extinguished" | "cool-flame" | "disruption" | "no-ignition" | "unknown";
 
 export const OUTCOME_GROUP: Record<Outcome, OutcomeGroup> = {
-  sustained: "sustained",
-  "self-extinguished": "extinguished",
+  burned: "burned",
+  extinguished: "extinguished",
   blowoff: "extinguished",
-  quenched: "extinguished",
   "cool-flame": "cool-flame",
+  disruption: "disruption",
   "no-ignition": "no-ignition",
+  unknown: "unknown",
 };
 
-export const OUTCOME_GROUP_STYLE: Record<
-  OutcomeGroup,
-  { label: string; color: string; shape: MarkerShape }
-> = {
-  sustained: { label: "Sustained flame", color: "#d95926", shape: "circle" },
-  extinguished: {
-    label: "Extinguished (self, blowoff, quenched)",
-    color: "#3987e5",
-    shape: "triangle",
-  },
+export const OUTCOME_GROUP_STYLE: Record<OutcomeGroup, { label: string; color: string; shape: MarkerShape }> = {
+  burned: { label: "Burned", color: "#d95926", shape: "circle" },
+  extinguished: { label: "Extinguished or blew off", color: "#3987e5", shape: "triangle" },
   "cool-flame": { label: "Cool flame", color: "#199e70", shape: "diamond" },
+  disruption: { label: "Droplet disruption", color: "#c98500", shape: "square" },
   "no-ignition": { label: "No ignition", color: NEUTRAL_MARK, shape: "cross" },
+  unknown: { label: "Outcome not stated", color: "#3b4658", shape: "wye" },
 };
 
-export const OUTCOME_GROUP_ORDER: readonly OutcomeGroup[] = [
-  "sustained",
-  "extinguished",
-  "cool-flame",
-  "no-ignition",
-];
-
-export const IGNITION_STYLE = {
-  ignited: { label: "Ignited", color: "#d95926", shape: "circle" as MarkerShape },
-  notIgnited: { label: "Did not ignite", color: NEUTRAL_MARK, shape: "cross" as MarkerShape },
-};
+export const OUTCOME_GROUP_ORDER: readonly OutcomeGroup[] = ["burned", "extinguished", "cool-flame", "disruption", "no-ignition", "unknown"];
 
 /** Chart chrome on the dark card surface. */
 export const CHART_INK = {

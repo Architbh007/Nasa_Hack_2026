@@ -12,10 +12,10 @@ export const SOURCES_HEADER = "x-firesight-sources";
 export const CACHED_HEADER = "x-firesight-cached";
 
 export const STARTER_QUESTIONS = [
-  "Which investigations tested solid fuels at reduced pressure?",
-  "How does carbon dioxide compare with helium as a suppressant?",
-  "What evidence covers the lunar base atmosphere of 34% O2 at 8.2 psi?",
-  "Which instruments were reused between smoke and dust experiments?",
-  "How does airflow change flame spread over solids in microgravity?",
-  "Where do cool flames appear and why do they matter?",
+  "Which real tests burned solid materials below 10 psi?",
+  "What did FLEX measure about CO2 and helium as suppressants?",
+  "What real runs are closest to 34% O2 at 8.2 psi?",
+  "How did DAFT help the SAME smoke experiment?",
+  "Which outcomes in BASS come from investigator notes rather than a table field?",
+  "Where do cool flames appear in the CFI data?",
 ] as const;

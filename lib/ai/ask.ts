@@ -1,12 +1,13 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { aiConfig, anthropic, fallbackParams } from "@/lib/ai/client";
 import { cacheKey, readCache, writeCache } from "@/lib/ai/cache";
-import { briefContext, testStats } from "@/lib/ai/context";
+import { briefContext, runContext, runStats } from "@/lib/ai/context";
 import { SiError } from "@/lib/ai/errors";
 import { ASK_SYSTEM, PROMPT_VERSION } from "@/lib/ai/prompts";
 import { retrieve } from "@/lib/ai/retrieval";
 import { getDataset } from "@/lib/data";
-import { FUEL_PHASES } from "@/lib/schema";
+import { placeRun } from "@/lib/metrics";
+import { CATEGORIES } from "@/lib/schema";
 
 export type ChatTurn = { role: "user" | "assistant"; content: string };
 
@@ -21,19 +22,25 @@ export type AskPlan = {
 export function planAsk(turns: readonly ChatTurn[]): AskPlan {
   const question = turns.at(-1);
   if (!question || question.role !== "user") throw new SiError("bad_request", "The last message must be a question.", 400);
-  const { investigations, testsByInvestigation } = getDataset();
+  const { investigations, runsByInvestigation } = getDataset();
   // Follow-ups often lean on the previous question, so retrieve on both.
   const previousQuestion = [...turns.slice(0, -1)].reverse().find((t) => t.role === "user")?.content ?? "";
   const hits = retrieve(`${question.content} ${previousQuestion}`.trim(), investigations, 6);
-  const records = hits.map((h) => ({
-    retrievalScore: Math.round(h.score * 100) / 100,
-    ...briefContext(h.investigation, testsByInvestigation.get(h.investigation.id) ?? []),
-    aggregateTestStats: testStats(testsByInvestigation.get(h.investigation.id) ?? []),
-  }));
+  const records = hits.map((h) => {
+    const runs = runsByInvestigation.get(h.investigation.id) ?? [];
+    return {
+      retrievalScore: Math.round(h.score * 100) / 100,
+      ...briefContext(h.investigation, runs),
+      runStatistics: runStats(runs),
+      // A few example runs so answers can cite run ids; the full tables are in the Explorer.
+      exampleRuns: runs.slice(0, 3).map((run) => runContext({ run, assumedPressure: placeRun(run)?.assumedPressure ?? false })),
+    };
+  });
   const overview = {
     totalInvestigations: investigations.length,
-    investigationsByFuelPhase: Object.fromEntries(
-      FUEL_PHASES.map((p) => [p, investigations.filter((i) => i.fuelPhase === p).map((i) => i.id)])
+    totalRuns: [...runsByInvestigation.values()].reduce((n, r) => n + r.length, 0),
+    investigationsByTeamCategory: Object.fromEntries(
+      CATEGORIES.map((c) => [c, investigations.filter((i) => i.category === c).map((i) => i.id)])
     ),
     note: "Only the retrieved records below include details. Other ids are listed for orientation only.",
   };

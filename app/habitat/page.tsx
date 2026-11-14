@@ -24,16 +24,18 @@ function HabitatSkeleton() {
 }
 
 export default function HabitatPage() {
-  const { investigations, tests, scenarios, model } = getDataset();
+  const { investigations, runs: allRuns, scenarios } = getDataset();
+  // The map and nearest-runs table need values and outcomes, not the long investigator notes (those are in the Explorer).
+  const runs = allRuns.map((r) => ({ ...r, outcomeText: null, metrics: {}, flags: [], pressureNote: null }));
   return (
     <>
       <PageHeader
         eyebrow="Main feature"
         title="Habitat Flammability Explorer"
-        description="Set a proposed cabin atmosphere and see where it sits relative to tested microgravity combustion conditions, which research covers it, what is untested, and a predicted ignition likelihood."
+        description="Set a proposed cabin atmosphere and see which real NASA tests are near it, for solids, liquids and gases, and what was never tested."
       />
       <Suspense fallback={<HabitatSkeleton />}>
-        <HabitatView investigations={investigations} tests={tests} scenarios={scenarios} model={model} />
+        <HabitatView investigations={investigations} runs={runs} scenarios={scenarios} />
       </Suspense>
     </>
   );

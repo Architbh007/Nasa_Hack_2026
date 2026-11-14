@@ -6,7 +6,7 @@ import { ChevronDown, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ChartLegend } from "@/components/charts/chart-parts";
-import { FuelPhaseBadge } from "@/components/common/badges";
+import { CategoryBadge } from "@/components/common/badges";
 import { SERIES_COLORS } from "@/lib/chart-colors";
 import {
   DEFAULT_RANKING_WEIGHTS,
@@ -20,16 +20,16 @@ import { cn } from "@/lib/utils";
 
 const COMPONENT_COLOR: Record<RankingComponentKey, string> = {
   rangeOverlap: SERIES_COLORS[0],
-  fuelPhaseMatch: SERIES_COLORS[1],
-  flowRegimeMatch: SERIES_COLORS[2],
-  safetyPillar: SERIES_COLORS[3],
+  categoryMatch: SERIES_COLORS[1],
+  flowMatch: SERIES_COLORS[2],
+  evidenceLevel: SERIES_COLORS[3],
 };
 
 const COMPONENT_HELP: Record<RankingComponentKey, string> = {
-  rangeOverlap: "1 if the tested O2/pressure box contains your point, decaying with distance outside it",
-  fuelPhaseMatch: "1 for the same phase with matching material, 0.75 same phase, 0.1 other phase",
-  flowRegimeMatch: "How well the tested airflow range matches your airflow setting",
-  safetyPillar: "Share of prevention, detection and suppression the record addresses",
+  rangeOverlap: "1 if the O2/pressure span of its real runs contains your point, decaying with distance; 0 without run data",
+  categoryMatch: "1 for the same fuel category with a matching material, 0.75 same category, 0.1 other category",
+  flowMatch: "How well the recorded airflow range matches your airflow setting; 0.5 when airflow is not recorded",
+  evidenceLevel: "Run tables score 0.6 plus up to 0.4 for run count; summaries 0.2 to 0.4; description only 0",
 };
 
 function SegmentedScore({ r }: { r: RankedInvestigation }) {
@@ -59,7 +59,7 @@ function RankedRow({ r, rank }: { r: RankedInvestigation; rank: number }) {
         <span className="min-w-0 space-y-1.5">
           <span className="flex items-center gap-2">
             <span className="truncate text-sm font-medium">{inv.acronym}</span>
-            <FuelPhaseBadge phase={inv.fuelPhase} className="text-[11px] text-muted-foreground" />
+            <CategoryBadge category={inv.category} className="text-[11px] text-muted-foreground" />
           </span>
           <SegmentedScore r={r} />
         </span>

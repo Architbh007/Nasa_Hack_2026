@@ -1,23 +1,21 @@
 import { createInvestigationIndex } from "@/lib/search";
-import type { FuelPhase, HabitatKey, Investigation, SafetyPillar } from "@/lib/schema";
+import type { Category, Investigation, SafetyPillar } from "@/lib/schema";
 
 /**
- * Retrieval for Ask the Data: fuse.js fuzzy match blended with plain keyword
- * overlap, plus light boosts when a question names a fuel phase, habitat or
- * safety pillar. Deliberately simple and explainable.
+ * Retrieval for Ask the Data: fuse.js fuzzy match blended with plain keyword overlap, plus light
+ * boosts when a question names a fuel category, a low-pressure or high-O2 atmosphere, or a safety
+ * pillar. Deliberately simple and explainable.
  */
 
-const PHASE_WORDS: Record<FuelPhase, RegExp> = {
-  solid: /\b(solids?|fabrics?|plastics?|foams?|materials?|wire|textiles?)\b/i,
-  liquid: /\b(liquids?|droplets?|sprays?|propellants?)\b/i,
-  gas: /\b(gas|gases|gaseous|jets?|leaks?)\b/i,
+const CATEGORY_WORDS: Record<Category, RegExp> = {
+  solid: /\b(solids?|fabrics?|plastics?|foams?|materials?|wire|textiles?|pmma|sibal|nomex)\b/i,
+  liquid: /\b(liquids?|droplets?|sprays?|heptane|decane|methanol|ethanol)\b/i,
+  gas: /\b(gas|gases|gaseous|jets?|leaks?|burners?|ethylene|methane|propane)\b/i,
+  "smoke-dust": /\b(smoke|dust|particles?|aerosols?|soot)\b/i,
 };
-const HABITAT_WORDS: Record<HabitatKey, RegExp> = {
-  iss: /\b(iss|space station|cabin air)\b/i,
-  lunarBase: /\b(lunar|moon)\b/i,
-  rover: /\b(rovers?)\b/i,
-  marsTransit: /\b(mars|transit)\b/i,
-};
+/** Questions about exploration atmospheres favour investigations whose runs reach them. */
+const LOW_PRESSURE = /\b(low|reduced)[- ]pressure|lunar|moon|mars|rover|exploration|8\.2 psi|10\.2 psi\b/i;
+const HIGH_O2 = /\b(high|enriched|elevated)[- ](o2|oxygen)|\b3[0-9]% ?o2\b/i;
 const PILLAR_WORDS: Record<SafetyPillar, RegExp> = {
   prevention: /\b(prevent\w*|flammab\w*|ignit\w*|spread)\b/i,
   detection: /\b(detect\w*|smoke|sensors?|alarms?|particles?)\b/i,
@@ -26,15 +24,15 @@ const PILLAR_WORDS: Record<SafetyPillar, RegExp> = {
 
 function boost(inv: Investigation, query: string): number {
   let b = 0;
-  for (const [phase, re] of Object.entries(PHASE_WORDS) as Array<[FuelPhase, RegExp]>) {
-    if (re.test(query)) b += inv.fuelPhase === phase ? 0.25 : -0.1;
+  for (const [cat, re] of Object.entries(CATEGORY_WORDS) as Array<[Category, RegExp]>) {
+    if (re.test(query)) b += inv.category === cat ? 0.25 : -0.05;
   }
-  for (const [key, re] of Object.entries(HABITAT_WORDS) as Array<[HabitatKey, RegExp]>) {
-    if (re.test(query)) b += (inv.habitatRelevance[key].score / 5) * 0.25;
-  }
+  if (LOW_PRESSURE.test(query) && inv.ranges.pressurePsi && inv.ranges.pressurePsi.min < 11) b += 0.15;
+  if (HIGH_O2.test(query) && inv.ranges.o2Percent && inv.ranges.o2Percent.max >= 25) b += 0.15;
   for (const [pillar, re] of Object.entries(PILLAR_WORDS) as Array<[SafetyPillar, RegExp]>) {
-    if (re.test(query) && inv.safetyPillars.includes(pillar)) b += 0.12;
+    if (re.test(query) && inv.teamAssessment.safetyPillars.includes(pillar)) b += 0.08;
   }
+  if (inv.dataLevel === "runs") b += 0.05;
   return b;
 }
 
@@ -51,21 +49,19 @@ export function tokenize(text: string): string[] {
 function docText(inv: Investigation): string {
   return [
     inv.id,
+    inv.accession ?? "",
     inv.acronym,
     inv.name,
     inv.project,
     inv.platform,
-    inv.fuelPhase,
-    inv.gravityLevel,
-    ...inv.hardware,
+    inv.category,
+    inv.subResearchArea,
+    inv.keywords,
+    ...inv.hardware.map((h) => h.name),
     ...inv.fuels,
-    ...inv.diluents,
-    ...inv.measurements,
-    ...inv.objectives,
-    ...inv.variables,
-    ...inv.keyFindings,
-    ...inv.safetyPillars,
-    ...inv.earthApplications,
+    inv.objectives,
+    inv.approach,
+    inv.earthBenefits,
   ].join(" ");
 }
 

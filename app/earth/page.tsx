@@ -1,33 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BellRing, Factory, HardHat, ScrollText, Waves, type LucideIcon } from "lucide-react";
+import { BellRing, ExternalLink, Factory, Flame, Sparkles, type LucideIcon } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDataset } from "@/lib/data";
-import { groupEarthApplications, type EarthGroupKey } from "@/lib/earth";
+import { groupEarthBenefits, type EarthGroupKey } from "@/lib/earth";
 
-export const metadata: Metadata = { title: "Spinoffs and Earth Applications" };
+export const metadata: Metadata = { title: "Earth Benefits" };
 
 const ICON: Record<EarthGroupKey, LucideIcon> = {
-  suppression: Waves,
   detection: BellRing,
-  gear: HardHat,
-  standards: ScrollText,
+  "fire-safety": Flame,
   combustion: Factory,
+  other: Sparkles,
 };
 
 export default function EarthPage() {
   const { investigations } = getDataset();
-  const groups = groupEarthApplications(investigations).filter((g) => g.items.length > 0);
+  const groups = groupEarthBenefits(investigations);
   const total = groups.reduce((s, g) => s + g.items.length, 0);
   return (
     <>
       <PageHeader
         eyebrow="Earth"
-        title="Spinoffs and Earth Applications"
-        description={`Microgravity removes buoyancy, so flames reveal the chemistry and transport that Earth-bound tests hide. ${total} application notes from the investigation records, grouped by where they help on Earth.`}
+        title="Earth Benefits"
+        description={`What each investigation's PSI record says it means on Earth, quoted from the "Research Impacts/Earth Benefits" field of ${total} records. We grouped them by keyword; the words are NASA's.`}
       />
-      <div className="mb-6 grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {groups.map((g) => {
           const Icon = ICON[g.key];
           return (
@@ -35,14 +34,13 @@ export default function EarthPage() {
               <Icon className="mb-2 size-5 text-primary" aria-hidden />
               <p className="text-sm font-medium leading-snug">{g.title}</p>
               <p className="tabular mt-1 text-xs text-muted-foreground">
-                {g.items.length} application{g.items.length === 1 ? "" : "s"} ·{" "}
-                {new Set(g.items.flatMap((i) => i.investigations.map((x) => x.id))).size} investigations
+                {g.items.length} investigation{g.items.length === 1 ? "" : "s"}
               </p>
             </a>
           );
         })}
       </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="space-y-6">
         {groups.map((g) => {
           const Icon = ICON[g.key];
           return (
@@ -51,24 +49,23 @@ export default function EarthPage() {
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Icon className="size-4 text-primary" aria-hidden /> {g.title}
                 </CardTitle>
-                <CardDescription>{g.blurb}</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="divide-y divide-border">
                   {g.items.map((item) => (
-                    <li key={item.text} className="flex flex-col gap-1.5 py-2.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                      <span className="text-sm">{item.text}</span>
-                      <span className="flex shrink-0 flex-wrap gap-1">
-                        {item.investigations.map((inv) => (
-                          <Link
-                            key={inv.id}
-                            href={`/explore?id=${inv.id}`}
-                            className="rounded border border-border px-1.5 py-0.5 text-[11px] text-muted-foreground hover:border-link hover:text-link"
-                          >
-                            {inv.acronym}
-                          </Link>
-                        ))}
-                      </span>
+                    <li key={item.investigationId} className="space-y-1.5 py-3">
+                      <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                        <Link href={`/explore?id=${item.investigationId}`} className="text-link hover:underline">
+                          {item.acronym}
+                        </Link>
+                        {item.accession && <span className="text-xs font-normal text-muted-foreground">{item.accession}</span>}
+                        {item.pageUrl && (
+                          <a href={item.pageUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground hover:text-link">
+                            PSI record <ExternalLink className="size-3" aria-hidden />
+                          </a>
+                        )}
+                      </p>
+                      <blockquote className="border-l-2 border-border pl-3 text-sm leading-relaxed text-foreground/90">{item.text}</blockquote>
                     </li>
                   ))}
                 </ul>
@@ -78,8 +75,8 @@ export default function EarthPage() {
         })}
       </div>
       <p className="mt-6 text-xs text-muted-foreground">
-        Application notes are part of the synthetic demo records and illustrate the kinds of transfer PSI research supports; they are not
-        claims about specific NASA spinoff programs.
+        Text retrieved from NASA PSI investigation records (psi.nasa.gov). Statements are the investigators&apos; own descriptions of expected
+        benefits, not claims about specific NASA spinoff programs.
       </p>
     </>
   );

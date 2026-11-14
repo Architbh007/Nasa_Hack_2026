@@ -16,14 +16,13 @@ export default function Home() {
             Flame in Freefall
           </p>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Fire safety insight for crewed habitats, from microgravity
-            combustion research.
+            What real NASA fire tests cover, and what they miss, for crewed habitats.
           </h1>
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-            FireSight summarizes, ranks and interprets Physical Science
-            Informatics combustion investigations. Set a cabin atmosphere and
-            see what has been tested, what has not, and how likely a material
-            is to ignite.
+            FireSight reads the combustion data NASA has archived in Physical
+            Science Informatics. Set a cabin atmosphere and see which real tests
+            are near it, what was never tested, and where the next experiment
+            should go. Every number links back to its NASA file or paper.
           </p>
           <div className="flex flex-wrap gap-2 pt-2">
             <Button asChild size="lg">

@@ -55,7 +55,7 @@ export function SiMeta({ cached, model }: { cached: boolean; model: string }) {
         {cached ? <Database className="size-3" aria-hidden /> : <Sparkles className="size-3" aria-hidden />}
         {cached ? "Cached SI output" : "Fresh SI output"} · {model}
       </span>
-      <span>Grounded in synthetic records only; verify before use.</span>
+      <span>Grounded in the NASA records shown; check cited ids before use.</span>
     </p>
   );
 }

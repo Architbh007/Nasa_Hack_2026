@@ -3,11 +3,6 @@
 import { useMemo, type ReactNode } from "react";
 import {
   CartesianGrid,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
   ResponsiveContainer,
   Scatter,
   ScatterChart,
@@ -27,18 +22,18 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChartLegend, TooltipCard } from "@/components/charts/chart-parts";
-import { FuelPhaseBadge, PillarBadges } from "@/components/common/badges";
+import { CategoryBadge, DataLevelBadge, PillarBadges } from "@/components/common/badges";
 import { CHART_INK, SERIES_COLORS, SERIES_SHAPES } from "@/lib/chart-colors";
-import { HABITAT_LABEL } from "@/lib/constants";
-import { formatFlowRange, formatO2Range, formatPressureRange, GRAVITY_LEVEL_LABEL, percent } from "@/lib/format";
-import { HABITAT_KEYS, type Investigation, type TestRun } from "@/lib/schema";
-import { ignitionRate, METRIC_LABEL, metricValue, primaryMetric, type MetricKey } from "@/lib/test-metrics";
+import { OUTCOME_LABEL } from "@/lib/constants";
+import { formatFlowRange, formatO2Range, formatPressureRange, formatYears } from "@/lib/format";
+import type { Investigation, Run } from "@/lib/schema";
+import { metricLabel, metricValue, primaryMetric } from "@/lib/test-metrics";
 import { CompareSiSlot } from "@/components/explore/compare-si-slot";
 import { niceDomain, tickCountFor } from "@/lib/chart-utils";
 
-type Selected = { inv: Investigation; tests: readonly TestRun[]; color: string; shape: (typeof SERIES_SHAPES)[number] };
+type Selected = { inv: Investigation; runs: readonly Run[]; color: string; shape: (typeof SERIES_SHAPES)[number] };
 
-type OverlayPoint = { x: number; y: number; test: TestRun; acronym: string };
+type OverlayPoint = { x: number; y: number; run: Run; acronym: string };
 
 function OverlayTooltip({ active, payload, yLabel }: TooltipContentProps & { yLabel: string }) {
   const first = payload?.[0];
@@ -46,18 +41,18 @@ function OverlayTooltip({ active, payload, yLabel }: TooltipContentProps & { yLa
   const p = first.payload as OverlayPoint;
   return (
     <TooltipCard
-      title={`${p.acronym} · ${p.test.testId}`}
+      title={`${p.acronym} · ${p.run.id}`}
       rows={[
         ["O2", `${p.x}%`],
         [yLabel, String(p.y)],
-        ["Outcome", p.test.outcome],
+        ["Outcome", OUTCOME_LABEL[p.run.outcome]],
       ]}
     />
   );
 }
 
-function Overlay({ series, y, yLabel }: { series: Selected[]; y: (t: TestRun) => number | null; yLabel: string }) {
-  const xDomain = niceDomain(series.flatMap((s) => s.tests.map((t) => t.o2Percent)));
+function Overlay({ series, y, yLabel }: { series: Selected[]; y: (r: Run) => number | null; yLabel: string }) {
+  const xDomain = niceDomain(series.flatMap((s) => s.runs.flatMap((r) => (r.o2Percent === null ? [] : [r.o2Percent]))));
   return (
     <div className="space-y-2">
       <ChartLegend items={series.map((s) => ({ key: s.inv.id, label: s.inv.acronym, color: s.color, shape: s.shape }))} />
@@ -89,9 +84,9 @@ function Overlay({ series, y, yLabel }: { series: Selected[]; y: (t: TestRun) =>
               <Scatter
                 key={s.inv.id}
                 name={s.inv.acronym}
-                data={s.tests
-                  .map((t) => ({ x: t.o2Percent, y: y(t), test: t, acronym: s.inv.acronym }))
-                  .filter((p): p is OverlayPoint => p.y !== null)}
+                data={s.runs
+                  .map((r) => ({ x: r.o2Percent, y: y(r), run: r, acronym: s.inv.acronym }))
+                  .filter((p): p is OverlayPoint => p.x !== null && p.y !== null)}
                 fill={s.color}
                 shape={s.shape}
                 fillOpacity={0.85}
@@ -107,63 +102,20 @@ function Overlay({ series, y, yLabel }: { series: Selected[]; y: (t: TestRun) =>
   );
 }
 
-function RelevanceRadar({ series }: { series: Selected[] }) {
-  const data = HABITAT_KEYS.map((h) => {
-    const row: Record<string, string | number> = { habitat: HABITAT_LABEL[h] };
-    for (const s of series) row[s.inv.id] = s.inv.habitatRelevance[h].score;
-    return row;
-  });
-  return (
-    <div className="space-y-2">
-      <ChartLegend items={series.map((s) => ({ key: s.inv.id, label: s.inv.acronym, color: s.color, line: true }))} />
-      <div className="h-72">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={data} outerRadius="72%">
-            <PolarGrid stroke={CHART_INK.grid} />
-            <PolarAngleAxis dataKey="habitat" tick={{ fill: CHART_INK.label, fontSize: 12 }} />
-            <PolarRadiusAxis domain={[0, 5]} tickCount={6} tick={{ fill: CHART_INK.tick, fontSize: 10 }} axisLine={false} angle={45} />
-            {series.map((s) => (
-              <Radar
-                key={s.inv.id}
-                name={s.inv.acronym}
-                dataKey={s.inv.id}
-                stroke={s.color}
-                strokeWidth={2}
-                fill={s.color}
-                fillOpacity={0.1}
-                dot={{ r: 3, fill: s.color, strokeWidth: 0 }}
-                isAnimationActive={false}
-              />
-            ))}
-            <Tooltip
-              content={({ active, payload, label }) =>
-                active && payload?.length ? (
-                  <TooltipCard
-                    title={String(label ?? "")}
-                    rows={payload.map((p) => [String(p.name ?? ""), `${String(p.value)}/5`] as [string, string])}
-                  />
-                ) : null
-              }
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-}
-
 function CompareTable({ series }: { series: Selected[] }) {
   const rows: Array<[string, (s: Selected) => ReactNode]> = [
-    ["Project", (s) => s.inv.project],
-    ["Fuel phase", (s) => <FuelPhaseBadge phase={s.inv.fuelPhase} />],
-    ["Fuels", (s) => s.inv.fuels.join(", ")],
-    ["Hardware", (s) => s.inv.hardware.join(", ")],
-    ["O2 range", (s) => formatO2Range(s.inv)],
-    ["Pressure", (s) => formatPressureRange(s.inv)],
-    ["Flow", (s) => formatFlowRange(s.inv)],
-    ["Gravity", (s) => GRAVITY_LEVEL_LABEL[s.inv.gravityLevel]],
-    ["Safety pillars", (s) => <PillarBadges pillars={s.inv.safetyPillars} />],
-    ["Runs · ignited", (s) => `${s.tests.length} · ${percent(ignitionRate(s.tests))}`],
+    ["PSI accession", (s) => s.inv.accession ?? "Published paper"],
+    ["Platform", (s) => s.inv.platform || "Not listed"],
+    ["Years (PSI)", (s) => formatYears(s.inv)],
+    ["Category (team)", (s) => <CategoryBadge category={s.inv.category} />],
+    ["Data held", (s) => <DataLevelBadge level={s.inv.dataLevel} />],
+    ["Fuels as written", (s) => s.inv.fuels.slice(0, 8).join(", ") || "Not listed"],
+    ["Hardware (PSI)", (s) => s.inv.hardware.map((h) => h.name).join("; ") || "Not listed"],
+    ["O2 in runs", (s) => formatO2Range(s.inv)],
+    ["Pressure in runs", (s) => formatPressureRange(s.inv)],
+    ["Flow in runs", (s) => formatFlowRange(s.inv)],
+    ["Pillars (team)", (s) => <PillarBadges pillars={s.inv.teamAssessment.safetyPillars} />],
+    ["Run-level tests", (s) => String(s.runs.length)],
   ];
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
@@ -202,26 +154,26 @@ export function CompareDialog({
   open,
   onOpenChange,
   investigations,
-  testsByInvestigation,
+  runsByInvestigation,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   investigations: readonly Investigation[];
-  testsByInvestigation: ReadonlyMap<string, readonly TestRun[]>;
+  runsByInvestigation: ReadonlyMap<string, readonly Run[]>;
 }) {
   const series: Selected[] = useMemo(
     () =>
       investigations.map((inv, i) => ({
         inv,
-        tests: testsByInvestigation.get(inv.id) ?? [],
+        runs: runsByInvestigation.get(inv.id) ?? [],
         color: SERIES_COLORS[i % SERIES_COLORS.length] as string,
         shape: SERIES_SHAPES[i % SERIES_SHAPES.length] as (typeof SERIES_SHAPES)[number],
       })),
-    [investigations, testsByInvestigation]
+    [investigations, runsByInvestigation]
   );
 
-  const sharedMetric: MetricKey | null = useMemo(() => {
-    const metrics = series.map((s) => primaryMetric(s.tests));
+  const sharedMetric: string | null = useMemo(() => {
+    const metrics = series.map((s) => primaryMetric(s.runs));
     const first = metrics[0];
     return first && metrics.every((m) => m === first) ? first : null;
   }, [series]);
@@ -231,31 +183,27 @@ export function CompareDialog({
       <DialogContent className="flex max-h-[92svh] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl">
         <DialogHeader className="border-b border-border px-6 py-4">
           <DialogTitle>Compare {series.map((s) => s.inv.acronym).join(" · ")}</DialogTitle>
-          <DialogDescription>Habitat relevance, tested conditions and outcomes side by side.</DialogDescription>
+          <DialogDescription>PSI records, tested conditions from real runs and what each one holds, side by side.</DialogDescription>
         </DialogHeader>
         <ScrollArea className="min-h-0 flex-1">
           <div className="space-y-6 px-6 py-5">
             <CompareSiSlot ids={series.map((s) => s.inv.id)} />
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div>
               <section className="space-y-2">
-                <h3 className="text-sm font-medium">Habitat relevance (0–5)</h3>
-                <RelevanceRadar series={series} />
-              </section>
-              <section className="space-y-2">
-                <h3 className="text-sm font-medium">Test runs</h3>
+                <h3 className="text-sm font-medium">Real runs</h3>
                 <Tabs defaultValue={sharedMetric ? "metric" : "conditions"}>
                   <TabsList>
                     <TabsTrigger value="conditions">Tested conditions</TabsTrigger>
                     <TabsTrigger value="metric" disabled={!sharedMetric}>
-                      {sharedMetric ? METRIC_LABEL[sharedMetric].replace(/ \(.*\)$/, "") : "No shared metric"}
+                      {sharedMetric ? metricLabel(sharedMetric) : "No shared metric"}
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="conditions">
-                    <Overlay series={series} y={(t) => t.pressurePsi} yLabel="Pressure (psi)" />
+                    <Overlay series={series} y={(r) => r.pressurePsi} yLabel="Recorded pressure (psi)" />
                   </TabsContent>
                   {sharedMetric && (
                     <TabsContent value="metric">
-                      <Overlay series={series} y={(t) => metricValue(t, sharedMetric)} yLabel={METRIC_LABEL[sharedMetric]} />
+                      <Overlay series={series} y={(r) => metricValue(r, sharedMetric)} yLabel={metricLabel(sharedMetric)} />
                     </TabsContent>
                   )}
                 </Tabs>

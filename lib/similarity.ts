@@ -1,39 +1,36 @@
+import { materialClassForFuel } from "@/lib/materials";
 import type { Investigation } from "@/lib/schema";
 
 /**
- * Investigation similarity: weighted Jaccard over set-valued attributes.
- * Components where both sides are empty (e.g. no diluents on either) are
+ * Investigation similarity: weighted Jaccard over set-valued attributes taken from the PSI
+ * records (related-investigation links, hardware, project) plus the team's category and the
+ * material classes of the fuels each one burned. Components where both sides are empty are
  * skipped and the remaining weights renormalized.
  */
 
-export const SIMILARITY_KEYS = [
-  "hardware",
-  "fuels",
-  "fuelPhase",
-  "measurements",
-  "diluents",
-  "safetyPillars",
-] as const;
+export const SIMILARITY_KEYS = ["related", "hardware", "project", "materials", "category"] as const;
 export type SimilarityKey = (typeof SIMILARITY_KEYS)[number];
-
 export type SimilarityWeights = Record<SimilarityKey, number>;
 
 export const DEFAULT_SIMILARITY_WEIGHTS: SimilarityWeights = {
-  hardware: 0.25,
-  fuels: 0.2,
-  fuelPhase: 0.1,
-  measurements: 0.3,
-  diluents: 0.05,
-  safetyPillars: 0.1,
+  related: 0.35,
+  hardware: 0.3,
+  project: 0.1,
+  materials: 0.15,
+  category: 0.1,
 };
 
-export type EdgeLabel = "shared hardware" | "shared fuel" | "shared instrument" | "shared variable";
-
-export type SimilarityComponent = {
-  jaccard: number | null;
-  shared: string[];
-  weight: number;
+export const SIMILARITY_LABEL: Record<SimilarityKey, string> = {
+  related: "Related in PSI",
+  hardware: "Hardware",
+  project: "Project",
+  materials: "Material classes",
+  category: "Fuel category",
 };
+
+export type EdgeLabel = "PSI-listed relation" | "shared hardware" | "same project" | "shared material";
+
+export type SimilarityComponent = { jaccard: number | null; shared: string[]; weight: number };
 
 export type SimilarityResult = {
   id: string;
@@ -41,24 +38,22 @@ export type SimilarityResult = {
   target: string;
   score: number;
   components: Record<SimilarityKey, SimilarityComponent>;
-  sharedVariables: string[];
   label: EdgeLabel;
 };
 
 function setOf(inv: Investigation, key: SimilarityKey): string[] {
   switch (key) {
-    case "fuelPhase":
-      return [inv.fuelPhase];
+    case "related":
+      // Each record's own accession plus the ones PSI lists as related, so a one-way link counts.
+      return inv.accession ? [inv.accession, ...inv.relatedAccessions] : inv.relatedAccessions;
     case "hardware":
-      return inv.hardware;
-    case "fuels":
-      return inv.fuels;
-    case "measurements":
-      return inv.measurements;
-    case "diluents":
-      return inv.diluents;
-    case "safetyPillars":
-      return inv.safetyPillars;
+      return inv.hardwareTags;
+    case "project":
+      return inv.project === "Standalone" ? [] : [inv.project];
+    case "materials":
+      return [...new Set(inv.fuels.map(materialClassForFuel).filter((m): m is NonNullable<typeof m> => m !== null))];
+    case "category":
+      return [inv.category];
   }
 }
 
@@ -66,61 +61,51 @@ export function jaccard(a: readonly string[], b: readonly string[]): { value: nu
   const A = new Set(a.map((s) => s.toLowerCase()));
   const B = new Set(b.map((s) => s.toLowerCase()));
   if (A.size === 0 && B.size === 0) return { value: null, shared: [] };
-  const shared = a.filter((s, i) => B.has(s.toLowerCase()) && a.findIndex((x) => x.toLowerCase() === s.toLowerCase()) === i);
+  const shared = [...new Set(a.filter((s) => B.has(s.toLowerCase())))];
   const union = new Set([...A, ...B]).size;
   return { value: shared.length / union, shared };
+}
+
+/** PSI relation: one record lists the other as related. Scored 1 or 0 (null when neither lists any). */
+function related(a: Investigation, b: Investigation): SimilarityComponent & { listed: boolean } {
+  const listed =
+    a.id === b.id ||
+    (!!b.accession && a.relatedAccessions.includes(b.accession)) ||
+    (!!a.accession && b.relatedAccessions.includes(a.accession));
+  const none = a.id !== b.id && a.relatedAccessions.length === 0 && b.relatedAccessions.length === 0;
+  const pair = [a.accession, b.accession].filter((x): x is string => !!x);
+  return { jaccard: none ? null : listed ? 1 : 0, shared: listed ? pair : [], weight: 0, listed };
 }
 
 export function edgeId(a: string, b: string): string {
   return a < b ? `${a}__${b}` : `${b}__${a}`;
 }
 
-function pickLabel(components: Record<SimilarityKey, SimilarityComponent>, sharedVariables: string[]): EdgeLabel {
-  const all: Array<{ label: EdgeLabel; contribution: number }> = [
-    {
-      label: "shared hardware",
-      contribution: (components.hardware.jaccard ?? 0) * components.hardware.weight,
-    },
-    {
-      label: "shared instrument",
-      contribution: (components.measurements.jaccard ?? 0) * components.measurements.weight,
-    },
-    { label: "shared fuel", contribution: (components.fuels.jaccard ?? 0) * components.fuels.weight },
+function pickLabel(c: Record<SimilarityKey, SimilarityComponent>): EdgeLabel {
+  if ((c.related.jaccard ?? 0) > 0) return "PSI-listed relation";
+  const options: Array<{ label: EdgeLabel; v: number }> = [
+    { label: "shared hardware", v: (c.hardware.jaccard ?? 0) * c.hardware.weight },
+    { label: "same project", v: (c.project.jaccard ?? 0) * c.project.weight },
+    { label: "shared material", v: (c.materials.jaccard ?? 0) * c.materials.weight },
   ];
-  const candidates = all.filter((c) => c.contribution > 0);
-  if (candidates.length === 0) return sharedVariables.length > 0 ? "shared variable" : "shared fuel";
-  // Hardware wins ties: a common facility is the strongest kind of link.
-  candidates.sort((a, b) => b.contribution - a.contribution || (a.label === "shared hardware" ? -1 : 1));
-  return (candidates[0] as { label: EdgeLabel }).label;
+  options.sort((x, y) => y.v - x.v);
+  return options[0]!.v > 0 ? options[0]!.label : "shared material";
 }
 
-export function similarity(
-  a: Investigation,
-  b: Investigation,
-  weights: SimilarityWeights = DEFAULT_SIMILARITY_WEIGHTS
-): SimilarityResult {
+export function similarity(a: Investigation, b: Investigation, weights: SimilarityWeights = DEFAULT_SIMILARITY_WEIGHTS): SimilarityResult {
   let num = 0;
   let den = 0;
   const components = {} as Record<SimilarityKey, SimilarityComponent>;
   for (const key of SIMILARITY_KEYS) {
-    const { value, shared } = jaccard(setOf(a, key), setOf(b, key));
+    const { value, shared } = key === "related" ? { value: related(a, b).jaccard, shared: related(a, b).shared } : jaccard(setOf(a, key), setOf(b, key));
     components[key] = { jaccard: value, shared, weight: weights[key] };
     if (value !== null) {
       num += weights[key] * value;
       den += weights[key];
     }
   }
-  const sharedVariables = jaccard(a.variables, b.variables).shared;
   const [source, target] = a.id < b.id ? [a.id, b.id] : [b.id, a.id];
-  return {
-    id: edgeId(a.id, b.id),
-    source,
-    target,
-    score: den === 0 ? 0 : num / den,
-    components,
-    sharedVariables,
-    label: pickLabel(components, sharedVariables),
-  };
+  return { id: edgeId(a.id, b.id), source, target, score: den === 0 ? 0 : num / den, components, label: pickLabel(components) };
 }
 
 /** All pairwise similarities at or above a threshold, strongest first. */
@@ -132,7 +117,7 @@ export function similarityEdges(
   const edges: SimilarityResult[] = [];
   for (let i = 0; i < investigations.length; i++) {
     for (let j = i + 1; j < investigations.length; j++) {
-      const s = similarity(investigations[i] as Investigation, investigations[j] as Investigation, weights);
+      const s = similarity(investigations[i]!, investigations[j]!, weights);
       if (s.score >= threshold) edges.push(s);
     }
   }

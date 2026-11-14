@@ -1,5 +1,5 @@
-import type { RiskBand } from "@/lib/habitat";
-import type { Airflow, HabitatGravity, SafetyPillar } from "@/lib/schema";
+import type { FuelCategory, Verdict } from "@/lib/habitat";
+import type { Airflow, HabitatGravity, SafetyPillar, Scenario } from "@/lib/schema";
 
 export type ScenarioCardData = {
   id: string;
@@ -10,12 +10,16 @@ export type ScenarioCardData = {
   gravity: HabitatGravity;
   airflow: Airflow;
   pO2Psi: number;
-  ignitionProbability: number;
-  riskBand: RiskBand;
-  gap: boolean;
-  overall: number;
-  nearbyTests: number;
-  pillars: Array<{ pillar: SafetyPillar; score: number; best: Array<{ id: string; acronym: string }> }>;
+  source: Scenario["source"];
+  verdicts: Array<{
+    category: FuelCategory;
+    verdict: Verdict;
+    reason: string;
+    nearest: Array<{ runId: string; investigationId: string; acronym: string; o2Percent: number; pressurePsi: number; outcome: string }>;
+  }>;
+  pillars: Array<{ pillar: SafetyPillar; withRuns: number; investigations: Array<{ id: string; acronym: string; hasRuns: boolean }> }>;
+  /** Real runs per distance band and category (for the chart). */
+  bands: Array<{ band: string } & Record<FuelCategory, number>>;
   best: Array<{ id: string; acronym: string; name: string; score: number }>;
   gaps: string[];
 };

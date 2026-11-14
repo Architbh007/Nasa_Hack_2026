@@ -37,7 +37,8 @@ function requireInvestigation(id: string): Investigation {
   return inv;
 }
 
-const testsOf = (id: string) => getDataset().testsByInvestigation.get(id) ?? [];
+const runsOf = (id: string) => getDataset().runsByInvestigation.get(id) ?? [];
+const summariesOf = (id: string) => getDataset().summariesByInvestigation.get(id) ?? [];
 
 export function summarizeInvestigation(id: string) {
   const inv = requireInvestigation(id);
@@ -46,7 +47,7 @@ export function summarizeInvestigation(id: string) {
     label: `summary:${id}`,
     model: aiConfig().modelMain,
     system: SUMMARY_SYSTEM,
-    input: investigationContext(inv, testsOf(id)),
+    input: investigationContext(inv, runsOf(id), summariesOf(id)),
     schema: InvestigationSummarySchema,
     effort: "low",
   });
@@ -57,7 +58,7 @@ export function compareInvestigations(ids: readonly string[]) {
   if (unique.length < 2 || unique.length > 4) {
     throw new SiError("bad_request", "Select between 2 and 4 investigations to compare.", 400);
   }
-  const records = unique.map((id) => briefContext(requireInvestigation(id), testsOf(id)));
+  const records = unique.map((id) => briefContext(requireInvestigation(id), runsOf(id)));
   return structuredCall({
     kind: "compare",
     label: `compare:${unique.join(",")}`,
@@ -89,12 +90,12 @@ export function explainEdge(source: string, target: string) {
 export const HABITAT_EVIDENCE_COUNT = 6;
 
 export function interpretHabitat(inputs: HabitatInputs, weights?: RankingWeights) {
-  const { investigations, tests, model } = getDataset();
+  const { investigations, runs } = getDataset();
   // Recompute server-side: the SI only ever sees numbers derived from the dataset.
-  const a = assessHabitat(inputs, { investigations, tests, model }, weights);
+  const a = assessHabitat(inputs, { investigations, runs }, weights);
   const top = a.ranked.slice(0, HABITAT_EVIDENCE_COUNT).map((r) => ({
     inv: r.investigation,
-    tests: testsOf(r.investigation.id),
+    runs: runsOf(r.investigation.id),
     score: r.score,
   }));
   const allowed = new Set(top.map((t) => t.inv.id));
@@ -111,15 +112,15 @@ export function interpretHabitat(inputs: HabitatInputs, weights?: RankingWeights
 }
 
 export function summarizeScenario(scenarioId: string) {
-  const { scenarios, investigations, tests, model } = getDataset();
+  const { scenarios, investigations, runs } = getDataset();
   const scenario = scenarios.find((s) => s.id === scenarioId);
   if (!scenario) throw new SiError("not_found", `Unknown scenario "${scenarioId}".`, 404);
-  const readiness = scenarioReadiness(scenario, { investigations, tests, model });
+  const readiness = scenarioReadiness(scenario, { investigations, runs });
   const ids = new Set([
     ...readiness.best.map((b) => b.investigation.id),
-    ...readiness.pillars.flatMap((p) => p.best.map((b) => b.investigation.id)),
+    ...readiness.verdicts.flatMap((v) => v.nearest.slice(0, 3).map((n) => n.run.investigationId)),
   ]);
-  const records = [...ids].map((id) => ({ inv: requireInvestigation(id), tests: testsOf(id) }));
+  const records = [...ids].map((id) => ({ inv: requireInvestigation(id), runs: runsOf(id) }));
   return structuredCall({
     kind: "scenario",
     label: `scenario:${scenarioId}`,

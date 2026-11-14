@@ -1,19 +1,19 @@
 import { Badge } from "@/components/ui/badge";
-import { FUEL_PHASE_COLOR } from "@/lib/chart-colors";
-import { FUEL_PHASE_LABEL, PILLAR_LABEL } from "@/lib/constants";
-import { SAFETY_PILLARS, type FuelPhase, type SafetyPillar } from "@/lib/schema";
+import { CATEGORY_COLOR } from "@/lib/chart-colors";
+import { CATEGORY_LABEL, DATA_LEVEL_LABEL, PILLAR_LABEL } from "@/lib/constants";
+import { SAFETY_PILLARS, type Category, type DataLevel, type DataSource, type SafetyPillar } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { BellRing, ShieldCheck, Waves } from "lucide-react";
 
-export function FuelPhaseBadge({ phase, className }: { phase: FuelPhase; className?: string }) {
+export function CategoryBadge({ category, className }: { category: Category; className?: string }) {
   return (
     <span className={cn("inline-flex items-center gap-1.5 text-xs text-foreground/90", className)}>
       <span
         aria-hidden
         className="size-2 rounded-full"
-        style={{ backgroundColor: FUEL_PHASE_COLOR[phase] }}
+        style={{ backgroundColor: CATEGORY_COLOR[category] }}
       />
-      {FUEL_PHASE_LABEL[phase]}
+      {CATEGORY_LABEL[category]}
     </span>
   );
 }
@@ -63,13 +63,33 @@ export function PillarBadges({ pillars: raw, compact = false }: { pillars: reado
   );
 }
 
-export function SyntheticTag({ className }: { className?: string }) {
+/** How much data we hold for an investigation. */
+export function DataLevelBadge({ level, className }: { level: DataLevel; className?: string }) {
   return (
     <Badge
       variant="outline"
-      className={cn("border-warning/40 text-[10px] font-medium uppercase tracking-wide text-warning", className)}
+      className={cn("font-normal", level === "runs" ? "text-foreground/90" : "text-muted-foreground", className)}
     >
-      Synthetic
+      {DATA_LEVEL_LABEL[level]}
     </Badge>
+  );
+}
+
+/** Marks values hand-transcribed from a published NASA paper rather than read from a PSI file. */
+export function SourceTag({ source, className }: { source: DataSource; className?: string }) {
+  if (source === "psi") return null;
+  return (
+    <Badge variant="outline" className={cn("border-warning/40 text-[10px] font-medium uppercase tracking-wide text-warning", className)}>
+      Published paper
+    </Badge>
+  );
+}
+
+/** Small "team assessment" marker for labels that are our classification, not NASA's. */
+export function TeamTag({ className }: { className?: string }) {
+  return (
+    <span className={cn("text-[10px] uppercase tracking-wide text-muted-foreground", className)} title="The team's own classification, not a NASA statement">
+      team assessment
+    </span>
   );
 }

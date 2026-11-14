@@ -170,7 +170,7 @@ export function AskView() {
                 {m.status === "done" && (
                   <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
                     {m.cached ? <Database className="size-3" aria-hidden /> : <Sparkles className="size-3" aria-hidden />}
-                    {m.cached ? "Cached answer" : "Streamed answer"} · grounded in synthetic records only
+                    {m.cached ? "Cached answer" : "Streamed answer"} · grounded in the retrieved NASA records
                   </p>
                 )}
               </div>

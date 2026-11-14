@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/shell/app-sidebar";
 import { MobileNav } from "@/components/shell/mobile-nav";
-import { SyntheticBanner } from "@/components/shell/synthetic-banner";
+import { DataBanner } from "@/components/shell/data-banner";
 import { InvestigationIdsProvider } from "@/components/si/investigation-ids";
 import { getDataset } from "@/lib/data";
 import "./globals.css";
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | FireSight",
   },
   description:
-    "SI-powered dashboard that summarizes, ranks and interprets NASA PSI microgravity combustion investigations for crewed habitat fire safety. Prototype on synthetic demo data.",
+    "SI-powered dashboard over real NASA PSI microgravity combustion data: which cabin atmospheres real tests cover, which they do not, and where the next experiment should go.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full">
         <InvestigationIdsProvider entries={ids}>
           <TooltipProvider delayDuration={150}>
-            <SyntheticBanner />
+            <DataBanner />
             <div className="flex min-h-[calc(100svh-30px)]">
               <AppSidebar />
               <div className="flex min-w-0 flex-1 flex-col">

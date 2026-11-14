@@ -20,7 +20,7 @@ export function ScenarioSiParagraph({ scenarioId }: { scenarioId: string }) {
           <SiMarkdown text={state.data.paragraph} className="text-[13px]" />
           <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
             {state.cached ? <Database className="size-3" aria-hidden /> : <Sparkles className="size-3" aria-hidden />}
-            {state.cached ? "Cached" : "Fresh"} · {state.model} · synthetic data
+            {state.cached ? "Cached" : "Fresh"} · {state.model} · grounded in real runs
           </p>
         </>
       )}

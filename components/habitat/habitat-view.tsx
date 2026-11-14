@@ -6,28 +6,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { HabitatControls } from "@/components/habitat/controls";
 import { FlammabilityMap } from "@/components/habitat/flammability-map";
 import { HabitatReadouts } from "@/components/habitat/readouts";
-import { SensitivityChart } from "@/components/habitat/sensitivity-chart";
+import { NearestRuns } from "@/components/habitat/nearest-runs";
 import { RankingPanel } from "@/components/habitat/ranking-panel";
 import { PartialGravityCallout } from "@/components/habitat/partial-gravity-callout";
 import { InterpretationPanel } from "@/components/habitat/interpretation-panel";
-import { FUEL_PHASE_LABEL, MATERIAL_LABEL, O2_SLIDER, PRESSURE_SLIDER, SYNTHETIC_SOLID_GAP } from "@/lib/constants";
-import {
-  assessHabitat,
-  ignitionStudyTests,
-  inputsFromScenario,
-  matchingScenario,
-  phaseLookup,
-  type HabitatInputs,
-} from "@/lib/habitat";
-import type { ModelArtifact } from "@/lib/model";
+import { CATEGORY_LABEL, MATERIAL_LABEL, O2_SLIDER, PRESSURE_SLIDER } from "@/lib/constants";
+import { assessHabitat, inputsFromScenario, matchingScenario, type HabitatInputs } from "@/lib/habitat";
 import { DEFAULT_RANKING_WEIGHTS, type RankingWeights } from "@/lib/ranking";
 import {
   AirflowSchema,
   HabitatGravitySchema,
   MaterialClassSchema,
   type Investigation,
+  type Run,
   type Scenario,
-  type TestRun,
 } from "@/lib/schema";
 
 const DEFAULT_PRESET = "iss-cabin";
@@ -73,14 +65,12 @@ function Section({ title, description, children, action }: { title: string; desc
 
 export function HabitatView({
   investigations,
-  tests,
+  runs,
   scenarios,
-  model,
 }: {
   investigations: Investigation[];
-  tests: TestRun[];
+  runs: Run[];
   scenarios: Scenario[];
-  model: ModelArtifact;
 }) {
   const searchParams = useSearchParams();
   const [{ presetId, inputs }, setState] = useState(() => initialState(new URLSearchParams(searchParams.toString()), scenarios));
@@ -101,28 +91,14 @@ export function HabitatView({
     return () => window.clearTimeout(id);
   }, [presetId, inputs]);
 
-  const data = useMemo(() => ({ investigations, tests, model }), [investigations, tests, model]);
+  const data = useMemo(() => ({ investigations, runs }), [investigations, runs]);
   const assessment = useMemo(() => assessHabitat(inputs, data, weights), [inputs, data, weights]);
+  const acronyms = useMemo(() => new Map(investigations.map((i) => [i.id, i.acronym])), [investigations]);
+  const acronym = (id: string) => acronyms.get(id) ?? id;
 
-  const phaseOf = useMemo(() => phaseLookup(investigations), [investigations]);
-  const chartRuns = useMemo(
-    () => ignitionStudyTests(investigations, tests).filter((t) => phaseOf(t) === assessment.fuelPhase),
-    [investigations, tests, phaseOf, assessment.fuelPhase]
-  );
-
-  // Shade the generated gap only for synthetic solid-fuel data, and only if it really is empty.
-  const showSyntheticGap = useMemo(
-    () =>
-      assessment.fuelPhase === "solid" &&
-      investigations.every((i) => i.dataSource === "synthetic") &&
-      !chartRuns.some(
-        (t) =>
-          t.o2Percent >= SYNTHETIC_SOLID_GAP.o2Min &&
-          t.o2Percent <= SYNTHETIC_SOLID_GAP.o2Max &&
-          t.pressurePsi < SYNTHETIC_SOLID_GAP.pressureMaxPsi
-      ),
-    [assessment.fuelPhase, investigations, chartRuns]
-  );
+  const verdict = assessment.verdicts[assessment.category];
+  const chartRuns = useMemo(() => runs.filter((r) => r.category === assessment.category), [runs, assessment.category]);
+  const highlightIds = useMemo(() => verdict.nearest.map((n) => n.run.id), [verdict]);
 
   const onPreset = (id: string) => {
     const s = scenarios.find((x) => x.id === id);
@@ -136,10 +112,9 @@ export function HabitatView({
     }));
   };
 
-  const onChange = (next: HabitatInputs) =>
-    setState({ presetId: matchingScenario(scenarios, next)?.id ?? "custom", inputs: next });
+  const onChange = (next: HabitatInputs) => setState({ presetId: matchingScenario(scenarios, next)?.id ?? "custom", inputs: next });
 
-  const phaseLabel = FUEL_PHASE_LABEL[assessment.fuelPhase].toLowerCase();
+  const categoryLabel = CATEGORY_LABEL[assessment.category].toLowerCase();
 
   return (
     <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
@@ -151,30 +126,48 @@ export function HabitatView({
         <HabitatReadouts a={assessment} />
 
         <Section
-          title="Where this atmosphere sits among tested conditions"
-          description={`${MATERIAL_LABEL[inputs.materialClass]} maps to ${phaseLabel} fuels. Each point is one test run; the large marker is your cabin.`}
+          title="Where this atmosphere sits among real tests"
+          description={`${MATERIAL_LABEL[inputs.materialClass]} is compared with ${categoryLabel}. Each point is one real run from a NASA file or paper; the large marker is your cabin.`}
         >
           <FlammabilityMap
             runs={chartRuns}
-            fuelPhase={assessment.fuelPhase}
+            category={assessment.category}
             scenarios={scenarios}
             point={{ o2Percent: inputs.o2Percent, pressurePsi: inputs.pressurePsi }}
-            showSyntheticGap={showSyntheticGap}
+            highlightIds={highlightIds}
           />
         </Section>
 
-        <Section title="SI interpretation" description="Structured risk drivers, evidence, gaps, recommended tests and design implications.">
+        <div className="grid gap-6 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <Section
+            title="Nearest real experiments"
+            description={`The ${verdict.nearest.length} closest ${categoryLabel} runs by O2 and pressure (10% O2 counts the same as 3 psi). These are neighbours to read, not a prediction.`}
+          >
+            <NearestRuns runs={verdict.nearest} acronym={acronym} />
+          </Section>
+          <Section title="Never tested in this data" description="Checked against every run we hold.">
+            {assessment.neverTested.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nothing flagged: real runs reach this atmosphere in every fuel category.</p>
+            ) : (
+              <ul className="space-y-2 text-sm">
+                {assessment.neverTested.map((t) => (
+                  <li key={t} className="flex gap-2">
+                    <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+        </div>
+
+        <Section title="SI interpretation" description="Grounded in the records above; cites investigation and run ids, and says which fields are missing.">
           <InterpretationPanel assessment={assessment} weights={weights} />
         </Section>
 
-        <div className="grid gap-6 2xl:grid-cols-2">
-          <Section title="Sensitivity to oxygen" description="Predicted ignition probability as O2 sweeps at your pressure.">
-            <SensitivityChart model={model} inputs={inputs} currentProbability={assessment.ignitionProbability} />
-          </Section>
-          <Section title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">
-            <RankingPanel ranked={assessment.ranked} weights={weights} onWeights={setWeights} limit={6} />
-          </Section>
-        </div>
+        <Section title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">
+          <RankingPanel ranked={assessment.ranked} weights={weights} onWeights={setWeights} limit={6} />
+        </Section>
       </div>
     </div>
   );

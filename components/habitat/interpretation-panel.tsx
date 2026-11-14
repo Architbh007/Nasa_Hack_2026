@@ -44,7 +44,7 @@ function InterpretationView({ data }: { data: HabitatInterpretation }) {
     <div className="space-y-4">
       <SiMarkdown text={data.summary} className="text-[15px]" />
       <div className="grid gap-4 lg:grid-cols-2">
-        <Block title="Risk drivers">
+        <Block title="Atmosphere factors">
           <Bullets items={data.riskDrivers} />
         </Block>
         <Block title="Knowledge gaps">
@@ -114,7 +114,7 @@ export function InterpretationPanel({ assessment, weights }: { assessment: Habit
     <div className="space-y-4" aria-live="polite">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
-          Sends this condition ({o2Percent.toFixed(1)}% O2, {pressurePsi.toFixed(1)} psi), the metrics, the model output and the
+          Sends this condition ({o2Percent.toFixed(1)}% O2, {pressurePsi.toFixed(1)} psi), the coverage verdicts, the nearest real runs and the
           top-ranked records to the SI. Numbers are recomputed on the server from the dataset.
         </p>
         <Button onClick={go} disabled={state.status === "loading"} className="shrink-0">

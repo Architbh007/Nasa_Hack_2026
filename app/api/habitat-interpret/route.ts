@@ -16,7 +16,7 @@ const Body = z.object({
     gravity: HabitatGravitySchema,
   }),
   weights: z
-    .object({ rangeOverlap: weight, fuelPhaseMatch: weight, flowRegimeMatch: weight, safetyPillar: weight })
+    .object({ rangeOverlap: weight, categoryMatch: weight, flowMatch: weight, evidenceLevel: weight })
     .optional(),
 });
 

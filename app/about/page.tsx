@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { FlaskConical, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { Database, ShieldAlert } from "lucide-react";
 import { PageHeader } from "@/components/shell/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { aiConfig } from "@/lib/ai/client";
-import { FUEL_PHASE_LABEL, SYNTHETIC_SOLID_GAP } from "@/lib/constants";
+import { DATA_LEVEL_LABEL, ISS_NOMINAL_SOURCE } from "@/lib/constants";
 import { getDataset } from "@/lib/data";
-import { coefficientTable } from "@/lib/model";
+import { NEAR_DISTANCE, RUN_SCALE, TESTED_TOLERANCE } from "@/lib/metrics";
 import { DEFAULT_RANKING_WEIGHTS, RANKING_COMPONENTS, RANKING_LABEL } from "@/lib/ranking";
-import { FUEL_PHASES } from "@/lib/schema";
-import { DEFAULT_SIMILARITY_WEIGHTS, SIMILARITY_KEYS } from "@/lib/similarity";
+import { DEFAULT_SIMILARITY_WEIGHTS, SIMILARITY_KEYS, SIMILARITY_LABEL } from "@/lib/similarity";
 
-export const metadata: Metadata = { title: "About and Methods" };
+export const metadata: Metadata = { title: "About and Sources" };
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
@@ -35,84 +35,136 @@ function Bullets({ items }: { items: ReactNode[] }) {
   );
 }
 
-const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
-const SIM_LABEL: Record<(typeof SIMILARITY_KEYS)[number], string> = {
-  hardware: "Hardware",
-  fuels: "Fuels",
-  fuelPhase: "Fuel phase",
-  measurements: "Instruments and measurements",
-  diluents: "Diluents",
-  safetyPillars: "Safety pillars",
+const code = (s: string) => <code className="rounded bg-muted px-1">{s}</code>;
+
+const RANKING_DEFINITION: Record<(typeof RANKING_COMPONENTS)[number], string> = {
+  rangeOverlap: "1 inside the O2/pressure span of the investigation's real runs, exp(−d/0.15) outside (d normalized by the dataset span), 0 without run data",
+  categoryMatch: "1 same fuel category with a matching material, 0.75 same category, 0.1 other category",
+  flowMatch: "1 when the recorded airflow range includes the cabin's, decaying with the gap; 0.5 when airflow is not recorded",
+  evidenceLevel: "Run tables 0.6 plus up to 0.4 by run count (full at 100 runs); planned matrix or day summary 0.4; log or schedule 0.2; description only 0",
 };
 
 export default function AboutPage() {
-  const { investigations, tests, scenarios, model } = getDataset();
-  const coef = coefficientTable(model);
+  const { investigations, runs, summaries, scenarios } = getDataset();
   const { modelMain, modelFast } = aiConfig();
-  const synthetic = investigations.every((i) => i.dataSource === "synthetic");
+  const published = runs.filter((r) => r.dataSource === "published").length;
+  const notesOutcomes = runs.filter((r) => r.outcomeBasis === "notes-keyword").length;
+  const unknownOutcomes = runs.filter((r) => r.outcome === "unknown").length;
+  const assumed = runs.filter((r) => r.pressureAssumedPsi !== null).length;
 
   return (
     <>
       <PageHeader
         eyebrow="About"
-        title="About and Methods"
-        description="How FireSight's data, model, ranking, similarity and SI layer work, so every number on screen can be traced and challenged."
+        title="About and Sources"
+        description="Where every number comes from, how coverage is judged, and what the data cannot tell you."
       />
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="space-y-6">
           <Section id="data-policy" title="Data policy">
-            <Alert className="border-warning/40 bg-warning/10">
-              <FlaskConical className="text-warning" aria-hidden />
-              <AlertTitle>{synthetic ? "This build runs on synthetic demo data" : "This build includes PSI data"}</AlertTitle>
+            <Alert className="border-primary/30 bg-primary/5">
+              <Database className="text-primary" aria-hidden />
+              <AlertTitle>Real NASA data only</AlertTitle>
               <AlertDescription>
-                Investigation names, hardware and project groupings follow real NASA PSI combustion investigations. Every
-                numeric value, test run, finding and measurement is generated. Do not cite these numbers as NASA results.
+                {runs.length} run-level tests from NASA Physical Science Informatics (PSI) tables and {published} from published NASA
+                papers, across {investigations.length} investigations. Nothing is generated or filled in.
               </AlertDescription>
             </Alert>
             <Bullets
               items={[
-                <>Every record carries <code className="rounded bg-muted px-1">dataSource: &quot;synthetic&quot;</code>; the banner on every page states the same.</>,
-                <>
-                  {investigations.length} investigations, {tests.length} test runs and {scenarios.length} habitat presets, regenerated
-                  reproducibly with <code className="rounded bg-muted px-1">npm run generate</code> from <code className="rounded bg-muted px-1">DATA_SEED</code>.
-                </>,
-                <>
-                  By fuel phase:{" "}
-                  {FUEL_PHASES.map((p) => `${FUEL_PHASE_LABEL[p]} ${investigations.filter((i) => i.fuelPhase === p).length}`).join(", ")}.
-                </>,
-                <>
-                  The schema (<code className="rounded bg-muted px-1">lib/schema.ts</code>) is the contract: real PSI exports that satisfy it
-                  replace the JSON files with no app code changes, and the model retrains on the next build.
-                </>,
+                <>Every run records its file and exact place in it (sheet and row, or paper, table and page). Open any investigation in the <Link href="/explore" className="text-link hover:underline">Explorer</Link> to see them.</>,
+                "Missing values stay missing and are shown as \"Not recorded\". Unit conversions use 1 atm = 14.6959 psi, 1 mmHg = 0.0193368 psi and 1 kPa = 0.145038 psi, and are checked at build time.",
+                <>Outcomes come only from the source. {runs.length - unknownOutcomes - notesOutcomes} are stated in a table field; {notesOutcomes} were read from investigator notes by keyword and reviewed by a team member; {unknownOutcomes} are &quot;not stated&quot; because the source does not say.</>,
+                <>Pressure is never invented. {assumed} BASS-II runs record no pressure; they are placed on the map at the cited ISS nominal 14.7 psi (hollow markers), kept in a separate field and labelled. Source: {ISS_NOMINAL_SOURCE.split(", ").slice(-1)[0]}.</>,
+                "Saffire I to III pressure comes from a NASA paper's flight-level table (100 kPa), not from the PSI tables, and is labelled \"from a NASA paper\".",
+                `Saffire IV to VI values (${published} samples) are hand-transcribed from NASA papers and marked "Published paper". They still need a cell-by-cell check against the PDFs by a second person.`,
+                "Fuel category and safety pillars are the team's own classification, labelled \"team assessment\" with the reason.",
+                `Data held varies: ${summaries.map((s) => s.title).join(", ")} are summaries, not runs, and are never plotted as runs.`,
               ]}
             />
           </Section>
 
-          <Section title="How the synthetic data was generated">
+          <Section title="Sources">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-left text-muted-foreground">
+                    <th className="py-1 pr-2 font-normal">Investigation</th>
+                    <th className="py-1 pr-2 font-normal">Data held</th>
+                    <th className="py-1 pr-2 text-right font-normal">Runs</th>
+                    <th className="py-1 font-normal">Citation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {investigations.map((i) => (
+                    <tr key={i.id} className="border-t border-border/60 align-top">
+                      <td className="py-1.5 pr-2">
+                        <Link href={`/explore?id=${i.id}`} className="text-link hover:underline">
+                          {i.acronym}
+                        </Link>
+                        <span className="block text-muted-foreground">{i.accession ?? "NASA papers"}</span>
+                      </td>
+                      <td className="py-1.5 pr-2">{DATA_LEVEL_LABEL[i.dataLevel]}</td>
+                      <td className="tabular py-1.5 pr-2 text-right">{i.runCount}</td>
+                      <td className="py-1.5 text-muted-foreground">
+                        {i.citation.doi ? (
+                          <a href={`https://doi.org/${i.citation.doi}`} target="_blank" rel="noreferrer" className="text-link hover:underline">
+                            doi:{i.citation.doi}
+                          </a>
+                        ) : i.citation.pageUrl ? (
+                          <a href={i.citation.pageUrl} target="_blank" rel="noreferrer" className="text-link hover:underline">
+                            {i.accession ? "PSI page (no DOI found)" : "NTRS paper"}
+                          </a>
+                        ) : (
+                          "–"
+                        )}
+                        {i.citation.licence && <span className="ml-1">· {i.citation.licence.toUpperCase()}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Investigation text (objectives, approach, hardware, earth benefits) is retrieved from the PSI search service that psi.nasa.gov
+              uses. Licences are from DataCite records; 16 of 19 PSI records list CC0 1.0, and three list none (PSI-10, PSI-20, PSI-22).
+              Five PSI ground investigations are not included. Raw video and image folders were not used.
+            </p>
+          </Section>
+
+          <Section title="Coverage method">
+            <p>
+              The habitat and readiness pages compare an atmosphere with real runs only. Distance between a run and the atmosphere is{" "}
+              {code(`hypot(ΔO2/${RUN_SCALE.o2}, Δpsi/${RUN_SCALE.psi})`)}, so {RUN_SCALE.o2} points of O2 count the same as {RUN_SCALE.psi} psi.
+            </p>
             <Bullets
               items={[
-                "Ignition probability is a logistic function of O2 partial pressure with fuel-phase midpoints (solids need more oxygen than liquids, liquids more than gases), an O2 concentration term, diluent penalties and noise.",
-                "Flame spread rises roughly linearly with O2 above a threshold and scales mildly with pressure (exponent 0.35).",
-                "In microgravity, flow under about 5 cm/s raises self-extinguishment of solids (oxygen starvation), moderate flow increases spread and flow above about 30 cm/s causes blowoff.",
-                "Carbon dioxide suppresses more strongly than helium, and helium more than nitrogen, at equal diluent percent.",
-                "Droplet extinction diameters shrink as O2 rises; cool flames appear at lower O2 in the cool-flame investigations.",
-                "Smoke obscuration exists only for SAME, SAME-R and solid runs with a smoke obscuration photometer; DAFT and DAFT-2 reuse the SAME particle counter by name.",
-                "Investigation O2, pressure and flow ranges are computed from their own test runs, and key findings are templates filled with statistics from those runs.",
-                `A deliberate gap: no solid-fuel runs between ${SYNTHETIC_SOLID_GAP.o2Min} and ${SYNTHETIC_SOLID_GAP.o2Max}% O2 below ${SYNTHETIC_SOLID_GAP.pressureMaxPsi} psi, so the lunar base and rover presets expose an untested region.`,
+                `Tested: a same-category run within ±${TESTED_TOLERANCE.o2}% O2 and ±${TESTED_TOLERANCE.psi} psi.`,
+                `Near tested runs: none that close, but the nearest is within distance ${NEAR_DISTANCE}.`,
+                "Not tested: runs exist in the category, none near this atmosphere.",
+                "No run data: the category has no runs with both O2 and pressure (true for gaseous fuels: the gas-flame tables in PSI are summaries or schedules).",
+                "Gravity is not matched: every run here was in microgravity.",
+                "Nearest runs are neighbours to read, not a prediction. FireSight does not estimate ignition probability or flame spread.",
               ]}
             />
+            <p className="text-xs text-muted-foreground">
+              Scenario presets cite where their atmosphere comes from; {scenarios.filter((s) => !s.source).length} of {scenarios.length} are marked
+              &quot;citation needed&quot;.
+            </p>
           </Section>
+        </div>
 
+        <div className="space-y-6">
           <Section title="Ranking method">
             <p>
-              Each investigation gets four components in [0, 1] for the chosen condition. The score is their weighted mean, and the
-              Habitat page shows every component so the order can be challenged and the weights changed.
+              Each investigation gets four components in [0, 1] for the chosen condition. The score is their weighted mean, and the Habitat page
+              shows every component so the order can be challenged and the weights changed.
             </p>
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-left text-muted-foreground">
                   <th className="py-1 font-normal">Component</th>
-                  <th className="py-1 font-normal">Default weight</th>
+                  <th className="py-1 font-normal">Weight</th>
                   <th className="py-1 font-normal">Definition</th>
                 </tr>
               </thead>
@@ -121,12 +173,7 @@ export default function AboutPage() {
                   <tr key={k} className="border-t border-border/60 align-top">
                     <td className="py-1.5 pr-2">{RANKING_LABEL[k]}</td>
                     <td className="tabular py-1.5">{DEFAULT_RANKING_WEIGHTS[k].toFixed(2)}</td>
-                    <td className="py-1.5 text-muted-foreground">
-                      {k === "rangeOverlap" && "1 inside the tested O2/pressure box, exp(−d/0.15) outside, with d the distance normalized by the dataset span"}
-                      {k === "fuelPhaseMatch" && "1 same phase with a matching material, 0.75 same phase, 0.1 other phase"}
-                      {k === "flowRegimeMatch" && "1 when the tested airflow range includes the cabin's, decaying with the gap"}
-                      {k === "safetyPillar" && "Share of prevention, detection and suppression the record addresses"}
-                    </td>
+                    <td className="py-1.5 text-muted-foreground">{RANKING_DEFINITION[k]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -135,82 +182,37 @@ export default function AboutPage() {
 
           <Section title="Similarity method">
             <p>
-              Weighted Jaccard similarity over set-valued attributes. Components where both records are empty are skipped and the
-              remaining weights renormalized. Edges are labelled by the strongest shared component: shared hardware, shared instrument,
-              shared fuel, or shared variable.
+              Weighted Jaccard similarity over set-valued attributes. Components where both records are empty are skipped and the remaining
+              weights renormalized. A link is labelled &quot;PSI-listed relation&quot; when either PSI record lists the other as related;
+              otherwise by its strongest shared component.
             </p>
             <div className="flex flex-wrap gap-2 text-xs">
               {SIMILARITY_KEYS.map((k) => (
                 <span key={k} className="rounded-md border border-border px-2 py-1">
-                  {SIM_LABEL[k]} <span className="tabular text-muted-foreground">{DEFAULT_SIMILARITY_WEIGHTS[k].toFixed(2)}</span>
+                  {SIMILARITY_LABEL[k]} <span className="tabular text-muted-foreground">{DEFAULT_SIMILARITY_WEIGHTS[k].toFixed(2)}</span>
                 </span>
               ))}
             </div>
-          </Section>
-        </div>
-
-        <div className="space-y-6">
-          <Section title="Ignition model">
-            <p>
-              A logistic regression implemented by hand and fit with batch gradient descent ({model.hyperparameters.iterations} iterations,
-              learning rate {model.hyperparameters.learningRate}, L2 {model.hyperparameters.l2}) when the app is built. Continuous features
-              are standardized; the three fuel-phase indicators act as phase-specific baselines (no separate intercept). It is trained on
-              synthetic data and is a relative indicator, not a certified flammability limit.
-            </p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {[
-                ["Training accuracy", pct(model.metrics.trainAccuracy)],
-                ["Holdout accuracy", pct(model.metrics.holdoutAccuracy)],
-                ["Majority baseline", pct(model.metrics.holdoutBaselineAccuracy)],
-                ["Holdout log loss", model.metrics.holdoutLogLoss.toFixed(3)],
-              ].map(([k, v]) => (
-                <div key={k} className="rounded-lg border border-border bg-background/40 p-2.5">
-                  <p className="text-[11px] text-muted-foreground">{k}</p>
-                  <p className="tabular text-lg font-semibold">{v}</p>
-                </div>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {model.metrics.nTrain} training runs and {model.metrics.nHoldout} holdout runs (deterministic 20% split by test id) from{" "}
-              {model.trainedOn.investigationIds.length} ignition studies. Excluded because they were smoke or dust tests, not ignition
-              attempts: {model.trainedOn.excludedInvestigationIds.join(", ")}.
-            </p>
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-left text-muted-foreground">
-                  <th className="py-1 font-normal">Feature</th>
-                  <th className="py-1 text-right font-normal">Std. weight</th>
-                  <th className="py-1 text-right font-normal">Per unit</th>
-                  <th className="py-1 text-right font-normal">Odds ratio / unit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {coef.map((c) => (
-                  <tr key={c.key} className="border-t border-border/60">
-                    <td className="py-1.5">
-                      {c.label} <span className="text-muted-foreground">({c.unit})</span>
-                    </td>
-                    <td className="tabular py-1.5 text-right">{c.standardizedWeight.toFixed(2)}</td>
-                    <td className="tabular py-1.5 text-right">{c.perUnitWeight.toFixed(3)}</td>
-                    <td className="tabular py-1.5 text-right">{c.oddsRatioPerUnit.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="text-xs text-muted-foreground">
-              Flame spread estimates use the 10 nearest runs with a measured spread rate (distance over O2, pressure and flow, plus
-              penalties for a different material class or gravity level), weighted by inverse distance.
-            </p>
           </Section>
 
           <Section title="SI layer">
             <Bullets
               items={[
-                <>Main model <code className="rounded bg-muted px-1">{modelMain}</code> writes summaries, comparisons, habitat interpretations, readiness notes and Q&amp;A; the fast model <code className="rounded bg-muted px-1">{modelFast}</code> explains graph links.</>,
+                <>Main model {code(modelMain)} writes summaries, comparisons, habitat interpretations, readiness notes and Q&amp;A; the fast model {code(modelFast)} explains graph links.</>,
                 "All calls run in server-side route handlers; the API key never reaches the browser.",
-                "Prompts require answers grounded only in the provided records, citations by investigation id, plain statements when data is missing, no invented numbers, and a reminder that the data is synthetic.",
-                "Structured calls return JSON that is validated with zod and retried once with the error; habitat evidence may only cite ids from the ranked list sent.",
-                "Outputs are cached in data/cache by a hash of model, prompt version and grounded input. USE_CACHE_ONLY=true serves cached results only, for a safe offline demo.",
+                "Prompts require answers grounded only in the provided records, citations by investigation and run id, plain statements of which fields are missing, the basis of any outcome, and no invented numbers or predictions.",
+                "Structured calls return JSON validated with zod and retried once with the error; habitat evidence may only cite ids from the ranked list sent.",
+                "Outputs are cached in data/cache by a hash of model, prompt version and grounded input. USE_CACHE_ONLY=true serves cached results only, for an offline demo.",
+              ]}
+            />
+          </Section>
+
+          <Section title="Open items">
+            <Bullets
+              items={[
+                "Saffire IV to VI: second-person check of every transcribed value; confirm sample VI-2's 409 kJ total is not a copy of IV-1's.",
+                "Reuse terms for NASA NTRS papers and for PSI-10, PSI-20 and PSI-22 (no licence listed).",
+                "Citations for the rover, Mars transit and spacesuit atmospheres.",
               ]}
             />
           </Section>
@@ -219,8 +221,8 @@ export default function AboutPage() {
             <ShieldAlert className="text-[#ec835a]" aria-hidden />
             <AlertTitle>Supports engineering judgment; does not replace standards</AlertTitle>
             <AlertDescription>
-              FireSight helps engineers and students see what has and has not been tested. It does not replace NASA flammability
-              standards such as NASA-STD-6001, certified material testing, or the judgment of fire safety engineers.
+              FireSight shows what has and has not been tested in the NASA data we examined. It does not replace NASA flammability standards such
+              as NASA-STD-6001, certified material testing, or the judgment of fire safety engineers.
             </AlertDescription>
           </Alert>
         </div>

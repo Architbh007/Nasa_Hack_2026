@@ -8,16 +8,18 @@ import { ExploreFiltersBar } from "@/components/explore/explore-filters";
 import { InvestigationTable, type InvestigationRow } from "@/components/explore/investigation-table";
 import { InvestigationSheet } from "@/components/explore/investigation-sheet";
 import { CompareDialog } from "@/components/explore/compare-dialog";
-import { DEFAULT_FILTERS, HABITAT_MIN_SCORE, MAX_COMPARE, type ExploreFilters } from "@/components/explore/types";
+import { DEFAULT_FILTERS, MAX_COMPARE, type ExploreFilters } from "@/components/explore/types";
 import { createInvestigationIndex } from "@/lib/search";
-import type { Investigation, TestRun } from "@/lib/schema";
+import type { Investigation, Run, Summary } from "@/lib/schema";
 
 export function ExploreView({
   investigations,
-  tests,
+  runs,
+  summaries,
 }: {
   investigations: Investigation[];
-  tests: TestRun[];
+  runs: Run[];
+  summaries: Summary[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -34,19 +36,15 @@ export function ExploreView({
   const [selected, setSelected] = useState<Set<string>>(() => new Set(initialCompare));
   const [compareOpen, setCompareOpen] = useState(initialCompare.length >= 2);
 
-  const testsByInvestigation = useMemo(() => {
-    const m = new Map<string, TestRun[]>();
-    for (const t of tests) {
-      const arr = m.get(t.investigationId) ?? [];
-      arr.push(t);
-      m.set(t.investigationId, arr);
-    }
+  const runsByInvestigation = useMemo(() => {
+    const m = new Map<string, Run[]>();
+    for (const r of runs) m.set(r.investigationId, [...(m.get(r.investigationId) ?? []), r]);
     return m;
-  }, [tests]);
+  }, [runs]);
 
   const index = useMemo(() => createInvestigationIndex(investigations), [investigations]);
   const hardwareOptions = useMemo(
-    () => [...new Set(investigations.flatMap((i) => i.hardware))].sort(),
+    () => [...new Set(investigations.flatMap((i) => i.hardwareTags))].sort(),
     [investigations]
   );
 
@@ -54,13 +52,16 @@ export function ExploreView({
     const q = filters.query.trim();
     const base = q.length >= 2 ? index.search(q).map((r) => r.item) : investigations;
     return base
-      .filter((i) => filters.fuelPhase === "all" || i.fuelPhase === filters.fuelPhase)
-      .filter((i) => filters.hardware === "all" || i.hardware.includes(filters.hardware))
-      .filter((i) => filters.pillar === "all" || i.safetyPillars.includes(filters.pillar))
-      .filter((i) => filters.habitat === "all" || i.habitatRelevance[filters.habitat].score >= HABITAT_MIN_SCORE)
-      .filter((i) => i.oxygenRange.max >= filters.o2[0] && i.oxygenRange.min <= filters.o2[1])
-      .map((i) => ({ ...i, testCount: testsByInvestigation.get(i.id)?.length ?? 0 }));
-  }, [filters, index, investigations, testsByInvestigation]);
+      .filter((i) => filters.category === "all" || i.category === filters.category)
+      .filter((i) => filters.dataLevel === "all" || i.dataLevel === filters.dataLevel)
+      .filter((i) => filters.hardware === "all" || i.hardwareTags.includes(filters.hardware))
+      .filter((i) => filters.pillar === "all" || i.teamAssessment.safetyPillars.includes(filters.pillar))
+      .filter((i) => {
+        if (filters.o2[0] === 0 && filters.o2[1] === 100) return true;
+        const o2 = i.ranges.o2Percent;
+        return o2 !== null && o2.max >= filters.o2[0] && o2.min <= filters.o2[1];
+      });
+  }, [filters, index, investigations]);
 
   const setOpenId = useCallback(
     (id: string | null) => {
@@ -117,13 +118,12 @@ export function ExploreView({
           </>
         )}
         {!compareMode && (
-          <span className="text-xs text-muted-foreground">Click a row for the full record, test runs and SI summary.</span>
+          <span className="text-xs text-muted-foreground">Click a row for the PSI record, its real runs and an SI summary.</span>
         )}
       </div>
 
       <InvestigationTable
         rows={rows}
-        habitat={filters.habitat}
         compareMode={compareMode}
         selected={selected}
         onToggleSelect={toggleSelect}
@@ -133,7 +133,8 @@ export function ExploreView({
 
       <InvestigationSheet
         inv={openInv}
-        tests={openInv ? (testsByInvestigation.get(openInv.id) ?? []) : []}
+        runs={openInv ? (runsByInvestigation.get(openInv.id) ?? []) : []}
+        summaries={openInv ? summaries.filter((s) => s.investigationId === openInv.id) : []}
         open={openInv !== null}
         onOpenChange={(o) => !o && setOpenId(null)}
       />
@@ -143,7 +144,7 @@ export function ExploreView({
           open={compareOpen}
           onOpenChange={setCompareOpen}
           investigations={selectedInvestigations}
-          testsByInvestigation={testsByInvestigation}
+          runsByInvestigation={runsByInvestigation}
         />
       )}
     </div>

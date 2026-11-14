@@ -11,12 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  FUEL_PHASE_LABEL,
-  HABITAT_LABEL,
-  PILLAR_LABEL,
-} from "@/lib/constants";
-import { FUEL_PHASES, HABITAT_KEYS, SAFETY_PILLARS, type FuelPhase, type HabitatKey, type SafetyPillar } from "@/lib/schema";
+import { CATEGORY_LABEL, DATA_LEVEL_LABEL, PILLAR_LABEL } from "@/lib/constants";
+import { CATEGORIES, DATA_LEVELS, SAFETY_PILLARS, type Category, type DataLevel, type SafetyPillar } from "@/lib/schema";
 import { DEFAULT_FILTERS, type ExploreFilters } from "./types";
 
 function FilterSelect<T extends string>({
@@ -77,17 +73,23 @@ export function ExploreFiltersBar({
             <Input
               value={filters.query}
               onChange={(e) => set("query", e.target.value)}
-              placeholder="Name, fuel, instrument, finding…"
+              placeholder="Name, accession, fuel, hardware, objective…"
               className="pl-8"
               aria-label="Search investigations"
             />
           </span>
         </label>
-        <FilterSelect<FuelPhase>
-          label="Fuel phase"
-          value={filters.fuelPhase}
-          onChange={(v) => set("fuelPhase", v)}
-          options={FUEL_PHASES.map((p) => ({ value: p, label: FUEL_PHASE_LABEL[p] }))}
+        <FilterSelect<Category>
+          label="Fuel category"
+          value={filters.category}
+          onChange={(v) => set("category", v)}
+          options={CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABEL[c] }))}
+        />
+        <FilterSelect<DataLevel>
+          label="Data held"
+          value={filters.dataLevel}
+          onChange={(v) => set("dataLevel", v)}
+          options={DATA_LEVELS.map((d) => ({ value: d, label: DATA_LEVEL_LABEL[d] }))}
         />
         <FilterSelect<string>
           label="Hardware"
@@ -96,22 +98,16 @@ export function ExploreFiltersBar({
           options={hardwareOptions.map((h) => ({ value: h, label: h }))}
         />
         <FilterSelect<SafetyPillar>
-          label="Safety pillar"
+          label="Pillar (team)"
           value={filters.pillar}
           onChange={(v) => set("pillar", v)}
           options={SAFETY_PILLARS.map((p) => ({ value: p, label: PILLAR_LABEL[p] }))}
-        />
-        <FilterSelect<HabitatKey>
-          label="Habitat"
-          value={filters.habitat}
-          onChange={(v) => set("habitat", v)}
-          options={HABITAT_KEYS.map((h) => ({ value: h, label: `${HABITAT_LABEL[h]} (relevance ≥ 3)` }))}
         />
       </div>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="flex min-w-64 flex-1 items-center gap-3">
           <span className="shrink-0 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            Tested O2
+            O2 in real runs
           </span>
           <Slider
             min={0}

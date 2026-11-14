@@ -5,7 +5,6 @@ import {
   CartesianGrid,
   ComposedChart,
   Line,
-  ReferenceArea,
   ReferenceDot,
   ResponsiveContainer,
   Scatter,
@@ -16,38 +15,25 @@ import {
   type TooltipContentProps,
 } from "recharts";
 import { ChartLegend, TooltipCard, type LegendItem } from "@/components/charts/chart-parts";
-import { CHART_INK, IGNITION_STYLE } from "@/lib/chart-colors";
-import { FUEL_PHASE_LABEL, OUTCOME_LABEL, PRESSURE_SLIDER, SYNTHETIC_SOLID_GAP } from "@/lib/constants";
-import type { FuelPhase, Scenario, TestRun } from "@/lib/schema";
+import { CHART_INK, OUTCOME_GROUP, OUTCOME_GROUP_ORDER, OUTCOME_GROUP_STYLE, type OutcomeGroup } from "@/lib/chart-colors";
+import { CATEGORY_LABEL, OUTCOME_LABEL, PRESSURE_SLIDER } from "@/lib/constants";
+import { formatRunFlow, formatRunO2, formatRunPressure, num } from "@/lib/format";
+import { placeRuns, type PlacedRun } from "@/lib/metrics";
+import type { Category, Run, Scenario } from "@/lib/schema";
 
-const X_DOMAIN: [number, number] = [10, 100];
 const Y_DOMAIN: [number, number] = [PRESSURE_SLIDER.min, PRESSURE_SLIDER.max];
 const PO2_CURVES = [
   { psi: 2.0, label: "2.0 psi" },
   { psi: 3.09, label: "3.1 psi (sea level)" },
-  { psi: 4.3, label: "4.3 psi" },
 ] as const;
 const CURVE_COLOR = "#7c8aa3";
-/** Curve labels sit where the chart is empty for every fuel phase. */
-const CURVE_LABEL_X = 62;
-type LabelPosition = "top" | "left" | "right" | "bottom";
-/** Hand-placed preset label positions so neighbouring presets do not collide. */
-const PRESET_LABEL_POSITION: Record<string, LabelPosition> = {
-  "earth-sea-level": "top",
-  "iss-cabin": "top",
-  spacesuit: "left",
-  "lunar-base": "left",
-  "pressurized-rover": "top",
-  "mars-transit": "left",
-};
-const GAP_COLOR = "#fab219";
 const USER_COLOR = "#ff7a3d";
 
-type RunPoint = { x: number; y: number; test: TestRun };
+type RunPoint = { x: number; y: number; placed: PlacedRun };
 
-function curvePoints(pO2: number) {
+function curvePoints(pO2: number, xMax: number) {
   const pts: Array<{ x: number; y: number }> = [];
-  for (let x = X_DOMAIN[0]; x <= X_DOMAIN[1]; x += 0.5) {
+  for (let x = 10; x <= xMax; x += 0.5) {
     const y = (pO2 * 100) / x;
     if (y >= Y_DOMAIN[0] - 0.01 && y <= Y_DOMAIN[1] + 0.01) pts.push({ x, y });
   }
@@ -55,19 +41,19 @@ function curvePoints(pO2: number) {
 }
 
 function RunTooltip({ active, payload }: TooltipContentProps) {
-  const entry = payload?.find((p) => (p.payload as Partial<RunPoint> | undefined)?.test);
+  const entry = payload?.find((p) => (p.payload as Partial<RunPoint> | undefined)?.placed);
   if (!active || !entry) return null;
-  const { test: t } = entry.payload as RunPoint;
+  const { run: r } = (entry.payload as RunPoint).placed;
   return (
     <TooltipCard
-      title={t.testId}
+      title={r.id}
       rows={[
-        ["Outcome", OUTCOME_LABEL[t.outcome]],
-        ["O2", `${t.o2Percent}%`],
-        ["Pressure", `${t.pressurePsi} psi`],
-        ["pO2", `${((t.o2Percent / 100) * t.pressurePsi).toFixed(2)} psi`],
-        ["Flow", t.flowCmS === null ? "quiescent" : `${t.flowCmS} cm/s`],
-        ["Fuel", t.fuel],
+        ["Outcome", `${OUTCOME_LABEL[r.outcome]}${r.outcomeBasis === "notes-keyword" ? " (from notes)" : ""}`],
+        ["Material", r.material ?? "Not recorded"],
+        ["O2", formatRunO2(r)],
+        ["Pressure", formatRunPressure(r)],
+        ["Flow", formatRunFlow(r)],
+        ["Source", r.dataSource === "published" ? "Published NASA paper" : r.source.file],
       ]}
     />
   );
@@ -75,65 +61,70 @@ function RunTooltip({ active, payload }: TooltipContentProps) {
 
 export function FlammabilityMap({
   runs,
-  fuelPhase,
+  category,
   scenarios,
   point,
-  showSyntheticGap,
+  highlightIds,
   height = 440,
 }: {
-  runs: readonly TestRun[];
-  fuelPhase: FuelPhase;
+  runs: readonly Run[];
+  category: Category;
   scenarios: readonly Scenario[];
   point: { o2Percent: number; pressurePsi: number };
-  showSyntheticGap: boolean;
+  /** Runs to ring (the nearest real runs). */
+  highlightIds: readonly string[];
   height?: number;
 }) {
-  const { ignited, notIgnited } = useMemo(() => {
-    const a: RunPoint[] = [];
-    const b: RunPoint[] = [];
-    for (const t of runs) (t.ignited ? a : b).push({ x: t.o2Percent, y: t.pressurePsi, test: t });
-    return { ignited: a, notIgnited: b };
-  }, [runs]);
+  const placed = useMemo(() => placeRuns(runs), [runs]);
+  const xMax = Math.max(45, Math.ceil((point.o2Percent + 5) / 5) * 5);
+  const xTicks = useMemo(() => Array.from({ length: Math.floor((xMax - 10) / 5) + 1 }, (_, i) => 10 + i * 5), [xMax]);
 
-  const curves = useMemo(() => PO2_CURVES.map((c) => ({ ...c, data: curvePoints(c.psi) })), []);
-
-  // Presets sharing a point (Earth sea level and ISS) get one combined label.
-  const presetMarkers = useMemo(() => {
-    const m = new Map<string, { x: number; y: number; labels: string[]; position: LabelPosition }>();
-    for (const s of scenarios) {
-      const key = `${s.o2Percent}|${s.pressurePsi}`;
-      const entry = m.get(key) ?? {
-        x: s.o2Percent,
-        y: s.pressurePsi,
-        labels: [],
-        position: PRESET_LABEL_POSITION[s.id] ?? (s.o2Percent > 85 ? "left" : "top"),
-      };
-      entry.labels.push(s.label);
-      m.set(key, entry);
+  const series = useMemo(() => {
+    const m = new Map<string, { group: OutcomeGroup; assumed: boolean; data: RunPoint[] }>();
+    for (const p of placed) {
+      const group = OUTCOME_GROUP[p.run.outcome];
+      const key = `${group}|${p.assumedPressure}`;
+      const s = m.get(key) ?? { group, assumed: p.assumedPressure, data: [] };
+      s.data.push({ x: p.o2Percent, y: p.pressurePsi, placed: p });
+      m.set(key, s);
     }
-    return [...m.values()];
-  }, [scenarios]);
+    return [...m.values()].sort((a, b) => OUTCOME_GROUP_ORDER.indexOf(a.group) - OUTCOME_GROUP_ORDER.indexOf(b.group));
+  }, [placed]);
 
-  const legend: LegendItem[] = [
-    { key: "ign", label: `${IGNITION_STYLE.ignited.label} (${ignited.length})`, color: IGNITION_STYLE.ignited.color, shape: IGNITION_STYLE.ignited.shape },
-    { key: "no", label: `${IGNITION_STYLE.notIgnited.label} (${notIgnited.length})`, color: IGNITION_STYLE.notIgnited.color, shape: IGNITION_STYLE.notIgnited.shape },
-    { key: "po2", label: "Constant O2 partial pressure", color: CURVE_COLOR, line: true, dashed: true },
-    { key: "you", label: "Your cabin", color: USER_COLOR, shape: "circle" },
-  ];
-  if (showSyntheticGap) legend.push({ key: "gap", label: "Untested gap", color: GAP_COLOR, shape: "square" });
+  const highlighted = useMemo(() => placed.filter((p) => highlightIds.includes(p.run.id)), [placed, highlightIds]);
+  const offChart = placed.filter((p) => p.pressurePsi > Y_DOMAIN[1] || p.pressurePsi < Y_DOMAIN[0] || p.o2Percent > xMax).length;
+  const notPlaceable = runs.length - placed.length;
+  const assumedCount = placed.filter((p) => p.assumedPressure).length;
+  const curves = useMemo(() => PO2_CURVES.map((c) => ({ ...c, data: curvePoints(c.psi, xMax) })), [xMax]);
+  const presets = scenarios.filter((s) => s.o2Percent <= xMax);
+
+  const counts = new Map<OutcomeGroup, number>();
+  for (const s of series) counts.set(s.group, (counts.get(s.group) ?? 0) + s.data.length);
+  const legend: LegendItem[] = OUTCOME_GROUP_ORDER.filter((g) => counts.has(g)).map((g) => ({
+    key: g,
+    label: `${OUTCOME_GROUP_STYLE[g].label} (${counts.get(g)})`,
+    color: OUTCOME_GROUP_STYLE[g].color,
+    shape: OUTCOME_GROUP_STYLE[g].shape,
+  }));
+  legend.push({ key: "po2", label: "Constant O2 partial pressure", color: CURVE_COLOR, line: true, dashed: true });
+  legend.push({ key: "you", label: "Your cabin", color: USER_COLOR, shape: "circle" });
 
   return (
     <figure className="space-y-2">
       <ChartLegend items={legend} />
-      <div style={{ height }} role="img" aria-label={`Scatter of ${runs.length} ${FUEL_PHASE_LABEL[fuelPhase].toLowerCase()}-fuel test runs by oxygen concentration and pressure, with the selected cabin condition at ${point.o2Percent}% O2 and ${point.pressurePsi} psi`}>
+      <div
+        style={{ height }}
+        role="img"
+        aria-label={`Scatter of ${placed.length} real ${CATEGORY_LABEL[category].toLowerCase()} runs by oxygen concentration and pressure, with the selected cabin at ${point.o2Percent}% O2 and ${point.pressurePsi} psi`}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart margin={{ top: 16, right: 24, bottom: 26, left: 6 }}>
             <CartesianGrid stroke={CHART_INK.grid} />
             <XAxis
               type="number"
               dataKey="x"
-              domain={X_DOMAIN}
-              ticks={[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+              domain={[10, xMax]}
+              ticks={xTicks}
               allowDataOverflow
               tick={{ fill: CHART_INK.tick, fontSize: 11 }}
               stroke={CHART_INK.axis}
@@ -151,20 +142,6 @@ export function FlammabilityMap({
               label={{ value: "Total pressure (psi)", angle: -90, position: "insideLeft", offset: 10, fill: CHART_INK.label, fontSize: 11, style: { textAnchor: "middle" } }}
             />
             <ZAxis range={[40, 40]} />
-            {showSyntheticGap && (
-              <ReferenceArea
-                x1={SYNTHETIC_SOLID_GAP.o2Min}
-                x2={SYNTHETIC_SOLID_GAP.o2Max}
-                y1={Y_DOMAIN[0]}
-                y2={SYNTHETIC_SOLID_GAP.pressureMaxPsi}
-                fill={GAP_COLOR}
-                fillOpacity={0.12}
-                stroke={GAP_COLOR}
-                strokeOpacity={0.6}
-                strokeDasharray="4 3"
-                label={{ value: "Untested", position: "insideBottom", fill: GAP_COLOR, fontSize: 11, offset: 8 }}
-              />
-            )}
             {curves.map((c) => (
               <Line
                 key={c.psi}
@@ -180,43 +157,35 @@ export function FlammabilityMap({
                 legendType="none"
               />
             ))}
-            {curves.map((c) => (
-              <ReferenceDot
-                key={`l-${c.psi}`}
-                x={CURVE_LABEL_X}
-                y={(c.psi * 100) / CURVE_LABEL_X}
-                r={0}
-                label={{ value: `pO2 ${c.label}`, position: "top", fill: CURVE_COLOR, fontSize: 10, offset: 10 }}
-              />
+            {series.map((s) => {
+              const style = OUTCOME_GROUP_STYLE[s.group];
+              return (
+                <Scatter
+                  key={`${s.group}-${s.assumed}`}
+                  name={style.label}
+                  data={s.data}
+                  shape={style.shape}
+                  fill={s.assumed ? "none" : style.color}
+                  stroke={s.assumed ? style.color : CHART_INK.surface}
+                  strokeWidth={s.assumed ? 1.5 : 1}
+                  fillOpacity={0.85}
+                  isAnimationActive={false}
+                />
+              );
+            })}
+            {highlighted.map((p) => (
+              <ReferenceDot key={p.run.id} x={p.o2Percent} y={p.pressurePsi} r={8} fill="none" stroke="#e6ebf4" strokeWidth={1.5} ifOverflow="hidden" />
             ))}
-            <Scatter
-              name="Did not ignite"
-              data={notIgnited}
-              fill={IGNITION_STYLE.notIgnited.color}
-              shape={IGNITION_STYLE.notIgnited.shape}
-              fillOpacity={0.8}
-              isAnimationActive={false}
-            />
-            <Scatter
-              name="Ignited"
-              data={ignited}
-              fill={IGNITION_STYLE.ignited.color}
-              shape={IGNITION_STYLE.ignited.shape}
-              fillOpacity={0.8}
-              stroke={CHART_INK.surface}
-              strokeWidth={1}
-              isAnimationActive={false}
-            />
-            {presetMarkers.map((p) => (
+            {presets.map((s) => (
               <ReferenceDot
-                key={`${p.x}-${p.y}`}
-                x={p.x}
-                y={p.y}
-                r={6}
+                key={s.id}
+                x={s.o2Percent}
+                y={s.pressurePsi}
+                r={5}
                 fill="none"
-                stroke="#e6ebf4"
-                strokeWidth={1.5}
-                label={{ value: p.labels.join(" / "), position: p.position, fill: "#c9d2e0", fontSize: 10, offset: 9 }}
+                stroke="#8d9ab0"
+                strokeDasharray="2 2"
+                label={{ value: s.label, position: "top", fill: "#a9b4c6", fontSize: 10, offset: 8 }}
               />
             ))}
             <ReferenceDot
@@ -226,15 +195,18 @@ export function FlammabilityMap({
               fill={USER_COLOR}
               stroke={CHART_INK.surface}
               strokeWidth={3}
-              label={{ value: "Your cabin", position: point.o2Percent > 85 ? "left" : "right", fill: "#ffd2bd", fontSize: 11, fontWeight: 600, offset: 12 }}
+              label={{ value: "Your cabin", position: "right", fill: "#ffd2bd", fontSize: 11, fontWeight: 600, offset: 12 }}
             />
             <Tooltip shared={false} cursor={false} content={(props) => <RunTooltip {...props} />} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
       <figcaption className="text-[11px] leading-relaxed text-muted-foreground">
-        {runs.length} {FUEL_PHASE_LABEL[fuelPhase].toLowerCase()}-fuel ignition runs. Smoke and dust runs are excluded because they were not ignition attempts.
-        Dashed curves join points with equal O2 partial pressure: moving down a curve keeps pO2 constant while O2 concentration rises.
+        {placed.length} real {CATEGORY_LABEL[category].toLowerCase()} runs with O2 and pressure
+        {offChart > 0 && ` (${offChart} outside this view, e.g. above ${Y_DOMAIN[1]} psi)`}
+        {notPlaceable > 0 && `; ${notPlaceable} more lack O2 or pressure and cannot be placed`}. Colour is the outcome the source records.
+        {assumedCount > 0 && ` Hollow markers (${assumedCount}): pressure not recorded, placed at the cited ISS nominal ${num(14.7)} psi.`}{" "}
+        Rings mark the nearest runs. Dashed curves join points with equal O2 partial pressure.
       </figcaption>
     </figure>
   );

@@ -1,33 +1,68 @@
-import { GRAVITY_LABEL, PILLAR_LABEL } from "@/lib/constants";
-import { assessHabitat, inputsFromScenario, type HabitatAssessment, type HabitatData } from "@/lib/habitat";
-import { datasetScales, rangeContains } from "@/lib/metrics";
+import { CATEGORY_SHORT, PILLAR_LABEL } from "@/lib/constants";
+import {
+  assessHabitat,
+  FUEL_CATEGORIES,
+  inputsFromScenario,
+  type CategoryVerdict,
+  type FuelCategory,
+  type HabitatAssessment,
+  type HabitatData,
+} from "@/lib/habitat";
+import { datasetScales, placeRuns, runDistance } from "@/lib/metrics";
 import { scoreInvestigation, type RankedInvestigation } from "@/lib/ranking";
 import { SAFETY_PILLARS, type Investigation, type SafetyPillar, type Scenario } from "@/lib/schema";
 
 /**
- * Mission readiness for a habitat preset: how well the evidence base covers
- * prevention, detection and suppression at that atmosphere, for cabin fabrics.
+ * Mission readiness for a habitat preset: which fuel categories real tests cover at that
+ * atmosphere, which investigations are the closest evidence, and what is missing. The pillar
+ * lists use the team's own pillar assessment and say so.
  */
 
-export type PillarScore = {
+export type PillarEvidence = {
   pillar: SafetyPillar;
-  /** 0-100: mean evidence strength of the two best records carrying this pillar. */
-  score: number;
-  best: RankedInvestigation[];
+  /** Investigations the team assessed as carrying this pillar, best evidence first. */
+  investigations: RankedInvestigation[];
+  /** How many of them have run-level data. */
+  withRuns: number;
 };
+
+/** Counts of real runs by run distance from the scenario, per category (for the readiness chart). */
+export type DistanceBand = { band: string; maxDistance: number } & Record<FuelCategory, number>;
 
 export type ScenarioReadiness = {
   scenario: Scenario;
   assessment: HabitatAssessment;
-  pillars: PillarScore[];
-  overall: number;
+  verdicts: CategoryVerdict[];
+  pillars: PillarEvidence[];
+  bands: DistanceBand[];
   gaps: string[];
   best: RankedInvestigation[];
 };
 
-/** Evidence strength ignores the pillar component: it asks how well a record matches this atmosphere and material. */
-const EVIDENCE_WEIGHTS = { rangeOverlap: 0.5, fuelPhaseMatch: 0.35, flowRegimeMatch: 0.15, safetyPillar: 0 };
-export const OUTSIDE_RANGE_FACTOR = 0.75;
+/** Evidence ranking leans on range overlap: it asks how closely a record's real runs match this atmosphere. */
+const EVIDENCE_WEIGHTS = { rangeOverlap: 0.45, categoryMatch: 0.3, flowMatch: 0.1, evidenceLevel: 0.15 };
+
+export const DISTANCE_BANDS: ReadonlyArray<{ band: string; maxDistance: number }> = [
+  { band: "Very close (distance ≤ 0.25)", maxDistance: 0.25 },
+  { band: "Close (distance ≤ 0.6)", maxDistance: 0.6 },
+  { band: "Farther (≤ 1.5)", maxDistance: 1.5 },
+];
+
+export function distanceBands(scenario: Pick<Scenario, "o2Percent" | "pressurePsi">, data: HabitatData): DistanceBand[] {
+  const placed = placeRuns(data.runs);
+  let previous = -Infinity;
+  return DISTANCE_BANDS.map(({ band, maxDistance }) => {
+    const row = { band, maxDistance, solid: 0, liquid: 0, gas: 0 } as DistanceBand;
+    for (const p of placed) {
+      const d = runDistance(p, scenario);
+      if (d > previous && d <= maxDistance && (FUEL_CATEGORIES as readonly string[]).includes(p.run.category)) {
+        row[p.run.category as FuelCategory] += 1;
+      }
+    }
+    previous = maxDistance;
+    return row;
+  });
+}
 
 export function scenarioReadiness(scenario: Scenario, data: HabitatData): ScenarioReadiness {
   const inputs = inputsFromScenario(scenario, "fabric");
@@ -35,36 +70,24 @@ export function scenarioReadiness(scenario: Scenario, data: HabitatData): Scenar
   const scales = datasetScales(data.investigations);
   const query = { o2Percent: inputs.o2Percent, pressurePsi: inputs.pressurePsi, materialClass: inputs.materialClass, airflow: inputs.airflow };
   const scored = data.investigations
-    .map((inv: Investigation) => {
-      const r = scoreInvestigation(inv, query, EVIDENCE_WEIGHTS, scales);
-      // Near-misses are useful evidence, but a record that does not bracket the atmosphere counts at 75%.
-      const brackets = rangeContains(inv, query);
-      return brackets ? r : { ...r, score: r.score * OUTSIDE_RANGE_FACTOR };
-    })
+    .map((inv: Investigation) => scoreInvestigation(inv, query, EVIDENCE_WEIGHTS, scales))
     .sort((a, b) => b.score - a.score || a.investigation.id.localeCompare(b.investigation.id));
 
-  const pillars: PillarScore[] = SAFETY_PILLARS.map((pillar) => {
-    const withPillar = scored.filter((r) => r.investigation.safetyPillars.includes(pillar));
-    const best = withPillar.slice(0, 2);
-    const score = best.length === 0 ? 0 : (best.reduce((s, r) => s + r.score, 0) / best.length) * 100;
-    return { pillar, score: Math.round(score), best };
+  const pillars: PillarEvidence[] = SAFETY_PILLARS.map((pillar) => {
+    const investigations = scored.filter((r) => r.investigation.teamAssessment.safetyPillars.includes(pillar));
+    return { pillar, investigations, withRuns: investigations.filter((r) => r.investigation.dataLevel === "runs").length };
   });
 
+  const verdicts = FUEL_CATEGORIES.map((c) => assessment.verdicts[c]);
   const gaps: string[] = [];
-  if (assessment.coverage.gap) {
-    gaps.push(`No solid-fuel investigation brackets ${scenario.o2Percent}% O2 at ${scenario.pressurePsi} psi; fabric predictions here are extrapolations.`);
+  for (const v of verdicts) {
+    // "no-runs" is already stated by neverTested below.
+    if (v.verdict === "untested") gaps.push(`${CATEGORY_SHORT[v.category]}: ${v.reason}`);
   }
   for (const p of pillars) {
-    if (p.score < 40) gaps.push(`Weak ${PILLAR_LABEL[p.pillar].toLowerCase()} evidence at this atmosphere (score ${p.score}/100).`);
+    if (p.withRuns === 0) gaps.push(`${PILLAR_LABEL[p.pillar]}: no investigation with run-level data carries this pillar (team assessment).`);
   }
-  if (scenario.gravity === "lunar" || scenario.gravity === "mars") {
-    gaps.push(`No ${GRAVITY_LABEL[scenario.gravity]} combustion data; results are bounded by microgravity and 1 g tests.`);
-  }
-  if (assessment.nearbyTestCount === 0) {
-    gaps.push("No solid-fuel test runs within ±2.5% O2 and ±0.75 psi of this atmosphere.");
-  }
+  for (const line of assessment.neverTested) if (!gaps.includes(line)) gaps.push(line);
 
-  const pillarMean = pillars.reduce((s, p) => s + p.score, 0) / pillars.length;
-  const overall = Math.round(pillarMean * (assessment.coverage.gap ? 0.8 : 1));
-  return { scenario, assessment, pillars, overall, gaps, best: scored.slice(0, 3) };
+  return { scenario, assessment, verdicts, pillars, bands: distanceBands(scenario, data), gaps: [...new Set(gaps)], best: scored.slice(0, 3) };
 }
