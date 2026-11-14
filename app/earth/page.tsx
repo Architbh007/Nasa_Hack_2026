@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDataset } from "@/lib/data";
 import { groupEarthBenefits, type EarthGroupKey } from "@/lib/earth";
 
-export const metadata: Metadata = { title: "Earth Benefits" };
+export const metadata: Metadata = { title: "Spinoffs and Earth Applications" };
 
 const ICON: Record<EarthGroupKey, LucideIcon> = {
   detection: BellRing,
@@ -22,7 +22,7 @@ export default function EarthPage() {
   return (
     <>
       <PageHeader
-        title="Earth Benefits"
+        title="Spinoffs and Earth Applications"
         description={`What each investigation's PSI record says it means on Earth, quoted from the "Research Impacts/Earth Benefits" field of ${total} records. We grouped them by keyword; the words are NASA's.`}
       />
       <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

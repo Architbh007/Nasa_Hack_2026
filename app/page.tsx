@@ -24,10 +24,10 @@ const FLIGHT_PLAN = [
     where: "Habitat · Fire Twin",
   },
   {
-    href: "/ask",
-    title: "Ask the data",
-    body: "Plain-language questions answered only from the records, citing investigation and run ids.",
-    where: "Ask the Data",
+    href: "/earth",
+    title: "Back on Earth",
+    body: "The same research shapes smoke detectors, suppression systems and firefighter gear.",
+    where: "Earth applications",
   },
 ] as const;
 

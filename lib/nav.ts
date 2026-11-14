@@ -5,10 +5,7 @@ export type NavItem = {
   icon: "habitat" | "explore" | "graph" | "ask" | "earth" | "about";
 };
 
-/**
- * Mission Readiness (/scenarios) and Earth Benefits (/earth) are left out of the
- * nav on this branch for now. Their pages and lib code still exist.
- */
+/** Mission Readiness (/scenarios) is left out of the nav on this branch; its logic still feeds the habitat verdicts. */
 export const NAV_ITEMS: readonly NavItem[] = [
   {
     href: "/habitat",
@@ -33,6 +30,12 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Ask the Data",
     description: "Grounded Q&A over the records, with citations",
     icon: "ask",
+  },
+  {
+    href: "/earth",
+    label: "Earth Applications",
+    description: "Spinoffs from microgravity combustion research, as stated in PSI records",
+    icon: "earth",
   },
   {
     href: "/about",
