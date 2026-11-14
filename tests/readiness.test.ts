@@ -1,34 +1,41 @@
 import { describe, expect, it } from "vitest";
-import { fitIgnitionModel } from "@/lib/model";
+import { assessHabitat, inputsFromScenario } from "@/lib/habitat";
 import { scenarioReadiness } from "@/lib/readiness";
-import { generateDataset } from "@/scripts/generator";
+import { validateDataset } from "@/lib/validate";
+import { readBuiltFiles } from "./fixtures";
 
-const ds = generateDataset(42);
-const model = fitIgnitionModel(ds.tests, ds.investigations);
-const data = { investigations: ds.investigations, tests: ds.tests, model };
-const r = (id: string) => scenarioReadiness(ds.scenarios.find((s) => s.id === id)!, data);
+const { data } = validateDataset(readBuiltFiles());
+const ds = data!;
+const input = { investigations: ds.investigations, runs: ds.runs };
+const r = (id: string) => scenarioReadiness(ds.scenarios.find((s) => s.id === id)!, input);
 
-describe("scenario readiness", () => {
-  it("rates the ISS cabin above the exploration atmospheres", () => {
-    expect(r("iss-cabin").overall).toBeGreaterThan(r("lunar-base").overall);
-    expect(r("iss-cabin").overall).toBeGreaterThan(r("pressurized-rover").overall);
+describe("scenario readiness on the real data", () => {
+  it("finds the ISS cabin covered by real solid and liquid runs", () => {
+    const v = r("iss-cabin").verdicts;
+    expect(v.find((x) => x.category === "solid")?.verdict).toBe("tested");
+    expect(v.find((x) => x.category === "liquid")?.verdict).toBe("tested");
   });
 
-  it("flags the deliberate coverage gap for lunar base and rover, not Mars transit", () => {
-    expect(r("lunar-base").assessment.coverage.gap).toBe(true);
-    expect(r("pressurized-rover").assessment.coverage.gap).toBe(true);
-    expect(r("mars-transit").assessment.coverage.gap).toBe(false);
-    expect(r("lunar-base").gaps.some((g) => /partial|Lunar/i.test(g))).toBe(true);
+  it("finds no solid run at the lunar atmosphere; the nearest is a published Saffire-VI sample", () => {
+    const solid = r("lunar-base").verdicts.find((x) => x.category === "solid")!;
+    expect(solid.verdict).not.toBe("tested");
+    expect(solid.nearest[0]!.run.investigationId).toBe("saffire-iv-vi");
+    expect(solid.nearest[0]!.run.dataSource).toBe("published");
+    expect(r("lunar-base").gaps.some((g) => /microgravity/.test(g))).toBe(true);
   });
 
-  it("keeps pillar scores in 0-100 with supporting records", () => {
-    for (const s of ds.scenarios) {
-      const x = scenarioReadiness(s, data);
-      for (const p of x.pillars) {
-        expect(p.score).toBeGreaterThanOrEqual(0);
-        expect(p.score).toBeLessThanOrEqual(100);
-      }
-      expect(x.best).toHaveLength(3);
-    }
+  it("finds Mars transit solids covered only by Saffire-V", () => {
+    const solid = r("mars-transit").verdicts.find((x) => x.category === "solid")!;
+    expect(solid.verdict).toBe("tested");
+    expect(solid.nearest.slice(0, solid.withinTolerance).every((n) => n.run.id.startsWith("saffire-v-"))).toBe(true);
+  });
+
+  it("reports gaseous fuels as having no run data anywhere", () => {
+    for (const s of ds.scenarios) expect(r(s.id).verdicts.find((x) => x.category === "gas")?.verdict).toBe("no-runs");
+  });
+
+  it("never outputs a probability", () => {
+    const a = assessHabitat(inputsFromScenario(ds.scenarios[0]!), input);
+    expect(JSON.stringify(a)).not.toMatch(/probab/i);
   });
 });

@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_RANKING_WEIGHTS, rankInvestigations, scoreInvestigation } from "@/lib/ranking";
+import { rankInvestigations, scoreInvestigation } from "@/lib/ranking";
+import type { Investigation } from "@/lib/schema";
 import { jaccard, similarity, similarityEdges } from "@/lib/similarity";
-import { generateDataset } from "@/scripts/generator";
-import { makeInvestigation } from "./fixtures";
+import { validateDataset } from "@/lib/validate";
+import { makeInvestigation, readBuiltFiles } from "./fixtures";
 
-const { investigations } = generateDataset(42);
-const byId = (id: string) => {
+const investigations = validateDataset(readBuiltFiles()).data!.investigations;
+const byId = (id: string): Investigation => {
   const inv = investigations.find((i) => i.id === id);
   if (!inv) throw new Error(`missing ${id}`);
   return inv;
@@ -20,37 +21,32 @@ describe("jaccard", () => {
   });
 });
 
-describe("similarity", () => {
+describe("similarity on the real PSI records", () => {
   it("is 1 for identical records and symmetric", () => {
-    const a = byId("bass");
-    expect(similarity(a, a).score).toBeCloseTo(1);
+    expect(similarity(byId("bass"), byId("bass")).score).toBeCloseTo(1);
     const ab = similarity(byId("bass"), byId("saffire-i"));
     const ba = similarity(byId("saffire-i"), byId("bass"));
     expect(ab.score).toBeCloseTo(ba.score);
     expect(ab.id).toBe(ba.id);
   });
 
-  it("labels SAME to DAFT as instrument reuse via the P-Trak counter", () => {
-    const s = similarity(byId("same"), byId("daft"));
-    expect(s.label).toBe("shared instrument");
-    expect(s.components.measurements.shared).toEqual(["TSI P-Trak ultrafine particle counter"]);
+  it("labels links that PSI itself lists as related", () => {
+    expect(similarity(byId("daft"), byId("same")).label).toBe("PSI-listed relation");
+    expect(similarity(byId("bass"), byId("bass-ii")).label).toBe("PSI-listed relation");
+    expect(similarity(byId("slice"), byId("spice")).label).toBe("PSI-listed relation");
   });
 
-  it("labels the SPICE flow duct family as shared hardware", () => {
-    for (const id of ["bass", "bass-ii", "slice"]) {
-      const s = similarity(byId("spice"), byId(id));
-      expect(s.label).toBe("shared hardware");
-      expect(s.components.hardware.shared).toContain("SPICE fan-driven flow duct");
-    }
+  it("links the ACME investigations through their shared CIR/ACME hardware", () => {
+    const s = similarity(byId("cld-flame"), byId("s-flame"));
+    expect(s.label).toBe("shared hardware");
+    expect(s.components.hardware.shared).toEqual(expect.arrayContaining(["CIR", "ACME"]));
   });
 
   it("returns only edges above the threshold, strongest first", () => {
     const edges = similarityEdges(investigations, 0.5);
     expect(edges.length).toBeGreaterThan(0);
     expect(edges.every((e) => e.score >= 0.5)).toBe(true);
-    for (let i = 1; i < edges.length; i++) {
-      expect(edges[i - 1]!.score).toBeGreaterThanOrEqual(edges[i]!.score);
-    }
+    for (let i = 1; i < edges.length; i++) expect(edges[i - 1]!.score).toBeGreaterThanOrEqual(edges[i]!.score);
   });
 });
 
@@ -58,34 +54,39 @@ describe("ranking", () => {
   const query = { o2Percent: 21, pressurePsi: 14.7, materialClass: "fabric" as const, airflow: "ventilated" as const };
 
   it("component contributions sum to the total score", () => {
-    const r = scoreInvestigation(byId("saffire-i"), query);
-    const sum = r.components.reduce((s, c) => s + c.contribution, 0);
-    expect(r.score).toBeCloseTo(sum);
+    const r = scoreInvestigation(byId("bass"), query);
+    expect(r.score).toBeCloseTo(r.components.reduce((s, c) => s + c.contribution, 0));
     expect(r.score).toBeGreaterThan(0);
     expect(r.score).toBeLessThanOrEqual(1);
   });
 
-  it("ranks a covering same-phase fabric study above an off-phase study", () => {
+  it("ranks solid studies with real runs at cabin air above description-only records", () => {
     const ranked = rankInvestigations(investigations, query);
     const pos = (id: string) => ranked.findIndex((r) => r.investigation.id === id);
-    expect(pos("saffire-i")).toBeLessThan(pos("cfi-g"));
-    expect(ranked[0]!.investigation.fuelPhase).toBe("solid");
+    expect(ranked[0]!.investigation.category).toBe("solid");
+    expect(pos("bass")).toBeLessThan(pos("same"));
+    expect(pos("bass-ii")).toBeLessThan(pos("cfi-g"));
   });
 
-  it("range overlap decays outside the tested box", () => {
+  it("gives no range credit to an investigation without runs", () => {
+    const r = scoreInvestigation(byId("cfi-g"), query);
+    expect(r.components.find((c) => c.key === "rangeOverlap")!.value).toBe(0);
+    expect(r.components.find((c) => c.key === "evidenceLevel")!.value).toBe(0);
+  });
+
+  it("range overlap decays outside the tested runs", () => {
     const inv = makeInvestigation();
-    const inside = scoreInvestigation(inv, { ...query, o2Percent: 21, pressurePsi: 12 });
-    const outside = scoreInvestigation(inv, { ...query, o2Percent: 60, pressurePsi: 5 });
-    const val = (r: typeof inside) => r.components.find((c) => c.key === "rangeOverlap")!.value;
-    expect(val(inside)).toBe(1);
-    expect(val(outside)).toBeLessThan(0.5);
+    const val = (o2: number, p: number) => scoreInvestigation(inv, { ...query, o2Percent: o2, pressurePsi: p }).components.find((c) => c.key === "rangeOverlap")!.value;
+    expect(val(21, 12)).toBe(1);
+    expect(val(60, 5)).toBeLessThan(0.5);
   });
 
   it("weights change the ordering", () => {
-    const pillarOnly = { rangeOverlap: 0, fuelPhaseMatch: 0, flowRegimeMatch: 0, safetyPillar: 1 };
-    const a = rankInvestigations(investigations, query, DEFAULT_RANKING_WEIGHTS)[0]!.investigation.id;
-    const b = rankInvestigations(investigations, query, pillarOnly)[0]!;
-    expect(b.investigation.safetyPillars.length).toBeGreaterThanOrEqual(2);
-    expect(typeof a).toBe("string");
+    const evidenceOnly = { rangeOverlap: 0, categoryMatch: 0, flowMatch: 0, evidenceLevel: 1 };
+    const ranked = rankInvestigations(investigations, query, evidenceOnly);
+    // Run tables with 100+ runs score 1; description-only records score 0 and sink to the bottom.
+    expect(ranked[0]!.investigation.runCount).toBeGreaterThanOrEqual(100);
+    expect(ranked.at(-1)!.investigation.dataLevel).toBe("metadata-only");
+    expect(rankInvestigations(investigations, query)[0]!.investigation.category).toBe("solid");
   });
 });

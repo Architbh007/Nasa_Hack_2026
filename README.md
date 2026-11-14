@@ -1,17 +1,19 @@
 # FireSight
 
-**Fire safety insight for crewed habitats, from microgravity combustion research.**
+**What real NASA fire tests cover, and what they miss, for crewed habitats.**
 NASA Space Apps Challenge 2026 · *Flame in Freefall*
 
-FireSight is a web dashboard that summarizes, ranks and interprets NASA Physical Science Informatics (PSI) combustion investigations for crewed habitats: ISS, Orion, a lunar surface base, pressurized rovers and Mars transit. Its centerpiece is the **Habitat Flammability Explorer**. You enter a proposed cabin atmosphere (oxygen % and total pressure), and it shows:
+FireSight is a web dashboard over the combustion data NASA has archived in Physical Science Informatics (PSI), plus published results from the Saffire IV–VI flights. Its centerpiece is the **Habitat Flammability Explorer**. You enter a proposed cabin atmosphere (oxygen % and total pressure), and it shows:
 
-- where that point sits among tested microgravity combustion conditions
-- which investigations cover it, and what is untested
-- a predicted ignition likelihood from a small model trained on test-level runs
+- a coverage verdict for solid, liquid and gaseous fuels: tested, near tested runs, not tested, or no run data
+- the nearest real experiments, with their recorded outcomes and where each value comes from
+- what the data we hold never tested at that atmosphere
 
-> **Synthetic demo data.** Investigation names, hardware and project groupings are real. Every number, test run, finding and measurement in this build is generated from a fixed seed. The app shows a persistent banner, and every record carries `dataSource: "synthetic"`. Do not cite any value here as a NASA result.
+> **Real data only.** 772 run-level tests: 764 from PSI tables (BASS, BASS-II, FLEX, CFI, Saffire I–III) and 8 hand-transcribed from NASA papers (Saffire IV–VI, marked "published paper"). Every run records its file and its exact place in it. Missing values stay missing. Nothing is generated, and FireSight makes no predictions.
 
 It supports engineering judgment. It does not replace NASA flammability standards such as NASA-STD-6001.
+
+**Headline finding.** In the PSI data we examined, solid materials were tested only at about cabin conditions (about 14–23% O2, about 14.7 psi). Liquid droplets reached exploration-like atmospheres (FLEX: 30–34% O2 at about 10.3 psi; CFI down to 7.35 psi). The later Saffire flights, which are not in PSI, burned solids at 25.4–26.2% O2 and about 10.3 psi (Saffire-V) and 28.8–31% O2 and about 7.9 psi (Saffire-VI). No solid-material run in this data reaches the 34% O2, 8.2 psi lunar exploration atmosphere.
 
 ---
 
@@ -19,25 +21,25 @@ It supports engineering judgment. It does not replace NASA flammability standard
 
 | Page | What it does |
 | --- | --- |
-| `/habitat` | **Main feature.** Presets and sliders for O2 (15–100%) and pressure (3–15 psi), plus material, airflow and gravity. Shows: a scatter of all same-phase test runs with constant-pO2 curves, preset markers, the shaded coverage gap and your cabin point; readouts (pO2, O2 vs Earth, ignition gauge, KNN flame spread, covering records, gap flag); an O2 sensitivity sweep; an explainable ranking with weight sliders; a partial-gravity callout; a structured SI interpretation. |
-| `/explore` | TanStack table of 19 investigations with fuse.js search and filters (fuel phase, hardware, pillar, habitat relevance, O2 range). The detail sheet has the SI summary, variables vs constants and a test scatter. Compare mode (2–4 records) adds a relevance radar, overlaid scatters and an SI comparison. |
-| `/graph` | Force-directed similarity network: weighted Jaccard over hardware, fuels, phase, instruments, diluents and pillars. Threshold slider; click a link for a two-sentence SI explanation; insight callouts (SAME to DAFT instrument reuse, the SPICE flow duct family). |
-| `/ask` | Streaming Q&A grounded in the six retrieved records plus their aggregate test stats, with citations that link to the Explorer. |
-| `/scenarios` | Mission readiness scorecard per habitat preset: prevention, detection and suppression coverage, fabric ignition probability, best records, biggest gaps and an SI readiness note. |
-| `/earth` | Earth applications grouped into suppression, smoke detection, firefighter gear, flammability standards and cleaner combustion. |
-| `/about` | Data policy, generation rules, model card (features, coefficients, train and holdout accuracy), ranking and similarity methods, SI layer. |
+| `/habitat` | **Main feature.** Presets and sliders for O2 (15–100%) and pressure (3–15 psi), plus material, airflow and gravity. Shows pO2 and O2 vs Earth, a coverage verdict per fuel category, a map of real runs coloured by recorded outcome (hollow markers mean pressure not recorded), the nearest real runs, a "never tested" list, a structured SI interpretation and an explainable ranking with weight sliders. |
+| `/explore` | TanStack table of 20 investigations with fuse.js search and filters (fuel category, data held, hardware, pillar, O2 range of real runs). The detail sheet shows the PSI record verbatim, every real run with its source reference and caveats, known data issues and the citation (DOI, licence). Compare mode (2–4 records) overlays real runs and adds an SI comparison. |
+| `/graph` | Similarity network over PSI-listed relations, hardware, project, material classes and category. Each insight states its source. |
+| `/ask` | Streaming Q&A grounded in six retrieved records, their run statistics and example runs, with citations to investigation and run ids. |
+| `/scenarios` | Mission readiness per habitat preset: coverage verdict per fuel category, nearest real solid-material runs, the team's pillar evidence lists, gaps, and where the preset's atmosphere values come from. |
+| `/earth` | Earth benefits quoted from each PSI record, grouped by keyword. |
+| `/about` | Data policy, sources table with DOIs and licences, coverage, ranking and similarity methods, SI layer, open items. |
 
-Deep links that help in demos:
+Deep links for demos:
 - `/habitat?preset=lunar-base`
-- `/explore?id=bass-ii`
-- `/explore?compare=bass,bass-ii,saffire-ii`
-- `/graph?insight=same-daft`
+- `/habitat?preset=mars-transit`
+- `/explore?id=saffire-iv-vi`
+- `/graph?insight=daft-same`
 
 ---
 
 ## Quick start
 
-Prerequisites: Node.js 20.9 or newer (22 recommended), npm. No GPU, no database; it runs comfortably on an 8 GB laptop.
+Prerequisites: Node.js 20.9 or newer (22 recommended), npm.
 
 ```bash
 npm install
@@ -45,9 +47,7 @@ cp .env.example .env.local      # then add ANTHROPIC_API_KEY (optional; see belo
 npm run dev                     # http://localhost:3000
 ```
 
-The synthetic data, trained model and any precomputed SI outputs are committed, so the app runs straight after `npm install`.
-
-Without an API key, every non-SI feature works. SI panels show a friendly "SI unavailable" message, except for outputs already in `data/cache`.
+The built dataset and any precomputed SI outputs are committed, so the app runs straight after `npm install`. Without an API key, every non-SI feature works; SI panels show "SI unavailable" except for outputs already in `data/cache`.
 
 ### Environment variables (`.env.local`)
 
@@ -57,21 +57,19 @@ Without an API key, every non-SI feature works. SI panels show a friendly "SI un
 | `MODEL_MAIN` | `claude-sonnet-5-5` | Summaries, comparisons, habitat interpretation, readiness notes, Q&A. |
 | `MODEL_FAST` | `claude-haiku-5-5` | Graph edge explanations. |
 | `USE_CACHE_ONLY` | `false` | When `true`, never call the API; serve cached outputs only (demo safety). |
-| `DATA_SEED` | `42` | Seed for `npm run generate`. |
 
 ### Scripts
 
 | Command | What it does |
 | --- | --- |
 | `npm run dev` / `npm run build` / `npm start` | Next.js dev server, production build (runs `prebuild`), production server. |
-| `npm run generate` | Regenerates `data/investigations.json`, `tests.json` and `scenarios.json` from `DATA_SEED`, validates them, and retrains `data/model.json`. |
-| `npm run train` | Validates the data and retrains the ignition model. Runs automatically before every build (`prebuild`). |
-| `npm run validate:data` | Schema and cross-file checks (ids, ranges vs tests, units). |
+| `npm run build:data` | Normalizes `data/real/*.json` into `data/investigations.json`, `runs.json` and `summaries.json`, checks unit conversions and cross-file facts, and fails without writing on any error. Runs before every build (`prebuild`). |
+| `npm run fetch:psi` | Refreshes `data/real/psi-investigations.json` from the PSI search service. |
 | `npm run prewarm` | Generates and caches SI outputs for the demo (needs an API key). `-- --core` limits it to summaries, scenario notes and preset interpretations. |
-| `npm test` | Vitest suite: generator, metrics, model, similarity, ranking, readiness, retrieval and the SI pipeline with a mocked client. |
+| `npm test` | Vitest: provenance, no invented outcomes, unit conversions, normalizers on real fixtures, coverage, ranking, similarity, readiness on the real data, retrieval, and the SI pipeline with a mocked client. |
 | `npm run lint` / `npm run typecheck` | ESLint and `tsc --noEmit`. |
 
-On Windows, `npm test` goes through `scripts/run-vitest.mjs`. The wrapper upper-cases the drive letter, because vitest fails when the shell's working directory is `c:\...` instead of `C:\...`.
+On Windows, `npm test` goes through `scripts/run-vitest.mjs`, which upper-cases the drive letter because vitest fails with `c:\...`.
 
 ---
 
@@ -79,124 +77,102 @@ On Windows, `npm test` goes through `scripts/run-vitest.mjs`. The wrapper upper-
 
 ```mermaid
 flowchart LR
-  subgraph Build["Build time"]
-    GEN["scripts/generate-data.ts<br/>seedrandom + physics rules"] --> DATA[("data/*.json<br/>investigations · tests · scenarios")]
-    DATA --> TRAIN["scripts/train-model.ts<br/>(prebuild)"] --> MODEL[("data/model.json<br/>logistic regression")]
+  subgraph Extract["Data preparation (done once)"]
+    RAW["NASA PSI tables and papers<br/>(data/raw, not committed)"] --> EXT["scripts/real/extract-*.ts<br/>fetch-psi-metadata.ts"] --> REAL[("data/real/*.json<br/>extracted values + source registry")]
+  end
+
+  subgraph Build["Build time (prebuild)"]
+    REAL --> NORM["lib/real/normalize.ts + build.ts<br/>scripts/build-data.ts"] --> DATA[("data/*.json<br/>investigations · runs · summaries")]
+    SCEN[("data/scenarios.json<br/>cited presets")]
   end
 
   subgraph Server["Next.js server (App Router)"]
     LOAD["lib/data.ts<br/>zod-validated dataset"]
-    CORE["lib/metrics · model · ranking<br/>similarity · habitat · readiness"]
-    PAGES["Server components<br/>/habitat /explore /graph /scenarios /earth /about"]
-    API["Route handlers /api/*<br/>summarize · compare · edge-explain<br/>habitat-interpret · scenario-summary · ask (stream)"]
+    CORE["lib/metrics · habitat · ranking<br/>similarity · readiness"]
+    PAGES["Server components"]
+    API["Route handlers /api/*"]
     AI["lib/ai<br/>prompts · context · zod validation + retry"]
     CACHE[("data/cache/&lt;sha256&gt;.json")]
   end
 
-  subgraph Client["Browser"]
-    UI["Client components<br/>Recharts · TanStack Table · force graph · chat"]
-  end
-
   DATA --> LOAD
-  MODEL --> LOAD
-  LOAD --> CORE --> PAGES --> UI
-  UI -- "POST JSON" --> API
-  API --> CORE
-  API --> AI
-  AI <--> CACHE
-  AI -- "only on cache miss<br/>(never when USE_CACHE_ONLY)" --> CLAUDE["Anthropic API<br/>MODEL_MAIN / MODEL_FAST"]
+  SCEN --> LOAD
+  LOAD --> CORE --> PAGES --> UI["Browser<br/>Recharts · TanStack Table · force graph · chat"]
+  UI -- "POST JSON" --> API --> CORE
+  API --> AI <--> CACHE
+  AI -- "only on cache miss" --> CLAUDE["Anthropic API"]
 ```
 
-How the pieces fit:
-- **No database.** Data lives in versioned JSON in `/data`, is imported statically, and is validated once with zod.
-- **Shared math.** All habitat numbers come from one pure function, `assessHabitat` in `lib/habitat.ts`. The page, the SI route and the prewarm script all use it, so the SI always sees exactly what the user sees.
-- **Server-side SI.** All model calls happen in route handlers, with input size limits and friendly error JSON.
-  - Structured calls ask for JSON only, validate it with zod and retry once with the validation error appended.
-  - Habitat evidence may only cite investigation ids that were sent in the ranked list.
-  - `MODEL_MAIN` calls opt into server-side refusal fallbacks.
-- **Caching.** Results are cached by a sha256 of kind, model, prompt version and grounded input, so a data change automatically invalidates them. On read-only hosts, new entries go to the OS temp directory.
+- **No database.** Data lives in versioned JSON, is imported statically and validated once with zod.
+- **One assessment function.** `assessHabitat` in `lib/habitat.ts` feeds the page, the SI route and the prewarm script, so the SI sees exactly what the user sees.
+- **Server-side SI.** Structured calls ask for JSON only, validate it with zod and retry once. Habitat evidence may only cite ids sent in the ranked list. Prompts require citing investigation and run ids, stating missing fields and outcome bases, and forbid predictions.
+- **Caching.** Results are cached by a sha256 of kind, model, prompt version and grounded input, so data or prompt changes invalidate them.
 
 ### Project structure
 
 ```
-app/            routes (pages) and app/api/* route handlers
-components/     ui/ (shadcn) plus feature folders: habitat, explore, graph, ask, scenarios, si, charts, shell, common
-lib/            schema, data, metrics, model, ranking, similarity, habitat, readiness, graph, earth, search, ai/
-data/           investigations.json, tests.json, scenarios.json, model.json, cache/
-scripts/        generate-data, train-model, validate-data, prewarm-cache, generator/ (designs, physics, findings)
+app/            routes and app/api/* route handlers
+components/     ui/ (shadcn) plus habitat, explore, graph, ask, scenarios, si, charts, shell, common
+lib/            schema, data, validate, metrics, habitat, ranking, similarity, readiness, graph, earth, search, ai/
+lib/real/       normalize.ts (per-dataset mappers), build.ts (investigation config and assembly)
+data/real/      extracted NASA values, PSI metadata, citations, source registry
+data/           built investigations.json, runs.json, summaries.json; scenarios.json; cache/
+scripts/        build-data, prewarm-cache, real/ (extractors and PSI metadata fetch)
 tests/          vitest suites
 ```
 
 ---
 
-## Data model and synthetic generation
+## Data
 
-`lib/schema.ts` defines three files:
-- **`investigations.json`**: one record per investigation. Fields include project, platform, hardware, fuel phase, fuels, tested O2, pressure (psi and kPa) and flow ranges, diluents, gravity level, objectives, variables vs constants, measurements, key findings, safety pillars, habitat relevance 0–5 with rationale, Earth applications, source URLs and `dataSource`.
-- **`tests.json`**: one row per test run (20–60 per investigation, 876 in total). Fields include conditions, fuel and sample size, ignition and outcome, spread rate, burn duration, peak temperature, smoke obscuration and droplet extinction diameter.
-- **`scenarios.json`**: habitat presets: Earth sea level, ISS cabin, spacesuit, lunar base (34% at 8.2 psi), pressurized rover (30% at 10.2 psi) and Mars transit (26.5% at 10.2 psi).
+`lib/schema.ts` is the contract.
 
-The generator (`scripts/generator/`) gives each investigation its own seeded stream and applies simple, monotone physics:
-- Ignition is logistic in O2 partial pressure, with phase-specific midpoints.
-- Spread is linear in O2 above a threshold, with mild pressure scaling.
-- In microgravity, airflow drives the outcome for solids: starvation below about 5 cm/s, blowoff above about 30 cm/s.
-- CO2 suppresses more strongly than helium.
-- Droplet extinction diameters shrink as O2 rises, and cool flames appear at lower O2.
+- **Runs** (`runs.json`): one record per real test. Nearly every value is nullable. Each run carries `dataSource` (`psi` or `published`), `sourceKind` (`psi-table` or `paper`) and `source: { file, ref }` (sheet and row, or paper, table and page). Outcomes carry a basis: `source-field` (a table column), `notes-keyword` (read from investigator notes and reviewed by a person) or `none` (the outcome is "not stated").
+- **Pressure policy.** `pressureStatus` is `measured`, `paper` or `not-recorded`. For BASS-II, which records no pressure, a cited ISS nominal (14.7 psi, NASA ECLSS technical brief) is kept in a separate `pressureAssumedPsi` field and drawn as a hollow marker; it is never stored as a measured value.
+- **Summaries** (`summaries.json`): FLEX-2 planned matrix, ACME BRE day-level summary, SPICE burner log and SLICE schedule. They are never plotted or counted as runs.
+- **Investigations** (`investigations.json`): built from PSI metadata (title, platform, dates, objectives, approach, hypothesis, earth benefits, hardware, publications, related investigations), DataCite citations and licences, and known issues from the source registry. O2, pressure and flow ranges come from run-level data only. Fuel category and safety pillars are the team's classification, stored with their basis and shown as "team assessment".
+- **Scenarios** (`scenarios.json`): each preset cites its atmosphere source or is marked "citation needed". The lunar preset (34% O2 at 8.2 psi) cites the Saffire status paper, NTRS 20170000230, page 7.
 
-Investigation ranges are computed from the tests, and findings are templated from test statistics, so the two files always agree. A deliberate gap (no solid-fuel runs at 30–40% O2 below 10.5 psi) makes the lunar base and rover presets reveal untested territory.
+Build-time checks (`lib/validate.ts`): provenance on every run, outcome only with a basis, no measured pressure where none was recorded, psi vs kPa agreement, ranges equal to the runs' min and max, and source conversions (atm × 14.6959, mmHg × 0.0193368, kPa × 0.145038).
 
-### Swapping in real PSI data
-
-1. Export PSI investigations and test runs into the shapes in `lib/schema.ts`, with `dataSource: "psi"`. Keep investigation `id`s as lowercase slugs. Put measurement and hardware names in canonical form (shared names drive the similarity graph).
-2. Replace `data/investigations.json`, `data/tests.json` and, if needed, `data/scenarios.json`. Compute each investigation's O2, pressure and flow ranges from its runs: `lib/ranges.ts` does this, and the validator enforces it.
-3. Run `npm run validate:data`, then `npm run train` (or just `npm run build`, which retrains in `prebuild`).
-4. Delete stale `data/cache/*.json` and run `npm run prewarm`. Cache keys include the grounded input, so stale entries are simply never hit.
-
-No app code changes are needed. The synthetic-only pieces switch themselves off when data is not synthetic:
-- the shaded gap on the habitat chart
-- the "committed files match the generator" test
+Sources and reuse terms are listed in `data/real/source-registry.json` and on the About page. 16 of the 19 PSI investigations list CC0 1.0 in DataCite; PSI-10, PSI-20 and PSI-22 list no licence.
 
 ---
 
-## Deploying to Vercel (free tier)
+## Deploying to Vercel
 
-1. Push the repo to GitHub and import it in Vercel. `vercel.json` pins `npm ci` and `npm run build`; dev dependencies install by default, so `prebuild` can retrain the model.
-2. Add environment variables: `ANTHROPIC_API_KEY`, `MODEL_MAIN`, `MODEL_FAST`, and for a public demo `USE_CACHE_ONLY=true`.
-3. Commit `data/cache/*.json` after `npm run prewarm`. `next.config.ts` traces those files into the API functions (`outputFileTracingIncludes`).
-
-API routes set `maxDuration = 60`. With `USE_CACHE_ONLY=true` the deployed demo never calls the API and costs nothing.
+1. Import the repo in Vercel. `vercel.json` pins `npm ci` and `npm run build`; `prebuild` rebuilds and validates the dataset from `data/real`.
+2. Add `ANTHROPIC_API_KEY`, `MODEL_MAIN`, `MODEL_FAST`, and for a public demo `USE_CACHE_ONLY=true`.
+3. Commit `data/cache/*.json` after `npm run prewarm`. `next.config.ts` traces those files into the API functions.
 
 ---
 
 ## 3-minute demo script
 
-Before presenting:
-1. Run `npm run prewarm` with an API key and commit `data/cache`.
-2. Set `USE_CACHE_ONLY=true` so nothing depends on the network.
-3. Open `/habitat`.
+Before presenting: run `npm run prewarm` with an API key, commit `data/cache`, set `USE_CACHE_ONLY=true`, open `/habitat`.
 
-1. **(0:00) Frame it.** "Exploration habitats run at lower pressure and higher oxygen than the ISS. Is that more flammable, and what has actually been tested?" Point at the *Synthetic demo data* banner.
-2. **(0:20) Lunar base preset.** Pick *Lunar base · 34% at 8.2 psi* in the preset dropdown.
-   - Call out the readouts: pO2 is lower than sea level (2.79 vs 3.09 psi), but O2 concentration is +62%. The ignition gauge reads *Very high*. Coverage says **Untested**.
-   - Point at the shaded gap on the chart: "no solid-fuel runs between 30 and 40% O2 below 10.5 psi; our cabin sits right inside it."
-   - Show the partial-gravity callout.
-3. **(1:00) Sensitivity and ranking.** Show the O2 sweep against the sea-level curve. Expand the top-ranked record (BASS) to show its score breakdown, and drag the *Fuel phase match* weight to show the ranking is explainable.
-4. **(1:30) SI interpretation.** Click *Run SI interpretation*. Walk through:
-   - the risk drivers
-   - the knowledge gaps (the coverage gap, no partial-gravity data)
-   - a recommended test at 34% O2 and 8.2 psi
-   - the design implications split by prevention, detection and suppression
-5. **(2:10) Jump to evidence.** Click a cited investigation chip (for example BASS-II). The Explorer opens its record: SI summary, variables vs constants, and the O2 vs spread scatter.
-6. **(2:30) Network link.** Open `/graph`, click the *Instrument reuse: SAME to DAFT* insight, and read the two-sentence explanation of the shared P-Trak counter.
-7. **(2:45) Ask one question.** On `/ask`, click *What evidence covers the lunar base atmosphere of 34% O2 at 8.2 psi?* The answer streams in with citations.
-8. **(3:00) Close.** "FireSight shows what has and hasn't been tested, so the next microgravity experiment goes where the gap is."
+1. **(0:00) Frame it.** "Exploration habitats run at lower pressure and higher oxygen than the ISS. We read the combustion data NASA archived in PSI. What has actually been tested?" Point at the *Real NASA PSI data* banner.
+2. **(0:20) ISS cabin.** The default preset: solids and liquids both *Tested*, with hundreds of real runs on the map.
+3. **(0:40) Lunar exploration atmosphere.** Pick the lunar preset (34% O2, 8.2 psi).
+   - Solids: *Near tested runs*. The nearest is a Saffire-VI sample at 31% O2, 7.85 psi, from a published paper.
+   - Liquids: *Not tested*; the nearest FLEX run is at 34% O2 but 10.3 psi.
+   - Gases: *No run data*.
+   - Read the "never tested" list: no solid run at 34% O2 or higher.
+4. **(1:20) Mars transit.** Switch to Mars transit (26.5%, 10.2 psi): solids are *Tested*, but only by three Saffire-V samples. Point out that every run is microgravity.
+5. **(1:40) SI interpretation.** Run it: the summary leads with the verdict, cites run ids and names missing fields.
+6. **(2:10) Trace a number.** Click a nearest run's investigation. The Explorer shows the run with its source sheet and row, and the PSI citation.
+7. **(2:40) Close.** "In the PSI data we examined, solids were tested at cabin conditions. Exploration atmospheres were reached by liquid droplets and by the newer Saffire flights. FireSight shows where the next solid-material experiment should go."
+
+Never say "nothing has been tested": say "in the data we examined".
 
 ---
 
 ## Limitations
 
-- **Data.** All numbers are synthetic. The physics is deliberately simple and monotone, chosen to be plausible rather than predictive.
-- **Model.** The ignition model is a small logistic regression with no gravity term. Partial gravity is only bounded by microgravity and 1 g data. Treat its output as a relative indicator.
-- **SI output.** SI text is constrained to the provided records but can still be wrong. Verify against the linked records.
+- **Coverage, not prediction.** The verdicts compare atmospheres only. FireSight does not estimate ignition probability or flame spread.
+- **Gravity.** Every run is microgravity; lunar and Mars gravity are not represented.
+- **Outcomes.** Some outcomes are keyword reads of investigator notes (labelled); many are not stated in the source.
+- **Saffire IV–VI.** Hand-transcribed from papers; a second-person check against the PDFs is still open.
+- **SI output.** Constrained to the provided records but can still be wrong. Check the cited ids.
 
-Built with Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, react-force-graph-2d, zod, fuse.js, seedrandom and the Anthropic TypeScript SDK.
+Built with Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, react-force-graph-2d, zod, fuse.js and the Anthropic TypeScript SDK.
