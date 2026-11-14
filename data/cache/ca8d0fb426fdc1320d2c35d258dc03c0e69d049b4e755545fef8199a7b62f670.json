@@ -1,0 +1,17 @@
+{
+  "key": "ca8d0fb426fdc1320d2c35d258dc03c0e69d049b4e755545fef8199a7b62f670",
+  "kind": "summary",
+  "model": "gpt-6.1-sol",
+  "label": "summary:saffire-iv-vi",
+  "createdAt": "2026-11-14T21:24:41.407Z",
+  "output": {
+    "overview": "Saffire IV–VI studied burning large solid samples, including fabric and PMMA, aboard the Cygnus cargo vehicle after it left the ISS [saffire-iv-vi]. This record is not in the PSI combustion archive; its sample conditions and results were hand-transcribed from cited NASA publications, and no approach description is provided [saffire-iv-vi].",
+    "keyTakeaways": [
+      "The record contains 8 runs involving SIBAL cloth, cotton jersey and several PMMA configurations [saffire-iv-vi].",
+      "Five runs are classified as burned on a source-field basis; outcomes for the other 3 are unknown, not evidence of non-burning [saffire-iv-vi].",
+      "Oxygen, pressure and flow are recorded for all 8 runs; no run pressures were placed at an assumed nominal value [saffire-iv-vi]."
+    ],
+    "habitatRelevance": "The real runs span 22–31% oxygen and 7.85–14.5 psi, with flow fixed at 20 cm/s; these ranges do not establish coverage of every oxygen–pressure combination [saffire-iv-vi]. They can inform engineering judgment for cabin conditions within the tested coverage, but do not predict ignition or flame spread or replace NASA flammability standards or certified material testing.",
+    "caveats": "The approach, hypothesis and test dates are missing, 3 outcomes are unavailable, results are preliminary, and the flagged Saffire-VI calorimetry total requires confirmation against a possible copy error [saffire-iv-vi]."
+  }
+}

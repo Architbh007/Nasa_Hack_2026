@@ -1,0 +1,12 @@
+{
+  "key": "313ffec8aba5e99fda289736cec1e933bad58c6f834ff555d2bcbd107024abba",
+  "kind": "fire-twin",
+  "model": "gpt-6-luna",
+  "label": "fire-twin:34%/8.2psi/ventilated/lunar/stowage-bag/vents/crew",
+  "createdAt": "2026-11-14T09:14:45.617Z",
+  "output": {
+    "narration": "The cabin is at 34% oxygen and 8.2 psi, with lunar gravity and ventilation on. At ignition, the stowage bag catches fire; its synthetic demo estimates are 95% ignition probability and 1.7 mm/s flame spread. The simulation also predicts ignition of the sleeping bag and plastic panel, but whether the untested wire bundle and foam seat burn is unknown. Smoke is detected at 16 seconds, the alarm sounds at 20 seconds, the vents shut down at 35 seconds, an extinguisher is used at 65 seconds, and the fire is out at 70 seconds; these timings are illustrative. These are synthetic demo predictions, not NASA results; related solid-burning records are [bass] and [bass-ii].",
+    "takeaway": "The key safety lesson is that the outcome for the untested wire bundle and foam seat is unknown at this cabin condition. The solid-burning records [bass] and [bass-ii] do not establish outcomes for those items at this combined atmosphere.",
+    "testNext": "Test the actual wire insulation and seat foam for ignition and flame spread at 34% oxygen, 8.2 psi, lunar gravity, and ventilated flow."
+  }
+}

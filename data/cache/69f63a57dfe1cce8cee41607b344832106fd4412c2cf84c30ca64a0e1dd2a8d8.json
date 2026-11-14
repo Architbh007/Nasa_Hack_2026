@@ -1,0 +1,71 @@
+{
+  "key": "69f63a57dfe1cce8cee41607b344832106fd4412c2cf84c30ca64a0e1dd2a8d8",
+  "kind": "habitat",
+  "model": "gpt-6.1-sol",
+  "label": "habitat:21%/14.7psi/fabric/ventilated/micro",
+  "createdAt": "2026-11-14T09:19:01.978Z",
+  "output": {
+    "plainSummary": "The synthetic demo model suggests fabric is very likely to ignite if exposed to an ignition source; this is not the chance of a cabin fire occurring. Synthetic fabric tests covered air close to this cabin condition, but the supplied records do not confirm a test at this exact combination [saffire-i]. These are generated demonstration results, not NASA findings.",
+    "summary": "For the proposed microgravity cabin, the model trained on synthetic runs predicts 82% ignition probability and assigns a very-high relative risk band, not a certified safety limit or an operational fire probability. The synthetic dataset's surrounding fabric grid contains 31 runs, with 27 ignitions, but spans a range of oxygen concentrations and pressures rather than only the exact proposed condition. The coverage check reports no gap, so the condition is within reported coverage, although an exact material-and-condition match is not established. Nearby synthetic runs give an estimated flame spread of 1.38 mm/s, with a neighboring-run range of 0.51–2.19 mm/s; that range is not a prediction confidence interval.",
+    "riskDrivers": [
+      "Earth-reference air does not establish fire safety: synthetic fabric runs near the proposed oxygen, pressure and airflow conditions frequently ignited [saffire-i].",
+      "The proposed ventilation falls within a flow regime where synthetic BASS and BASS-II ignited runs self-extinguished less often than under lower-flow conditions; ventilation should not be assumed to extinguish a flame [bass] [bass-ii].",
+      "Fabric identity matters. Synthetic BASS-II results show different spread behavior for Nomex and cotton-fiberglass fabric, so the generic Fabric label cannot establish the response of the installed material [bass-ii]."
+    ],
+    "relevantEvidence": [
+      {
+        "investigationId": "saffire-i",
+        "evidence": "In the synthetic dataset, cotton-fiberglass fabric ignited in 21 of 24 runs. Sustained flames spread at a mean of 1.56 mm/s.",
+        "relevance": "Its reported microgravity oxygen, pressure and airflow ranges include the proposed condition, and its fuel is fabric. Range overlap does not establish an exact-condition test."
+      },
+      {
+        "investigationId": "bass-ii",
+        "evidence": "In the synthetic runs, mean spread was 2.74 mm/s for cotton-fiberglass fabric and 1.00 mm/s for Nomex fabric.",
+        "relevance": "Both are fabrics, demonstrating why the cabin's unspecified fabric composition is an important limitation."
+      },
+      {
+        "investigationId": "bass",
+        "evidence": "In the synthetic runs, all ignited microgravity runs below 5 cm/s self-extinguished, compared with 18% at 5–30 cm/s.",
+        "relevance": "The proposed airflow lies in the latter band. This supports testing ventilation effects, but does not establish that reducing airflow will reliably suppress this cabin material."
+      },
+      {
+        "investigationId": "saffire-iii",
+        "evidence": "The synthetic dataset reports a mean smoke obscuration of 27.2% for cotton-fiberglass fabric.",
+        "relevance": "This supports including smoke measurements in fabric fire tests near the proposed atmosphere. It does not provide detector response times or performance for the installed fabric."
+      }
+    ],
+    "knowledgeGaps": [
+      "The supplied records do not identify the cabin fabric's composition, treatment, construction or installed configuration.",
+      "Coverage is reported, but the grid aggregates nearby oxygen and pressure conditions and does not establish an exact match in fabric, atmosphere and airflow.",
+      "The ignition model has no supplied calibration, validation uncertainty or ignition-source specification. Its output cannot establish operational cabin fire probability.",
+      "Detector response and suppression effectiveness for this installed fabric and cabin airflow are not provided."
+    ],
+    "recommendedTests": [
+      {
+        "test": "In microgravity, ignition-test the intended flight fabric at the proposed 21% oxygen, 14.7 psi and approximately 20 cm/s airflow, using representative installed construction and documented ignition exposure.",
+        "rationale": "Establishes an exact material-and-condition result rather than relying on generic fabric labels and nearby synthetic runs."
+      },
+      {
+        "test": "At the proposed 21% oxygen and 14.7 psi in microgravity, test the intended flight fabric at approximately 20 cm/s and at airflow below 5 cm/s; measure ignition, spread, extinction and re-ignition.",
+        "rationale": "Tests whether airflow reduction is effective for this fabric instead of treating the synthetic low-flow trend as a suppression guarantee."
+      },
+      {
+        "test": "At the proposed 21% oxygen, 14.7 psi and approximately 20 cm/s airflow in microgravity, burn the intended flight fabric in a representative installation while evaluating smoke detection and the proposed suppression system.",
+        "rationale": "Measures detection and suppression performance that the supplied records do not establish."
+      }
+    ],
+    "designImplications": {
+      "prevention": [
+        "Control ignition sources and limit exposed fabric pending material-specific qualification.",
+        "Use this synthetic assessment only to prioritize engineering work; retain applicable NASA flammability standards and certified material testing."
+      ],
+      "detection": [
+        "Validate smoke transport and detector response with the actual fabric and representative cabin ventilation; the supplied smoke measurements do not establish alarm timing."
+      ],
+      "suppression": [
+        "Do not credit ventilation reduction alone as reliable suppression.",
+        "Verify extinguishment and resistance to re-ignition for the installed fabric before assigning suppression-system performance."
+      ]
+    }
+  }
+}

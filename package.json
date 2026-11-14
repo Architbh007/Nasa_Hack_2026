@@ -1,0 +1,52 @@
+{
+  "name": "firesight",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "tsx scripts/build-data.ts",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node scripts/run-vitest.mjs run",
+    "test:watch": "node scripts/run-vitest.mjs",
+    "build:data": "tsx scripts/build-data.ts",
+    "fetch:psi": "tsx scripts/real/fetch-psi-metadata.ts",
+    "typecheck": "tsc --noEmit",
+    "prewarm": "tsx scripts/prewarm-cache.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-table": "^9.3.1",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.5.2",
+    "fuse.js": "^7.5.0",
+    "lucide-react": "^1.72.0",
+    "next": "16.4.6",
+    "openai": "^7.57.0",
+    "radix-ui": "^1.8.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.10.1",
+    "remark-gfm": "^4.0.1",
+    "shadcn": "^4.23.0",
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "exceljs": "^4.4.0",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=20.9"
+  }
+}

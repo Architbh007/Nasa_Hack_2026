@@ -1,0 +1,256 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-dm-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-link: var(--link);
+  --color-warning: var(--warning);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * FireSight theme. A black canvas like a NASA mission page or an Apple product page:
+ * content sits on soft, borderless surfaces, sections fade into one another, and colour
+ * comes from photography, data and the flame-orange accent. Data colours live in lib/chart-colors.ts.
+ */
+:root,
+.dark {
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --card: #111113;
+  --card-foreground: #f5f5f7;
+  --popover: #1c1c1f;
+  --popover-foreground: #f5f5f7;
+  --primary: #ff7a3d;
+  --primary-foreground: #1a0a03;
+  --secondary: #1c1c1f;
+  --secondary-foreground: #f5f5f7;
+  --muted: #18181b;
+  --muted-foreground: #a1a1a6;
+  --accent: #232327;
+  --accent-foreground: #f5f5f7;
+  --destructive: #ff6b6b;
+  --border: rgb(255 255 255 / 0.09);
+  --input: rgb(255 255 255 / 0.16);
+  --ring: #5eb1ff;
+  --link: #5eb1ff;
+  --warning: #fab219;
+  --telemetry: #5eb1ff;
+  --nominal: #3fcf8e;
+  --surface-raised: #18181b;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #9085e9;
+  --radius: 0.875rem;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --sidebar: #0b0b0d;
+  --sidebar-foreground: #e8e8ed;
+  --sidebar-primary: #ff7a3d;
+  --sidebar-primary-foreground: #1a0a03;
+  --sidebar-accent: #232327;
+  --sidebar-accent-foreground: #f5f5f7;
+  --sidebar-border: rgb(255 255 255 / 0.08);
+  --sidebar-ring: #5eb1ff;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    color-scheme: dark;
+    scrollbar-color: #3a3a3f transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: clip;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  ::selection {
+    background: rgb(94 177 255 / 0.35);
+    color: #fff;
+  }
+  /* Surfaces are soft and borderless; separation comes from tone, not lines. */
+  [data-slot="card"] {
+    box-shadow: none;
+    background-image: none;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    font-weight: 600;
+    letter-spacing: -0.022em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Jumped-to sections clear the sticky navigation bar. */
+  [id] {
+    scroll-margin-top: 4.5rem;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Small label: quiet, sentence case. Used above readouts and as table column heads. */
+.eyebrow,
+[data-slot="table-head"] {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.eyebrow { color: var(--muted-foreground); }
+
+/* Breaks a block out of the centred page column to the full viewport width. */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+}
+
+/* ---------- Backdrop (components/shell/space-backdrop.tsx) ---------- */
+.space-backdrop {
+  background: #000;
+}
+
+/* ---------- Motion ---------- */
+/* Page content settles in once on load: a short fade with a slight lift, eased out. */
+@keyframes fs-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+main > * {
+  animation: fs-enter 0.6s var(--ease-out-expo) both;
+}
+/* Hero photography eases in from a slight zoom, like a camera settling. */
+@keyframes fs-settle {
+  from { opacity: 0; transform: scale(1.04); }
+  to { opacity: 1; transform: none; }
+}
+.fs-settle { animation: fs-settle 1.6s var(--ease-out-expo) both; }
+
+.fs-live-dot { background: var(--nominal); }
+
+/* State changes: a value that is replaced (a verdict, a label) crossfades in with a brief focus pull. */
+@keyframes fs-swap {
+  from { opacity: 0; filter: blur(4px); transform: translateY(3px); }
+  to { opacity: 1; filter: none; transform: none; }
+}
+.fs-swap { animation: fs-swap 0.45s var(--ease-out-expo) both; }
+
+/* Flammability grid: squares fade between colours as the material changes; the cabin marker glides. */
+.fs-cell rect { transition: fill 0.35s var(--ease-out-expo), fill-opacity 0.35s var(--ease-out-expo), filter 0.2s ease-out; }
+.fs-cell:hover rect:first-child { filter: brightness(1.35); }
+.fs-glide { transition: x 0.45s var(--ease-out-expo), y 0.45s var(--ease-out-expo); }
+
+/* Surfaces that respond to the pointer lift their tone slightly. */
+.fs-hover-surface { transition: background-color 0.25s ease-out, box-shadow 0.25s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  main > *,
+  .fs-settle,
+  .fs-swap {
+    animation: none;
+  }
+  .fs-cell rect,
+  .fs-glide {
+    transition: none;
+  }
+}
+
+/* Fire Twin animation */
+@keyframes ft-flicker {
+  from { transform: scale(0.94); opacity: 0.88; }
+  to { transform: scale(1.06); opacity: 1; }
+}
+@keyframes ft-flow {
+  to { stroke-dashoffset: -28; }
+}
+@keyframes ft-pulse {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.ft-flicker {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ft-flicker 0.45s ease-in-out infinite alternate;
+}
+.ft-flow {
+  animation: ft-flow 1.4s linear infinite;
+}
+.ft-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ft-pulse 1.2s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ft-flicker,
+  .ft-flow,
+  .ft-pulse {
+    animation: none;
+  }
+}
+
+/* Sortable column heads are buttons; keep them in the telemetry label style. */
+[data-slot="table-head"] button {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}

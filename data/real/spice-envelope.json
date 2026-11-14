@@ -1,0 +1,47 @@
+{
+ "investigationId": "spice",
+ "accession": "PSI-107",
+ "kind": "burner-operating-log-summary",
+ "note": "Burner settings only: no O2, no pressure, no outcome column. Not converted to test runs.",
+ "sourceFile": "PSI-107_Experimental table_Spice.csv",
+ "rows": 469,
+ "exactDuplicateRows": 34,
+ "fuelLabelsAsWritten": {
+  "Ethylene": 47,
+  "Propane": 50,
+  "75% Propylene": 16,
+  "75 % Propylene": 119,
+  "50 % Propylene": 111,
+  "Propylene": 122,
+  "Methane": 4
+ },
+ "nozzleDiameterMm": {
+  "1.6002": 178,
+  "0.762": 119,
+  "0.4064": 172
+ },
+ "fuelRateSccm": {
+  "min": 0,
+  "max": 231.6,
+  "n": 457
+ },
+ "airSpeedCmS": {
+  "min": -5.92,
+  "max": 85.28,
+  "n": 444
+ },
+ "negativeAirSpeedReadings": 8,
+ "gmtDayOfYearValues": [
+  "45",
+  "48",
+  "52",
+  "55",
+  "58",
+  "119",
+  "136",
+  "167",
+  "168",
+  "173",
+  "174"
+ ]
+}

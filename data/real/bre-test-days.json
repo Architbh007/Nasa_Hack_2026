@@ -1,0 +1,317 @@
+{
+ "investigationId": "bre",
+ "accession": "PSI-20",
+ "kind": "test-day-summary",
+ "note": "Day-level summary: O2 levels used that day and flames ignited that day. Pressure was varied but is not identified in the table. Not individual runs.",
+ "sourceFile": "PSI-20_Experimental table_ACME BRE.csv",
+ "testDays": [
+  {
+   "sourceRow": 2,
+   "year": 2019,
+   "month": "Feb",
+   "day": 8,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "21; 26.5; 40",
+   "o2PercentLevels": [
+    21,
+    26.5,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 10,
+   "notesRaw": "Oxygen Conc. (as diluted with nitrogen on a volume basis) was varied between tests where approximate concentrations for tests that ignited are listed. The chamber pressures were also varied but are not identified in this summary table."
+  },
+  {
+   "sourceRow": 3,
+   "year": 2019,
+   "month": "Feb",
+   "day": 20,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "26.5; 34",
+   "o2PercentLevels": [
+    26.5,
+    34
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 8,
+   "notesRaw": "Flames Ignited is the number ignited on that day (neglecting the day change on ISS)."
+  },
+  {
+   "sourceRow": 4,
+   "year": 2019,
+   "month": "Feb",
+   "day": 25,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "50% C2H4",
+   "o2PercentRaw": "21; 26.5; 34; 40",
+   "o2PercentLevels": [
+    21,
+    26.5,
+    34,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 8,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 5,
+   "year": 2019,
+   "month": "March",
+   "day": 4,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "50% C2H4",
+   "o2PercentRaw": "26.5; 40",
+   "o2PercentLevels": [
+    26.5,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 6,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 6,
+   "year": 2019,
+   "month": "March",
+   "day": 7,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "50% C2H4",
+   "o2PercentRaw": "3400%",
+   "o2PercentLevels": [],
+   "o2Unparsed": [
+    "3400%"
+   ],
+   "flamesIgnited": 6,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 7,
+   "year": 2019,
+   "month": "March",
+   "day": 11,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "50% C2H4",
+   "o2PercentRaw": "26.5; 34",
+   "o2PercentLevels": [
+    26.5,
+    34
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 7,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 8,
+   "year": 2019,
+   "month": "March",
+   "day": 28,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100%C2H4",
+   "o2PercentRaw": "26.5; 34",
+   "o2PercentLevels": [
+    26.5,
+    34
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 8,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 9,
+   "year": 2019,
+   "month": "April",
+   "day": 1,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100%C2H4",
+   "o2PercentRaw": "2100%",
+   "o2PercentLevels": [],
+   "o2Unparsed": [
+    "2100%"
+   ],
+   "flamesIgnited": 0,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 10,
+   "year": 2019,
+   "month": "April",
+   "day": 4,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100%C2H4",
+   "o2PercentRaw": "21; 26.5; 34",
+   "o2PercentLevels": [
+    21,
+    26.5,
+    34
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 9,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 11,
+   "year": 2020,
+   "month": "Sept",
+   "day": 3,
+   "burnerSizeMm": 50,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "25; 34; 40",
+   "o2PercentLevels": [
+    25,
+    34,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 13,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 12,
+   "year": 2020,
+   "month": "Oct",
+   "day": 17,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "26.5; 34",
+   "o2PercentLevels": [
+    26.5,
+    34
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 13,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 13,
+   "year": 2020,
+   "month": "Dec",
+   "day": 5,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% CH4",
+   "o2PercentRaw": "25; 34; 40",
+   "o2PercentLevels": [
+    25,
+    34,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 21,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 14,
+   "year": 2020,
+   "month": "Dec",
+   "day": 4,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% CH4",
+   "o2PercentRaw": "25; 40",
+   "o2PercentLevels": [
+    25,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 18,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 15,
+   "year": 2020,
+   "month": "Dec",
+   "day": 11,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "50% C2H4",
+   "o2PercentRaw": "25; 40",
+   "o2PercentLevels": [
+    25,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 12,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 16,
+   "year": 2020,
+   "month": "Dec",
+   "day": 17,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "34; 40",
+   "o2PercentLevels": [
+    34,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 10,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 17,
+   "year": 2020,
+   "month": "Dec",
+   "day": 23,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "25; 34; 40",
+   "o2PercentLevels": [
+    25,
+    34,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 17,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 18,
+   "year": 2021,
+   "month": "Jan",
+   "day": 20,
+   "burnerSizeMm": 25,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "21; 26.5; 34",
+   "o2PercentLevels": [
+    21,
+    26.5,
+    34
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 15,
+   "notesRaw": ""
+  },
+  {
+   "sourceRow": 19,
+   "year": 2021,
+   "month": "Jan",
+   "day": 28,
+   "burnerSizeMm": 50,
+   "fuelBottleRaw": "100% C2H4",
+   "o2PercentRaw": "25; 34; 40",
+   "o2PercentLevels": [
+    25,
+    34,
+    40
+   ],
+   "o2Unparsed": [],
+   "flamesIgnited": 13,
+   "notesRaw": ""
+  }
+ ],
+ "totals": {
+  "days": 18,
+  "flamesIgnited": 194,
+  "o2PercentMin": 21,
+  "o2PercentMax": 40,
+  "o2PercentDistinctLevels": [
+   21,
+   25,
+   26.5,
+   34,
+   40
+  ]
+ }
+}

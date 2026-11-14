@@ -1,0 +1,10 @@
+{
+  "key": "a8ef29a5208faaeef159b5cb0b287a5b49388d3f03c7e82bca699b10d1e2fa8f",
+  "kind": "ask",
+  "model": "gpt-6.1-sol",
+  "label": "ask:Which real tests burned solid materials below 10 psi?",
+  "createdAt": "2026-11-14T12:53:18.356Z",
+  "output": {
+    "text": "The provided records do not identify a specific solid-material test that **burned below 10 psi**. Run-level results pairing pressure below 10 psi with a recorded burning outcome would answer this.\n\n- **Saffire IV–VI is the relevant investigation:** its recorded pressures reach **7.85 psi**, and **5 runs** are marked “burned” on a **source-field** basis. However, the supplied examples do not show which outcomes correspond to pressures below 10 psi. These data were hand-transcribed from published NASA papers, not retrieved from the PSI archive. [saffire-iv-vi]\n- The lowest-pressure example supplied is **cotton jersey at 10.25 psi**, marked “burned” on a **source-field** basis. It does **not** meet the below-10-psi criterion. [saffire-v-2]\n- BASS-II cannot establish a low-pressure result: pressure is missing for all its runs. Its displayed **14.7 psi** is an assumed nominal placement, not a measurement. [bass-ii]\n\nThe next step is to retrieve the remaining Saffire IV–VI run records, especially those at **7.85 psi**, with their material and outcome fields. [saffire-iv-vi]"
+  }
+}

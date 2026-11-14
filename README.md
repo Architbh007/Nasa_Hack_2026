@@ -1,270 +1,178 @@
-# Flame in Freefall
-**AI-powered fire safety insights from microgravity combustion data**
-2026 NASA Space Apps Challenge · Difficulty: Intermediate/Advanced · Subject: Space Exploration
+# FireSight
 
-> Status: **planning only. Nothing is built yet.** This document pins down what we are making so the team can agree before writing code.
+**What real NASA fire tests cover, and what they miss, for crewed habitats.**
+NASA Space Apps Challenge 2026 · *Flame in Freefall*
+
+FireSight is a web dashboard over the combustion data NASA has archived in Physical Science Informatics (PSI), plus published results from the Saffire IV–VI flights. Its centerpiece is the **Habitat Flammability Explorer**. You enter a proposed cabin atmosphere (oxygen % and total pressure), and it shows:
+
+- a coverage verdict for solid, liquid and gaseous fuels: tested, near tested runs, not tested, or no run data
+- the nearest real experiments, with their recorded outcomes and where each value comes from
+- what the data we hold never tested at that atmosphere
+
+> **Real data only.** 772 run-level tests: 764 from PSI tables (BASS, BASS-II, FLEX, CFI, Saffire I–III) and 8 hand-transcribed from NASA papers (Saffire IV–VI, marked "published paper"). Every run records its file and its exact place in it. Missing values stay missing. Nothing is generated, and FireSight makes no predictions.
+
+It supports engineering judgment. It does not replace NASA flammability standards such as NASA-STD-6001.
+
+**Headline finding.** In the PSI data we examined, solid materials were tested only at about cabin conditions (about 14–23% O2, about 14.7 psi). Liquid droplets reached exploration-like atmospheres (FLEX: 30–34% O2 at about 10.3 psi; CFI down to 7.35 psi). The later Saffire flights, which are not in PSI, burned solids at 25.4–26.2% O2 and about 10.3 psi (Saffire-V) and 28.8–31% O2 and about 7.9 psi (Saffire-VI). No solid-material run in this data reaches the 34% O2, 8.2 psi lunar exploration atmosphere.
 
 ---
 
-## 1. The challenge, in one paragraph
+## Features
 
-NASA has run decades of flame and fire experiments in microgravity (drop towers, parabolic flights, the ISS, free-flying spacecraft). The results are scattered across papers, experiment pages and data repositories. They are hard to find, compare and interpret. As crews return to the Moon and head to Mars, that knowledge decides how we design cabins, choose materials and plan fire response.
+| Page | What it does |
+| --- | --- |
+| `/habitat` | **Main feature.** Presets and sliders for O2 (15–100%) and pressure (3–15 psi), plus material, airflow and gravity. Shows pO2 and O2 vs Earth, a coverage verdict per fuel category, a map of real runs coloured by recorded outcome (hollow markers mean pressure not recorded), the nearest real runs, a "never tested" list, a structured SI interpretation and an explainable ranking with weight sliders. |
+| `/explore` | TanStack table of 20 investigations with fuse.js search and filters (fuel category, data held, hardware, pillar, O2 range of real runs). The detail sheet shows the PSI record verbatim, every real run with its source reference and caveats, known data issues and the citation (DOI, licence). Compare mode (2–4 records) overlays real runs and adds an SI comparison. |
+| `/graph` | Similarity network over PSI-listed relations, hardware, project, material classes and category. Each insight states its source. |
+| `/ask` | Streaming Q&A grounded in six retrieved records, their run statistics and example runs, with citations to investigation and run ids. |
+| `/scenarios` | Mission readiness per habitat preset: coverage verdict per fuel category, nearest real solid-material runs, the team's pillar evidence lists, gaps, and where the preset's atmosphere values come from. |
+| `/earth` | Earth benefits quoted from each PSI record, grouped by keyword. |
+| `/about` | Data policy, sources table with DOIs and licences, coverage, ranking and similarity methods, SI layer, open items. |
 
-**The ask:** build an **interactive, AI-powered dashboard** that **summarizes, ranks and interprets** those findings to deliver **fire safety insights for human space exploration**.
+Deep links for demos:
+- `/habitat?preset=lunar-base`
+- `/habitat?preset=mars-transit`
+- `/explore?id=saffire-iv-vi`
+- `/graph?insight=daft-same`
 
-The three verbs are the judging rubric. Every feature should serve one of them:
+---
 
-| Verb | What it means for us |
-|---|---|
-| **Summarize** | Plain-language digests of each experiment and of the whole body of work |
-| **Rank** | Transparent, adjustable scoring of materials, conditions and experiments by fire risk and by relevance to mission scenarios |
-| **Interpret** | Turn numbers into "so what for a crew on the Moon/Mars/ISS", with cited evidence |
+## Quick start
 
-## 2. The core idea (our pitch)
+Prerequisites: Node.js 20.9 or newer (22 recommended), npm.
 
-> **"Pick a spacecraft scenario, get the fire risk, and see the evidence behind it."**
-
-Instead of a data browser, we build a **decision-support tool**. A user sets mission conditions (gravity level, oxygen %, pressure, airflow, material) and the dashboard answers three questions:
-
-1. **How dangerous is fire here?** A ranked risk view of materials and conditions.
-2. **Why?** The experiments that support the answer, summarized and linked back to source.
-3. **What should we do?** Design and operations recommendations (material choice, atmosphere, suppression, detection).
-
-The AI layer is what makes this "super intelligence" rather than a chart page: it reads across all experiments, explains trends, answers questions and flags where the evidence is thin. It is powered by an **open-weight model** (see section 6), so the whole stack can run without a paid proprietary API.
-
-**Second hook: the Live Fire Lab.** Users don't just read about fire in space, they **play with it**. A simulated spacecraft environment streams live telemetry, and the user can **drag objects around** (an ignition source, a material sample, a crew module, a vent) and watch temperature, flame behavior, the heatmap and the risk score update in real time.
-
-## 3. Why microgravity fire is different (the story the dashboard tells)
-
-These are the scientific hooks. **Verify each against NASA sources before it goes in the demo.**
-
-- **No buoyancy.** On Earth, hot gas rises and pulls fresh oxygen in, giving the familiar teardrop flame. In microgravity there is no buoyant flow, so flames are often **spherical and dimmer**, and they depend on slow diffusion and whatever airflow the ventilation system provides.
-- **Materials can burn at lower oxygen** and in weak flow than Earth-based flammability tests predict. Standard tests (e.g. NASA-STD-6001 Test 1, which is upward burning in 1g) may not be conservative for space. This is the biggest safety insight.
-- **Low-speed airflow can make some fires worse.** There is a "quenching" flow regime at very low speed, so ventilation shutdown is not automatically safe, and flow rate matters.
-- **Cool flames and soot behave differently**, which affects detection (smoke detectors tuned on Earth smoke) and toxic products.
-- **Lunar and Martian gravity** are partial-gravity regimes with far less data. This is the **evidence gap** we should highlight.
-- **Spacecraft atmosphere trade-offs:** lower pressure and higher oxygen (e.g. for EVA prep) change flammability sharply.
-
-## 4. Data plan
-
-### 4.1 Sources (to confirm and collect)
-
-| Source | What it gives | Notes |
-|---|---|---|
-| NASA **Physical Sciences Informatics (PSI)** repository | Public experiment metadata and data from ISS physical science investigations | Primary real-data target; check export formats and licensing |
-| NASA Glenn **Zero Gravity Research Facility / 2.2 s Drop Tower** | Short-duration microgravity combustion results | Mostly papers and reports |
-| ISS combustion experiments: **SoFIE, FLEX/FLEX-2, ACME, BASS, Cool Flames, Candle Flame** | Solid fuels, droplets, gaseous flames, suppression | Names to verify; build one record per experiment |
-| **Saffire I-VI** (Spacecraft Fire Safety Demonstration) | Large-scale unmanned spacecraft fire tests | Closest to real cabin fires |
-| NASA-STD-6001 and related flammability standards | Test method context for "ground vs space" comparison | Reference only |
-| NTRS (NASA Technical Reports Server) papers | Abstracts and findings for the summarizer | Check reuse terms |
-
-### 4.2 Phased approach (agreed in this session)
-
-- **Phase A, curated seed dataset.** Hand-build a structured dataset of ~15-30 experiments/results from public NASA material, with a source URL on every record. This is what powers the demo.
-- **Phase B, real-data loader.** Write an import script/schema so real PSI/NTRS exports can replace or extend the seed data without changing the UI.
-
-> **Integrity rule:** no invented numbers. Every value shown must trace to a source URL, or be clearly labelled `illustrative` / `estimated`. Judges will check, and it protects our credibility.
-
-### 4.3 Proposed data schema (draft)
-
-```jsonc
-{
-  "id": "saffire-iv-001",
-  "title": "Saffire-IV large-scale fire in Cygnus",
-  "program": "Saffire",
-  "platform": "Free-flying spacecraft",         // drop tower | parabolic | ISS | spacecraft
-  "year": 2019,
-  "gravity_g": 0.0,                              // 0, 0.16 (Moon), 0.38 (Mars), 1 (ground baseline)
-  "fuel_material": "Cotton-fiberglass fabric (SIBAL)",
-  "fuel_state": "solid",                         // solid | liquid | gas | dust
-  "oxygen_pct": 21,
-  "pressure_kpa": 101.3,
-  "flow_speed_cm_s": 20,
-  "geometry": "flat sheet",
-  "key_metrics": {                               // only fields with a source
-    "flame_spread_rate_cm_s": null,
-    "extinction_limit_o2_pct": null,
-    "peak_temp_c": null
-  },
-  "finding": "One-sentence takeaway",
-  "safety_implication": "Why a crew should care",
-  "source_url": "https://...",
-  "data_quality": "measured | published-summary | illustrative"
-}
+```bash
+npm install
+cp .env.example .env.local      # then add OPENAI_API_KEY (optional; see below)
+npm run dev                     # http://localhost:3000
 ```
 
-## 5. Features
+The built dataset and any precomputed SI outputs are committed, so the app runs straight after `npm install`. Without an API key, every non-SI feature works; SI panels show "SI unavailable" except for outputs already in `data/cache`.
 
-### 5.1 MVP (must be demo-ready)
+### Environment variables (`.env.local`)
 
-1. **Overview / "state of knowledge" page**: counts by platform, gravity, fuel type; timeline of experiments; **evidence-gap heatmap** (gravity level x oxygen level, showing where we have data and where we don't).
-2. **Experiment explorer**: filter/search by gravity, fuel, O2, pressure, flow; each card shows an AI summary plus source link.
-3. **Risk ranking engine**: ranked list of materials/conditions by fire risk. Scoring weights are **visible and adjustable** by the user (sliders), with the formula explained. Ranking is rule-based and transparent; the AI explains it but does not invent it.
-4. **Scenario simulator ("Mission Scenario")**: choose ISS cabin / lunar habitat / Mars transit / EVA-prep atmosphere. Dashboard returns risk level, supporting experiments and recommendations.
-5. **AI analyst (open-weight model)**: chat grounded only in the dataset; answers cite experiment IDs; says "insufficient evidence" when appropriate.
-6. **Auto-generated briefing**: one-click "fire safety brief" for the selected scenario (exportable to PDF/Markdown).
-7. **Live Fire Lab (simulated telemetry + draggable objects)**: see section 5.4. This is the interactive centerpiece.
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | (none) | Used only by server-side route handlers; never sent to the browser. |
+| `MODEL_MAIN` | `gpt-6.1-sol` | Summaries, comparisons, habitat interpretation, readiness notes, Q&A. |
+| `MODEL_FAST` | `gpt-6-luna` | Graph edge explanations. |
+| `USE_CACHE_ONLY` | `false` | When `true`, never call the API; serve cached outputs only (demo safety). |
 
-### 5.4 Live Fire Lab: details
+### Scripts
 
-**What the user sees:** a simulated spacecraft compartment (2D top-down for MVP, 3D as stretch) with a live telemetry panel and a live heatmap overlay.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` / `npm run build` / `npm start` | Next.js dev server, production build (runs `prebuild`), production server. |
+| `npm run build:data` | Normalizes `data/real/*.json` into `data/investigations.json`, `runs.json` and `summaries.json`, checks unit conversions and cross-file facts, and fails without writing on any error. Runs before every build (`prebuild`). |
+| `npm run fetch:psi` | Refreshes `data/real/psi-investigations.json` from the PSI search service. |
+| `npm run prewarm` | Generates and caches SI outputs for the demo (needs an API key). `-- --core` limits it to summaries, scenario notes and preset interpretations. |
+| `npm test` | Vitest: provenance, no invented outcomes, unit conversions, normalizers on real fixtures, coverage, ranking, similarity, readiness on the real data, retrieval, and the SI pipeline with a mocked client. |
+| `npm run lint` / `npm run typecheck` | ESLint and `tsc --noEmit`. |
 
-**What the user can do:**
-- **Drag and drop** objects in the space: ignition source (hot wire / overheated electronics), fuel sample (cotton fabric, Nomex, silicone, acrylic, etc.), crew module / equipment rack, ventilation inlet and outlet, smoke detector.
-- **Change the environment live:** gravity (0g / lunar 0.16g / Mars 0.38g / 1g baseline), O2 %, pressure, fan speed and airflow direction.
-- **Trigger events:** ignite, shut down ventilation, activate suppression (CO2 / water mist), then watch the response.
-- **Play, pause, rewind** the run and compare two runs side-by-side.
+On Windows, `npm test` goes through `scripts/run-vitest.mjs`, which upper-cases the drive letter because vitest fails with `c:\...`.
 
-**What updates in real time:**
+---
 
-| Output | Description |
-|---|---|
-| Heatmap | Temperature field across the compartment, recomputed as objects move |
-| Flame visual | Spherical vs teardrop flame, size and brightness driven by gravity, O2 and flow |
-| Telemetry stream | Time-series charts: peak temperature, O2 %, CO / smoke obscuration, flame spread rate, heat flux at the crew module |
-| Detector response | Whether and when the smoke detector would trigger, so slow microgravity smoke can be missed |
-| Risk score | The same transparent score as the Risk Ranking page, live |
-| Linked evidence | Which seed-dataset experiments support what you are seeing, with citations |
-| AI commentary | The open-weight model narrates what just happened and suggests mitigations |
+## Architecture
 
-**How it works (and the honesty rule):**
-- The "telemetry" is **simulated, not real NASA flight data**, and the UI must label it **SIMULATED**.
-- Engine: a lightweight, simplified model running in the browser (e.g. a 2D grid with heat diffusion plus buoyancy-free advection and a flame-spread rule). It is **calibrated to trends from the seed dataset** (spread rate vs O2, vs flow, vs gravity), not CFD. Exact formulas and calibration sources go in `docs/sim-model.md`.
-- The telemetry panel is fed by a stream interface (a worker or WebSocket-style event feed), so a real data source could be plugged in later.
-- Whenever the sim is outside the range our data covers, show an **"extrapolating, low confidence"** badge.
+```mermaid
+flowchart LR
+  subgraph Extract["Data preparation (done once)"]
+    RAW["NASA PSI tables and papers<br/>(data/raw, not committed)"] --> EXT["scripts/real/extract-*.ts<br/>fetch-psi-metadata.ts"] --> REAL[("data/real/*.json<br/>extracted values + source registry")]
+  end
 
-### 5.2 Stretch
+  subgraph Build["Build time (prebuild)"]
+    REAL --> NORM["lib/real/normalize.ts + build.ts<br/>scripts/build-data.ts"] --> DATA[("data/*.json<br/>investigations · runs · summaries")]
+    SCEN[("data/scenarios.json<br/>cited presets")]
+  end
 
-- Compare two experiments or conditions side-by-side, including 1g vs 0g.
-- 3D version of the Live Fire Lab (three.js / react-three-fiber) with orbit camera.
-- Voice or text commands to the Lab through the AI ("move the heater next to the vent").
-- Shareable link that saves a Lab setup and run.
-- Detection and suppression panel: what works in microgravity.
-- "Confidence" badge per insight based on number and quality of supporting experiments.
-- Upload your own CSV and have the AI parse it into the schema.
-- Light/dark and mission-control themed UI; keyboard accessible.
+  subgraph Server["Next.js server (App Router)"]
+    LOAD["lib/data.ts<br/>zod-validated dataset"]
+    CORE["lib/metrics · habitat · ranking<br/>similarity · readiness"]
+    PAGES["Server components"]
+    API["Route handlers /api/*"]
+    AI["lib/ai<br/>prompts · context · zod validation + retry"]
+    CACHE[("data/cache/&lt;sha256&gt;.json")]
+  end
 
-### 5.3 Explicit non-goals
-
-- Not a validated physics or CFD tool. The Live Fire Lab is an **educational, simplified, data-calibrated model**, not a prediction engine.
-- Telemetry is simulated and never presented as real flight data.
-- Not a certification tool; it is decision support only, and we say so in the UI.
-- No claims beyond what the data supports.
-
-## 6. How the AI layer works (the "SI" part)
-
-**Principle: retrieval first, generation second. The model only talks about data we hand it.**
-
-| AI job | Approach |
-|---|---|
-| Per-experiment summary | Pre-generate at build time from the record plus abstract; cache; show source |
-| Cross-experiment synthesis ("what do we know about low-O2 flame spread?") | Retrieve relevant records by filter/embedding, pass to the open-weight model, require cited IDs |
-| Chat analyst | Structured retrieval / function-calling over the dataset; refuses or flags gaps instead of guessing |
-| Scenario briefing | Rule-based risk score computed in code, then the model writes the interpretation around the computed numbers |
-| Evidence-gap detection | Computed from the data grid, narrated by the model |
-| **Live Fire Lab commentary** | Sim state (positions, temps, flame size, detector status) is sent as a compact JSON snapshot every few seconds or on events; the model narrates what changed, why (citing records), and suggests a mitigation |
-
-### Model choice: open-weight
-
-We use an **open-weight instruction-tuned LLM** instead of a proprietary API. Reasons: no API cost or key leakage risk, reproducible for judges, can run offline, and fits the NASA open-science spirit.
-
-- **Candidates (pick after a quick bake-off; check current versions and licenses):** Llama family, Qwen family, Mistral family, Gemma family, gpt-oss.
-- **Selection criteria:** license allows our use, good instruction following and JSON/function-calling, fits our hardware, and low hallucination on our grounded Q&A test set.
-- **Serving options (choose one primary, one fallback):**
-  1. **Local server** (Ollama / llama.cpp / vLLM) for dev and offline demo.
-  2. **Hosted open-model inference** (e.g. Hugging Face Inference, Together, Groq, OpenRouter) for the public demo link, behind our proxy.
-  3. **In-browser** small model (WebLLM / transformers.js) as a no-backend fallback.
-- **Embeddings:** an open embedding model (e.g. BGE / E5 / nomic class) for retrieval over the seed dataset; at our dataset size an in-memory vector index is enough.
-- **Eval:** build a 20-30 question test set from the seed data with known answers; measure citation correctness and "I don't know" behavior for each candidate model.
-
-Safeguards:
-- Show **citations** on every AI statement; clicking opens the source record.
-- Show a **confidence / evidence-strength** indicator.
-- The model never computes risk scores or sim physics. Code does, and the model only explains the results.
-- Keep any hosted-inference key **server-side** via a tiny proxy; never ship it in the browser bundle.
-- **Fallback mode** with pre-generated summaries so the demo still works if the model server is down.
-- Cap output length and rate-limit the commentary loop so a live sim doesn't flood the model.
-
-## 7. Proposed architecture & stack (confirmed: open-weight LLM, curated seed data, simulated live telemetry)
-
-```
-[ Seed JSON / real-data importer ]
-            |
-   [ Data layer + scoring engine ]  <- transparent risk formula (code)
-        |                    |
-        |            [ Sim engine (Web Worker) ] <- calibrated to seed data
-        |               grid heat/flow/flame model, objects, events
-        |                    |  telemetry stream (state snapshots @ ~10-30 Hz)
-        |                    v
-        |            [ Live Fire Lab UI: canvas + heatmap + telemetry charts ]
-        |                    |  compact state JSON (throttled)
-        v                    v
-   [ Thin API proxy ] -> open-weight LLM (Ollama/vLLM local or hosted) + embeddings
-            |
-   [ Web dashboard: React + Vite + Tailwind + charts ]
+  DATA --> LOAD
+  SCEN --> LOAD
+  LOAD --> CORE --> PAGES --> UI["Browser<br/>Recharts · TanStack Table · force graph · chat"]
+  UI -- "POST JSON" --> API --> CORE
+  API --> AI <--> CACHE
+  AI -- "only on cache miss" --> OPENAI["OpenAI API"]
 ```
 
-- **Frontend:** React + Vite + Tailwind; charting via Recharts/D3/ECharts; animated UI polish with ReactBits components (MCP available in this workspace).
-- **Live Fire Lab:** HTML canvas/WebGL (pixi.js or plain canvas for MVP; three.js for stretch), drag-and-drop via pointer events, simulation in a **Web Worker** so the UI stays smooth, state pushed to React through a throttled store.
-- **Backend:** minimal Node proxy in front of the model server; holds any hosted-inference key.
-- **Hosting:** Vercel or Netlify for the public demo link (Space Apps requires a shareable project).
-- Stack is a recommendation; the "Next.js" or "Streamlit" alternatives remain open if the team prefers.
+- **No database.** Data lives in versioned JSON, is imported statically and validated once with zod.
+- **One assessment function.** `assessHabitat` in `lib/habitat.ts` feeds the page, the SI route and the prewarm script, so the SI sees exactly what the user sees.
+- **Server-side SI.** Structured calls ask for JSON only, validate it with zod and retry once. Habitat evidence may only cite ids sent in the ranked list. Prompts require citing investigation and run ids, stating missing fields and outcome bases, and forbid predictions.
+- **Caching.** Results are cached by a sha256 of kind, model, prompt version and grounded input, so data or prompt changes invalidate them.
 
-## 8. Screens (rough layout)
+### Project structure
 
-1. **Home / Mission control**: headline stats, evidence-gap heatmap, "Start a scenario" call to action.
-2. **Explorer**: filter rail + experiment cards + detail drawer with AI summary and metrics.
-3. **Risk Ranking**: ranked table with weight sliders and "why this rank" explainer.
-4. **Scenario Lab**: pick environment, see risk gauge, supporting evidence, recommendations, flame visual.
-5. **Live Fire Lab**: center canvas with draggable objects and heatmap overlay; left toolbox (objects, events); right telemetry charts, detector status, live risk score; bottom AI commentary strip and timeline scrubber; top bar for gravity / O2 / pressure / airflow controls and a SIMULATED badge.
-6. **Ask the Analyst**: chat panel with citations (also available as a side panel inside the Lab).
-7. **Brief export**: printable one-pager, including a snapshot of a Lab run.
+```
+app/            routes and app/api/* route handlers
+components/     ui/ (shadcn) plus habitat, explore, graph, ask, scenarios, si, charts, shell, common
+lib/            schema, data, validate, metrics, habitat, ranking, similarity, readiness, graph, earth, search, ai/
+lib/real/       normalize.ts (per-dataset mappers), build.ts (investigation config and assembly)
+data/real/      extracted NASA values, PSI metadata, citations, source registry
+data/           built investigations.json, runs.json, summaries.json; scenarios.json; cache/
+scripts/        build-data, prewarm-cache, real/ (extractors and PSI metadata fetch)
+tests/          vitest suites
+```
 
-## 9. How we'll be judged (and how we respond)
+---
 
-NASA Space Apps typically weighs: **Impact, Creativity, Validity, Relevance, Presentation**.
+## Data
 
-| Criterion | Our answer |
-|---|---|
-| Impact | Directly serves Artemis/Mars cabin and material decisions |
-| Creativity | Scenario-first decision support, evidence-gap map, and a hands-on Live Fire Lab where you drag objects and watch heat respond |
-| Validity | Every number sourced; transparent scoring; AI constrained to retrieved evidence; sim clearly labelled simulated and calibrated to seed data; open-weight model so results are reproducible |
-| Relevance | Hits all three verbs: summarize, rank, interpret |
-| Presentation | 2-minute demo flow below; clean, accessible UI |
+`lib/schema.ts` is the contract.
 
-### 2-minute demo script
-1. "Fire behaves differently in space." Show teardrop vs sphere flame.
-2. Open the evidence-gap map: "Here is what we know and where we are blind (Moon/Mars gravity)."
-3. Pick **Lunar habitat, 34% O2, 70 kPa**: risk gauge, top risky materials, supporting experiments.
-4. **Enter the Live Fire Lab:** drag a heater next to a fabric panel, ignite it, watch the heatmap and telemetry react. Flip gravity from 1g to 0g and see the flame go spherical and the smoke detector respond late. Drag the heater next to the vent and watch the risk score change.
-5. The open-weight AI narrates the change and cites the experiments behind it; ask it a follow-up question.
-6. Export the brief. Close with the impact statement.
+- **Runs** (`runs.json`): one record per real test. Nearly every value is nullable. Each run carries `dataSource` (`psi` or `published`), `sourceKind` (`psi-table` or `paper`) and `source: { file, ref }` (sheet and row, or paper, table and page). Outcomes carry a basis: `source-field` (a table column), `notes-keyword` (read from investigator notes and reviewed by a person) or `none` (the outcome is "not stated").
+- **Pressure policy.** `pressureStatus` is `measured`, `paper` or `not-recorded`. For BASS-II, which records no pressure, a cited ISS nominal (14.7 psi, NASA ECLSS technical brief) is kept in a separate `pressureAssumedPsi` field and drawn as a hollow marker; it is never stored as a measured value.
+- **Summaries** (`summaries.json`): FLEX-2 planned matrix, ACME BRE day-level summary, SPICE burner log and SLICE schedule. They are never plotted or counted as runs.
+- **Investigations** (`investigations.json`): built from PSI metadata (title, platform, dates, objectives, approach, hypothesis, earth benefits, hardware, publications, related investigations), DataCite citations and licences, and known issues from the source registry. O2, pressure and flow ranges come from run-level data only. Fuel category and safety pillars are the team's classification, stored with their basis and shown as "team assessment".
+- **Scenarios** (`scenarios.json`): each preset cites its atmosphere source or is marked "citation needed". The lunar preset (34% O2 at 8.2 psi) cites the Saffire status paper, NTRS 20170000230, page 7.
 
-## 10. Work plan (suggested split for a small team)
+Build-time checks (`lib/validate.ts`): provenance on every run, outcome only with a basis, no measured pressure where none was recorded, psi vs kPa agreement, ranges equal to the runs' min and max, and source conversions (atm × 14.6959, mmHg × 0.0193368, kPa × 0.145038).
 
-| Track | Owner | Deliverables |
-|---|---|---|
-| Data research & curation | TBD | Seed dataset + sources list + schema validation |
-| Scoring & logic | TBD | Risk formula, scenario presets, evidence-gap computation |
-| AI layer | TBD | Model bake-off, serving setup, prompts, retrieval, proxy, fallback summaries, eval set |
-| Simulation / Live Fire Lab | TBD | Sim engine in a Web Worker, calibration to seed data, drag-and-drop objects, telemetry stream, `docs/sim-model.md` |
-| Frontend / UX | TBD | Screens in section 8, charts, flame visual, heatmap rendering |
-| Story & submission | TBD | Demo script, slides/video, project write-up, NASA data credits |
+Sources and reuse terms are listed in `data/real/source-registry.json` and on the About page. 16 of the 19 PSI investigations list CC0 1.0 in DataCite; PSI-10, PSI-20 and PSI-22 list no licence.
 
-Milestones: (1) schema + 10 records, (2) explorer + ranking working, (3) Live Fire Lab MVP (one object type draggable, heatmap + 3 telemetry charts), (4) open-weight AI chat + briefs + Lab commentary, (5) polish, deploy, record demo.
+---
 
-Cut line if time runs short: keep **Explorer + Ranking + Live Fire Lab MVP + AI chat**. Drop 3D, run comparison and exports first.
+## Deploying to Vercel
 
-## 11. Open questions for the team
+1. Import the repo in Vercel. `vercel.json` pins `npm ci` and `npm run build`; `prebuild` rebuilds and validates the dataset from `data/real`.
+2. Add `OPENAI_API_KEY`, `MODEL_MAIN`, `MODEL_FAST`, and for a public demo `USE_CACHE_ONLY=true`.
+3. Commit `data/cache/*.json` after `npm run prewarm`. `next.config.ts` traces those files into the API functions.
 
-- [ ] Final team roles and deadline (check the Space Apps submission date).
-- [ ] Which exact NASA datasets can we legally redistribute? Confirm licensing and cite properly.
-- [ ] How deep on risk scoring: simple weighted index (recommended) vs a fitted model?
-- [ ] Which open-weight model, and where is it served for the public demo (local GPU, hosted inference, in-browser)? What hardware do we have?
-- [ ] Sim fidelity: 2D grid model for MVP (recommended) vs 3D? What is the minimum set of draggable objects for the demo?
-- [ ] Do we have a hosting account for the web app and, if needed, for hosted model inference?
-- [ ] Is a video/pitch required by the submission format?
+---
 
-## 12. Credits & disclaimers
+## 3-minute demo script
 
-Data and imagery belong to NASA and the cited researchers. This project was created for the 2026 NASA Space Apps Challenge and is not affiliated with or endorsed by NASA. Outputs are informational and must not be used for flight certification or safety-critical decisions.
+Before presenting: run `npm run prewarm` with an API key, commit `data/cache`, set `USE_CACHE_ONLY=true`, open `/habitat`.
+
+1. **(0:00) Frame it.** "Exploration habitats run at lower pressure and higher oxygen than the ISS. We read the combustion data NASA archived in PSI. What has actually been tested?" Point at the *Real NASA PSI data* banner.
+2. **(0:20) ISS cabin.** The default preset: solids and liquids both *Tested*, with hundreds of real runs on the map.
+3. **(0:40) Lunar exploration atmosphere.** Pick the lunar preset (34% O2, 8.2 psi).
+   - Solids: *Near tested runs*. The nearest is a Saffire-VI sample at 31% O2, 7.85 psi, from a published paper.
+   - Liquids: *Not tested*; the nearest FLEX run is at 34% O2 but 10.3 psi.
+   - Gases: *No run data*.
+   - Read the "never tested" list: no solid run at 34% O2 or higher.
+4. **(1:20) Mars transit.** Switch to Mars transit (26.5%, 10.2 psi): solids are *Tested*, but only by three Saffire-V samples. Point out that every run is microgravity.
+5. **(1:40) SI interpretation.** Run it: the summary leads with the verdict, cites run ids and names missing fields.
+6. **(2:10) Trace a number.** Click a nearest run's investigation. The Explorer shows the run with its source sheet and row, and the PSI citation.
+7. **(2:40) Close.** "In the PSI data we examined, solids were tested at cabin conditions. Exploration atmospheres were reached by liquid droplets and by the newer Saffire flights. FireSight shows where the next solid-material experiment should go."
+
+Never say "nothing has been tested": say "in the data we examined".
+
+---
+
+## Limitations
+
+- **Coverage, not prediction.** The verdicts compare atmospheres only. FireSight does not estimate ignition probability or flame spread.
+- **Gravity.** Every run is microgravity; lunar and Mars gravity are not represented.
+- **Outcomes.** Some outcomes are keyword reads of investigator notes (labelled); many are not stated in the source.
+- **Saffire IV–VI.** Hand-transcribed from papers; a second-person check against the PDFs is still open.
+- **SI output.** Constrained to the provided records but can still be wrong. Check the cited ids.
+
+Built with Next.js 16 (App Router), TypeScript, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, react-force-graph-2d, zod, fuse.js and the OpenAI TypeScript SDK.

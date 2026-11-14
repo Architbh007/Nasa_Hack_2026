@@ -1,0 +1,107 @@
+{
+  "kind": "published-paper-transcription",
+  "dataSource": "published",
+  "note": "Hand-transcribed from screenshots of NASA papers supplied by the team, NOT from the PSI archive. Every value needs a human check against the original PDF before use. Blank cells in the source are null. Nothing was inferred or filled in.",
+  "needsHumanVerification": true,
+  "unconfirmedCitations": [],
+  "stillToCheck": [
+    "Sample VI-2: fuel-calorimetry total 409 kJ equals IV-1's; confirm it is not a copy error in the source or in the transcription.",
+    "A person should still check the transcribed numbers cell by cell against the PDFs."
+  ],
+  "sources": {
+    "tableA": { "label": "Table 1. Saffire IV-VI Sample Test Conditions considered in this paper", "paper": "Preliminary Results from the Saffire VI Experiment (ICES-2024-365), NTRS 20240002981", "tableNumber": "Table 1", "pageNumber": 3, "confirmedBy": "team member (title, table and page)" },
+    "tableB": { "label": "Table 2. Saffire IV-VI Heat release and increase of carbon oxides*", "paper": "Preliminary Results from the Saffire VI Experiment (ICES-2024-365), NTRS 20240002981", "tableNumber": "Table 2", "pageNumber": 6, "confirmedBy": "team member (title, table and page)", "footnote": "* Empty fields were cases where the data were not available.", "footnoteSource": "read from the PDF and reported by a team member" },
+    "tableC": { "label": "Test Matrix (as executed)", "paper": "Slide deck 'Preliminary Results from the Saffire VI Experiment', NTRS 20240007488", "tableNumber": "slide", "pageNumber": 11, "confirmedBy": "team member and slide number visible in the screenshot" },
+    "tableD": { "label": "Table 1: Saffire IV-V Sample Test Conditions (IV-1, IV-2, V-2, V-3, V-4)", "paper": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires (ICES 2021-266), NTRS 20210011521", "tableNumber": "Table 1", "pageNumber": 3, "confirmedBy": "team member (title, table and page)" },
+    "tableE": { "label": "Table 2 Test Conditions and flame size for thin samples", "paper": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires (ICES 2021-266), NTRS 20210011521", "tableNumber": "Table 2", "pageNumber": 8, "confirmedBy": "team member (title, table and page); matches the caption in the screenshot" },
+    "overview": { "label": "NASA Saffire overview text (flight dates and goals)", "paper": "nasa.gov/wp-content/uploads/2025/07/spacecraft-fire-safety-demonstration-saffire.pdf", "confirmed": true }
+  },
+  "flights": [
+    { "flight": "Saffire-IV", "datesPerOverview": "launched 2020-02-15 (Northrop Grumman CRS-15); ignited 2020-05-11 after Cygnus left the ISS", "pressurizedVolumeM3": 18.7, "freeVolumeM3": 17.9, "source": "tableD (volumes), overview (dates)" },
+    { "flight": "Saffire-V", "datesPerOverview": "not stated in the supplied overview text", "pressurizedVolumeM3": 19.2, "freeVolumeM3": 19.0, "source": "tableD" },
+    { "flight": "Saffire-VI", "datesPerOverview": "not stated in the supplied overview text", "pressurizedVolumeM3": null, "freeVolumeM3": 16.7, "source": "tableA" }
+  ],
+  "samples": [
+    {
+      "sampleId": "IV-1", "flight": "Saffire-IV", "material": "SIBAL cloth", "lengthCm": 50, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 100.0, "pressurePsi": 14.5, "o2MolPercent": 22.0,
+      "burnDurationS": 130, "oxygenCalorimetry": { "peakHeatReleaseW": null, "totalHeatReleasekJ": null },
+      "fuelCalorimetry": { "averageHeatReleaseW": 3150, "totalHeatReleasekJ": 409 },
+      "maxTempSfuOutletC": 45, "maxTempFfdC": 25, "ffdInletCo2IncreasePpm": 1390, "co2PartialPressureIncreaseMmHg": 1.03, "ffdInletCoIncreasePpm": 80,
+      "sources": ["tableA", "tableB", "tableC", "tableD"],
+      "checks": ["pressure and O2 agree across tableA, tableC and tableD"]
+    },
+    {
+      "sampleId": "IV-2", "flight": "Saffire-IV", "material": "2-sided PMMA", "lengthCm": 18, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 100.0, "pressurePsi": 14.5, "o2MolPercent": 22.0,
+      "sources": ["tableD"], "checks": ["appears only in tableD"]
+    },
+    {
+      "sampleId": "V-2", "flight": "Saffire-V", "material": "Cotton jersey", "lengthCm": 50, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 70.7, "pressurePsi": 10.25, "o2MolPercent": 26.2,
+      "burnDurationS": 200, "oxygenCalorimetry": { "peakHeatReleaseW": null, "totalHeatReleasekJ": null },
+      "fuelCalorimetry": { "averageHeatReleaseW": 2800, "totalHeatReleasekJ": 560 },
+      "maxTempSfuOutletC": 46, "maxTempFfdC": 23, "ffdInletCo2IncreasePpm": 2360, "co2PartialPressureIncreaseMmHg": 1.26, "ffdInletCoIncreasePpm": 83,
+      "sources": ["tableA", "tableB", "tableC", "tableD", "tableE"],
+      "checks": ["pressure and O2 agree across tableA, tableC, tableD and tableE"]
+    },
+    {
+      "sampleId": "V-3", "flight": "Saffire-V", "material": "1 sided PMMA", "lengthCm": 18, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 71.3, "pressurePsi": 10.34, "o2MolPercent": 25.4,
+      "sources": ["tableD"], "checks": ["appears only in tableD"]
+    },
+    {
+      "sampleId": "V-4", "flight": "Saffire-V", "material": "Structured PMMA", "lengthCm": 20, "airFlowCmS": 20, "flowDirection": "Opposed",
+      "pressureKPa": 72.6, "pressurePsi": 10.53, "o2MolPercent": 25.7,
+      "sources": ["tableD"], "checks": ["appears only in tableD"]
+    },
+    {
+      "sampleId": "VI-2", "flight": "Saffire-VI", "material": "SIBAL cloth", "lengthCm": 50, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 54.1, "pressurePsi": 7.85, "o2MolPercent": 31.0,
+      "burnDurationS": 112, "oxygenCalorimetry": { "peakHeatReleaseW": 3217, "totalHeatReleasekJ": 580 },
+      "fuelCalorimetry": { "averageHeatReleaseW": 3650, "totalHeatReleasekJ": 409 },
+      "maxTempSfuOutletC": 48, "maxTempFfdC": 20, "ffdInletCo2IncreasePpm": 2800, "co2PartialPressureIncreaseMmHg": 1.15, "ffdInletCoIncreasePpm": 120,
+      "sources": ["tableA", "tableB", "tableC"],
+      "checks": ["pressure and O2 agree across tableA and tableC", "VERIFY: fuel-calorimetry total 409 kJ is identical to IV-1's value; confirm it is not a copy error"]
+    },
+    {
+      "sampleId": "VI-3", "flight": "Saffire-VI", "material": "Two-sided PMMA", "lengthCm": 18, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 54.6, "pressurePsi": 7.92, "o2MolPercent": 30.3,
+      "burnDurationS": 780, "oxygenCalorimetry": { "peakHeatReleaseW": 3080, "totalHeatReleasekJ": 1280 },
+      "fuelCalorimetry": { "averageHeatReleaseW": null, "totalHeatReleasekJ": null },
+      "maxTempSfuOutletC": 77, "maxTempFfdC": 21, "ffdInletCo2IncreasePpm": 8539, "co2PartialPressureIncreaseMmHg": 3.51, "ffdInletCoIncreasePpm": 308,
+      "sources": ["tableA", "tableB", "tableC"],
+      "checks": ["pressure and O2 agree across tableA and tableC"]
+    },
+    {
+      "sampleId": "VI-4", "flight": "Saffire-VI", "material": "One-sided PMMA", "lengthCm": 18, "airFlowCmS": 20, "flowDirection": "Concurrent",
+      "pressureKPa": 55.2, "pressurePsi": 8.01, "o2MolPercent": 28.8,
+      "burnDurationS": 1200, "oxygenCalorimetry": { "peakHeatReleaseW": 1507, "totalHeatReleasekJ": 830 },
+      "fuelCalorimetry": { "averageHeatReleaseW": null, "totalHeatReleasekJ": null },
+      "maxTempSfuOutletC": 57, "maxTempFfdC": 21, "ffdInletCo2IncreasePpm": 8117, "co2PartialPressureIncreaseMmHg": 3.37, "ffdInletCoIncreasePpm": 320,
+      "sources": ["tableA", "tableB", "tableC"],
+      "checks": ["pressure and O2 agree across tableA and tableC"]
+    }
+  ],
+  "thinSampleTable": {
+    "source": "tableE",
+    "note": "Conditions and flame size for thin samples across Saffire I to V. Source paper not identified.",
+    "rows": [
+      { "sample": "I-1",  "airFlowCmS": 20, "o2Percent": 21,   "pressureKPa": 100,  "material": "SIBAL",         "steadyStateSizeCm": 4,   "maxSizeCm": 6.2,  "ductHeightCm": 46, "sampleWidthCm": 41, "sampleLengthCm": 94 },
+      { "sample": "II-5", "airFlowCmS": 20, "o2Percent": 21,   "pressureKPa": 100,  "material": "SIBAL",         "steadyStateSizeCm": 4,   "maxSizeCm": 4,    "ductHeightCm": 46, "sampleWidthCm": 5,  "sampleLengthCm": 30 },
+      { "sample": "II-6", "airFlowCmS": 25, "o2Percent": 21,   "pressureKPa": 100,  "material": "SIBAL",         "steadyStateSizeCm": 5,   "maxSizeCm": 5,    "ductHeightCm": 46, "sampleWidthCm": 5,  "sampleLengthCm": 30 },
+      { "sample": "III-1","airFlowCmS": 25, "o2Percent": 21,   "pressureKPa": 100,  "material": "SIBAL",         "steadyStateSizeCm": 5,   "maxSizeCm": 8.2,  "ductHeightCm": 46, "sampleWidthCm": 41, "sampleLengthCm": 94 },
+      { "sample": "IV-1", "airFlowCmS": 20, "o2Percent": 22,   "pressureKPa": 100,  "material": "SIBAL",         "steadyStateSizeCm": 8.5, "maxSizeCm": 11.0, "ductHeightCm": 30, "sampleWidthCm": 41, "sampleLengthCm": 50 },
+      { "sample": "V-2",  "airFlowCmS": 20, "o2Percent": 26.2, "pressureKPa": 70.7, "material": "Cotton jersey", "steadyStateSizeCm": 10.0,"maxSizeCm": 14.0, "ductHeightCm": 30, "sampleWidthCm": 41, "sampleLengthCm": 50 }
+    ]
+  },
+  "psiCrossChecks": [
+    { "psiRecord": "saffire-i-s1 / s2 (PSI-98)", "thinTableRow": "I-1", "field": "pressure", "psi": "not recorded in the PSI table", "paper": "100 kPa", "result": "paper supplies a pressure" },
+    { "psiRecord": "saffire-i (PSI-98)", "thinTableRow": "I-1", "field": "O2", "psi": "21.5 to 21.7% (S1), about 21.5% (S2)", "paper": "21%", "result": "differs slightly; PSI value is the measured one, paper is rounded or nominal" },
+    { "psiRecord": "saffire-i (PSI-98)", "thinTableRow": "I-1", "field": "sample length and width", "psi": "length 40.6 cm, width 94 cm", "paper": "width 41 cm, length 94 cm", "result": "PSI Saffire-I table appears to have length and width swapped; the Saffire-III PSI table (length 94, width 40.6) agrees with the paper" },
+    { "psiRecord": "saffire-ii 2-5 (PSI-99)", "thinTableRow": "II-5", "field": "air flow", "psi": "20 cm/s (table), 20 cm/s (readme)", "paper": "20 cm/s", "result": "agree" },
+    { "psiRecord": "saffire-ii 2-6 (PSI-99)", "thinTableRow": "II-6", "field": "air flow", "psi": "20 cm/s (experimental table), 30 cm/s (readme Table 1)", "paper": "25 cm/s", "result": "THREE-WAY CONFLICT: 20, 30 and 25 cm/s. Unresolved; show all three with sources" },
+    { "psiRecord": "saffire-iii (PSI-100)", "thinTableRow": "III-1", "field": "air flow", "psi": "30 cm/s (experimental table and readme)", "paper": "25 cm/s", "result": "CONFLICT: 30 vs 25 cm/s. Unresolved" },
+    { "psiRecord": "saffire-ii and saffire-iii", "thinTableRow": "II-5, II-6, III-1", "field": "pressure", "psi": "not recorded", "paper": "100 kPa", "result": "paper supplies a pressure for all three" }
+  ]
+}
