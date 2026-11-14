@@ -3,7 +3,19 @@ import { citesOnly, fireTwinNarrationSchema } from "@/lib/ai/schemas";
 import { FIRE_EVENTS } from "@/lib/fire-history";
 import { gapCm, ILLUSTRATIVE, itemRisks, planFire, ROOM_ITEMS, stateAt } from "@/lib/fire-twin";
 import { eventCaption } from "@/lib/fire-twin-narration";
-import { buildFlammabilityGrid, cellAt, evidenceRuns, GRID_O2, GRID_PRESSURE, nearestEvidence, toneOf } from "@/lib/flammability-grid";
+import {
+  buildFlammabilityGrid,
+  cellAt,
+  coverageSummary,
+  evidenceRuns,
+  GAP_SHADE_MAX_DISTANCE,
+  gapShade,
+  GRID_O2,
+  GRID_PRESSURE,
+  nearestEvidence,
+  scopeRuns,
+  toneOf,
+} from "@/lib/flammability-grid";
 import type { HabitatInputs } from "@/lib/habitat";
 import { NEAR_DISTANCE } from "@/lib/metrics";
 import { INVESTIGATION_SOURCES, PSI_PORTAL, sourcesForInvestigation } from "@/lib/sources";
@@ -18,7 +30,7 @@ const iss: HabitatInputs = { o2Percent: 21, pressurePsi: 14.7, materialClass: "f
 const lunar: HabitatInputs = { o2Percent: 34, pressurePsi: 8.2, materialClass: "fabric", airflow: "ventilated", gravity: "lunar" };
 
 describe("flammability grid on the real runs", () => {
-  const grid = buildFlammabilityGrid(runs, { materialClass: "fabric" });
+  const grid = buildFlammabilityGrid(runs, { scope: "fabric" });
 
   it("is a 12 x 12 square over the configured ranges", () => {
     expect(grid.columns).toBe(12);
@@ -70,7 +82,7 @@ describe("flammability grid on the real runs", () => {
 
   it("has no real run for foam, wire insulation or gas", () => {
     for (const m of ["foam", "wire-insulation", "gas-leak"] as const) {
-      const g = buildFlammabilityGrid(runs, { materialClass: m });
+      const g = buildFlammabilityGrid(runs, { scope: m });
       expect(g.materialTested).toBe(false);
       expect(g.cells.every((c) => c.status === "untested")).toBe(true);
     }
@@ -83,6 +95,47 @@ describe("flammability grid on the real runs", () => {
     const near = nearestEvidence(plastic, { o2Percent: 21, pressurePsi: 14.7 }, 5);
     expect(near).toHaveLength(5);
     for (let i = 1; i < near.length; i++) expect(near[i]!.distance).toBeGreaterThanOrEqual(near[i - 1]!.distance);
+  });
+});
+
+describe("all-solids scope and coverage summary", () => {
+  const all = buildFlammabilityGrid(runs, { scope: "all-solids" });
+  const fabric = buildFlammabilityGrid(runs, { scope: "fabric" });
+  const tested = (g: typeof all) => g.cells.filter((c) => c.status === "tested").length;
+
+  it("draws every solid-fuel run, including those with no material class", () => {
+    const solids = runs.filter((r) => r.category === "solid");
+    expect(scopeRuns("all-solids", runs)).toHaveLength(solids.length);
+    expect(solids.some((r) => r.materialClass === null)).toBe(true);
+    expect(all.evidenceRunCount).toBe(solids.length);
+    expect(all.evidenceRunCount).toBeGreaterThan(fabric.evidenceRunCount);
+  });
+
+  it("covers at least as many squares as any single solid material", () => {
+    expect(tested(all)).toBeGreaterThanOrEqual(tested(fabric));
+    for (const m of ["plastic", "fabric"] as const) expect(tested(all)).toBeGreaterThanOrEqual(tested(buildFlammabilityGrid(runs, { scope: m })));
+  });
+
+  it("shades untested squares by distance to the nearest run, from 0 to 1", () => {
+    expect(gapShade(null)).toBe(1);
+    expect(gapShade(0.6)).toBe(0);
+    expect(gapShade(GAP_SHADE_MAX_DISTANCE)).toBe(1);
+    expect(gapShade(5)).toBe(1);
+    expect(gapShade(1.5)).toBeGreaterThan(gapShade(1));
+    for (const c of all.cells.filter((x) => x.status === "untested")) {
+      const g = gapShade(c.nearestDistance);
+      expect(g).toBeGreaterThanOrEqual(0);
+      expect(g).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it("counts squares and finds the run nearest the cabin", () => {
+    const s = coverageSummary(all, scopeRuns("all-solids", runs), lunar);
+    expect(s.tested + s.near + s.untested).toBe(s.total);
+    expect(s.total).toBe(144);
+    expect(s.nearest).not.toBeNull();
+    expect(s.nearest!.run.category).toBe("solid");
+    expect(coverageSummary(buildFlammabilityGrid(runs, { scope: "gas-leak" }), [], lunar).nearest).toBeNull();
   });
 });
 

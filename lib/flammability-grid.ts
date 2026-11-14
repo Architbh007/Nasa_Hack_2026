@@ -41,8 +41,11 @@ export type GridCell = {
   nearestDistance: number | null;
 };
 
+/** What the grid draws: one material class, or every solid-fuel run (including runs with no material class recorded). */
+export type GridScope = MaterialClass | "all-solids";
+
 export type FlammabilityGrid = {
-  materialClass: MaterialClass;
+  scope: GridScope;
   /** False when no real run exists for this material (for example foam, wire insulation, gas). */
   materialTested: boolean;
   evidenceRunCount: number;
@@ -62,6 +65,11 @@ export function evidenceRuns(materialClass: MaterialClass, runs: readonly Run[])
   return runs.filter((r) => r.category === category && (category !== "solid" || r.materialClass === materialClass));
 }
 
+/** Real runs a grid scope draws. "all-solids" keeps every solid-fuel run, even those whose material class is not recorded. */
+export function scopeRuns(scope: GridScope, runs: readonly Run[]): Run[] {
+  return scope === "all-solids" ? runs.filter((r) => r.category === "solid") : evidenceRuns(scope, runs);
+}
+
 const inside = (v: number, lo: number, hi: number, last: boolean) => v >= lo && (last ? v <= hi : v < hi);
 
 const DOWN: ReadonlySet<Outcome> = new Set<Outcome>(["extinguished", "blowoff", "no-ignition"]);
@@ -74,8 +82,8 @@ export function toneOf(counts: Partial<Record<Outcome, number>>): CellTone {
   return "mixed";
 }
 
-export function buildFlammabilityGrid(runs: readonly Run[], opts: { materialClass: MaterialClass }): FlammabilityGrid {
-  const evidence = evidenceRuns(opts.materialClass, runs);
+export function buildFlammabilityGrid(runs: readonly Run[], opts: { scope: GridScope }): FlammabilityGrid {
+  const evidence = scopeRuns(opts.scope, runs);
   const placed = placeRuns(evidence);
   const columns = Math.round((GRID_O2.max - GRID_O2.min) / GRID_O2.step);
   const rows = Math.round((GRID_PRESSURE.max - GRID_PRESSURE.min) / GRID_PRESSURE.step);
@@ -110,7 +118,7 @@ export function buildFlammabilityGrid(runs: readonly Run[], opts: { materialClas
     }
   }
   return {
-    materialClass: opts.materialClass,
+    scope: opts.scope,
     materialTested: evidence.length > 0,
     evidenceRunCount: evidence.length,
     offChartRunCount: placed.length - drawn,
@@ -139,4 +147,37 @@ export function nearestEvidence(
   k = 5
 ): NearRun[] {
   return nearestRuns(point, evidence, { count: k });
+}
+
+/** Run distance beyond which an untested square is drawn at its darkest shade (about 25 points of O2 or 7.5 psi away). */
+export const GAP_SHADE_MAX_DISTANCE = 2.5;
+
+/**
+ * 0 for an untested square just outside the "near" distance, rising to 1 for a square far from any real run.
+ * Used only to shade untested squares: a dark square is a bigger gap, not a riskier one.
+ */
+export function gapShade(distance: number | null): number {
+  if (distance === null) return 1;
+  return Math.min(1, Math.max(0, (distance - NEAR_DISTANCE) / (GAP_SHADE_MAX_DISTANCE - NEAR_DISTANCE)));
+}
+
+export type CoverageSummary = {
+  total: number;
+  tested: number;
+  near: number;
+  untested: number;
+  /** The real run closest to the cabin condition, or null when the scope has no placeable run. */
+  nearest: NearRun | null;
+};
+
+/** Headline numbers for the grid: how much of the window has real runs, and how far the cabin is from the nearest one. */
+export function coverageSummary(grid: FlammabilityGrid, evidence: readonly Run[], point: { o2Percent: number; pressurePsi: number }): CoverageSummary {
+  const count = (status: CellStatus) => grid.cells.filter((c) => c.status === status).length;
+  return {
+    total: grid.cells.length,
+    tested: count("tested"),
+    near: count("near"),
+    untested: count("untested"),
+    nearest: nearestRuns(point, evidence, { count: 1 })[0] ?? null,
+  };
 }

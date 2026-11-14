@@ -2,18 +2,21 @@
 
 import { useId, useMemo, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
-import { MATERIAL_LABEL, OUTCOME_LABEL } from "@/lib/constants";
+import { MATERIAL_CATEGORY, MATERIAL_LABEL, OUTCOME_LABEL } from "@/lib/constants";
 import {
   buildFlammabilityGrid,
   cellAt,
-  evidenceRuns,
+  coverageSummary,
+  gapShade,
   GRID_O2,
   GRID_PRESSURE,
   nearestEvidence,
   onGrid,
+  scopeRuns,
   TONE_LABEL,
   type CellTone,
   type GridCell,
+  type GridScope,
 } from "@/lib/flammability-grid";
 import type { HabitatInputs } from "@/lib/habitat";
 import { MATERIAL_CLASSES, type Investigation, type MaterialClass, type Run, type Scenario } from "@/lib/schema";
@@ -27,6 +30,8 @@ export const TONE_COLOR: Record<CellTone, string> = {
   unstated: "#3b4658",
 };
 const NEAR_FILL = "#8d9ab0";
+/** Untested squares are shaded from pale (just outside tested air) to dark (far from any real run). */
+const GAP_FILL = "#0b0d12";
 const UNTESTED_STRIPE = "#9a9fa9";
 const CABIN = "#ffffff";
 
@@ -41,6 +46,8 @@ const MATERIAL_SHORT: Record<MaterialClass, string> = {
   "liquid-fuel": "Liquid",
   "gas-leak": "Gas leak",
 };
+
+const scopeLabelOf = (scope: GridScope) => (scope === "all-solids" ? "solid-fuel" : MATERIAL_LABEL[scope].toLowerCase());
 
 type LabelPlace = "above-right" | "above-left" | "below-right" | "below-left";
 /** Hand-placed preset labels so neighbours (Mars transit and the rover share 10.2 psi) don't collide. */
@@ -72,14 +79,14 @@ function CellDetails({
   evidence,
   acronym,
   materialTested,
-  materialClass,
+  scopeLabel,
   isCabin,
 }: {
   cell: GridCell;
   evidence: readonly Run[];
   acronym: (id: string) => string;
   materialTested: boolean;
-  materialClass: MaterialClass;
+  scopeLabel: string;
   isCabin: boolean;
 }) {
   const near = nearestEvidence(evidence, { o2Percent: (cell.o2Min + cell.o2Max) / 2, pressurePsi: (cell.pMin + cell.pMax) / 2 }, 5);
@@ -112,8 +119,8 @@ function CellDetails({
             {cell.status === "tested"
               ? `Tested: ${counts.map(([o, k]) => `${k} ${OUTCOME_LABEL[o].toLowerCase()}`).join(", ")}.`
               : cell.status === "near"
-                ? `Not tested in this square, but a real ${MATERIAL_LABEL[materialClass].toLowerCase()} run lies close by (see the nearest runs below).`
-                : `Untested: no real ${MATERIAL_LABEL[materialClass].toLowerCase()} run in or near this square.`}
+                ? `Not tested in this square, but a real ${scopeLabel} run lies close by (see the nearest runs below).`
+                : `Untested: no real ${scopeLabel} run in or near this square.`}
           </p>
           <div className="space-y-1.5">
             <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Nearest real runs (evidence)</p>
@@ -132,6 +139,12 @@ function CellDetails({
                 </li>
               ))}
             </ul>
+            {cell.status !== "tested" && near[0] && (
+              <p className="text-[11px] text-muted-foreground">
+                The closest real run is {Math.abs(near[0].dO2).toFixed(1)} points of O2 {near[0].dO2 >= 0 ? "above" : "below"} and{" "}
+                {Math.abs(near[0].dPsi).toFixed(1)} psi {near[0].dPsi >= 0 ? "above" : "below"} the centre of this square.
+              </p>
+            )}
             {near.some((n) => n.assumedPressure) && (
               <p className="text-[11px] text-muted-foreground">* Pressure was not recorded; the run is placed at the cited ISS nominal 14.7 psi.</p>
             )}
@@ -139,7 +152,7 @@ function CellDetails({
         </>
       ) : (
         <p className="rounded-md bg-warning/10 px-2.5 py-2 text-xs leading-relaxed text-warning">
-          No real run of {MATERIAL_LABEL[materialClass].toLowerCase()} with a recorded oxygen level and pressure exists in the data we hold
+          No real {scopeLabel} run with a recorded oxygen level and pressure exists in the data we hold
           (it only appears in smoke or detection studies, or not at all). Nothing here can be backed by a run.
         </p>
       )}
@@ -163,8 +176,32 @@ export function FlammabilityGrid({
   onMaterial: (m: MaterialClass) => void;
 }) {
   const patternId = useId().replace(/:/g, "");
-  const grid = useMemo(() => buildFlammabilityGrid(runs, { materialClass: inputs.materialClass }), [runs, inputs.materialClass]);
-  const evidence = useMemo(() => evidenceRuns(inputs.materialClass, runs), [inputs.materialClass, runs]);
+  // "All solids" is the default view for a solid material: it draws every solid-fuel run, including those with no material class recorded.
+  const solidMaterial = MATERIAL_CATEGORY[inputs.materialClass] === "solid";
+  const [allSolids, setAllSolids] = useState(true);
+  const [materialSeen, setMaterialSeen] = useState(inputs.materialClass);
+  if (materialSeen !== inputs.materialClass) {
+    // A material picked from the controls (not the pills below) narrows the grid to that material.
+    setMaterialSeen(inputs.materialClass);
+    setAllSolids(false);
+  }
+  const scope: GridScope = allSolids && solidMaterial ? "all-solids" : inputs.materialClass;
+  const scopeLabel = scopeLabelOf(scope);
+  const pickAllSolids = () => {
+    if (!solidMaterial) {
+      setMaterialSeen("fabric");
+      onMaterial("fabric");
+    }
+    setAllSolids(true);
+  };
+  const pickMaterial = (m: MaterialClass) => {
+    setAllSolids(false);
+    onMaterial(m);
+  };
+
+  const grid = useMemo(() => buildFlammabilityGrid(runs, { scope }), [runs, scope]);
+  const evidence = useMemo(() => scopeRuns(scope, runs), [scope, runs]);
+  const summary = useMemo(() => coverageSummary(grid, evidence, inputs), [grid, evidence, inputs]);
   const acronymById = useMemo(() => new Map(investigations.map((i) => [i.id, i.acronym] as const)), [investigations]);
   const acronym = (id: string) => acronymById.get(id) ?? id;
 
@@ -218,16 +255,28 @@ export function FlammabilityGrid({
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Compare material</span>
         <div role="radiogroup" aria-label="Material" className="flex flex-wrap gap-1 rounded-lg border border-border bg-background/40 p-1">
+          <button
+            type="button"
+            role="radio"
+            aria-checked={scope === "all-solids"}
+            onClick={pickAllSolids}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs transition-colors",
+              scope === "all-solids" ? "bg-secondary text-foreground ring-1 ring-primary/40" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            All solids
+          </button>
           {MATERIAL_CLASSES.map((m) => (
             <button
               key={m}
               type="button"
               role="radio"
-              aria-checked={inputs.materialClass === m}
-              onClick={() => onMaterial(m)}
+              aria-checked={scope === m}
+              onClick={() => pickMaterial(m)}
               className={cn(
                 "rounded-md px-2.5 py-1 text-xs transition-colors",
-                inputs.materialClass === m ? "bg-secondary text-foreground ring-1 ring-primary/40" : "text-muted-foreground hover:text-foreground"
+                scope === m ? "bg-secondary text-foreground ring-1 ring-primary/40" : "text-muted-foreground hover:text-foreground"
               )}
             >
               {MATERIAL_SHORT[m]}
@@ -236,6 +285,25 @@ export function FlammabilityGrid({
         </div>
       </div>
 
+      <p className="rounded-lg border border-border bg-background/40 px-3.5 py-2.5 text-sm leading-relaxed" aria-live="polite">
+        <span className="tabular font-semibold">
+          {summary.tested} of {summary.total}
+        </span>{" "}
+        squares in this window hold a real {scopeLabel} run, and {summary.near} more have one close by.{" "}
+        {summary.nearest ? (
+          <>
+            The run nearest your cabin ({acronym(summary.nearest.run.investigationId)}) is{" "}
+            <span className="tabular font-medium">
+              {Math.abs(summary.nearest.dO2).toFixed(1)} points of O2 {summary.nearest.dO2 >= 0 ? "above" : "below"} and{" "}
+              {Math.abs(summary.nearest.dPsi).toFixed(1)} psi {summary.nearest.dPsi >= 0 ? "above" : "below"}
+            </span>{" "}
+            your air.
+          </>
+        ) : (
+          <>No real {scopeLabel} run exists for this material, so none can sit near your cabin.</>
+        )}
+      </p>
+
       <div className="grid gap-5 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
         <figure className="min-w-0 space-y-2">
           <svg
@@ -243,7 +311,7 @@ export function FlammabilityGrid({
             className="h-auto w-full touch-manipulation rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
             role="img"
             tabIndex={0}
-            aria-label={`Flammability grid for ${MATERIAL_LABEL[inputs.materialClass].toLowerCase()}: oxygen ${GRID_O2.min} to ${GRID_O2.max} percent across, pressure ${GRID_PRESSURE.min} to ${GRID_PRESSURE.max} psi up. ${
+            aria-label={`Coverage grid for ${scopeLabel} runs: oxygen ${GRID_O2.min} to ${GRID_O2.max} percent across, pressure ${GRID_PRESSURE.min} to ${GRID_PRESSURE.max} psi up. ${
               cabinCell
                 ? `Your cabin's square: ${cabinCell.status === "tested" ? `${cabinCell.runs.length} real runs` : cabinCell.status === "near" ? "no run inside, one nearby" : "untested"}.`
                 : "Your cabin is off this chart."
@@ -253,16 +321,19 @@ export function FlammabilityGrid({
           >
             <defs>
               <pattern id={patternId} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                <rect width="2.2" height="6" fill={UNTESTED_STRIPE} fillOpacity="0.55" />
+                <rect width="2.2" height="6" fill={UNTESTED_STRIPE} fillOpacity="0.4" />
               </pattern>
             </defs>
 
             {grid.cells.map((c) => {
               const cx = x(c.o2Min);
               const cy = y(c.pMax);
-              const fill = !grid.materialTested ? "#40434a" : c.status === "tested" && c.tone ? TONE_COLOR[c.tone] : NEAR_FILL;
+              const gap = c.status === "untested" || !grid.materialTested;
+              const fill = !grid.materialTested ? "#40434a" : c.status === "tested" && c.tone ? TONE_COLOR[c.tone] : gap ? GAP_FILL : NEAR_FILL;
               const solid = grid.materialTested && c.status === "tested";
-              const striped = !grid.materialTested || c.status === "untested";
+              const striped = gap;
+              // Pale just outside tested air, dark far from any real run.
+              const opacity = solid ? 0.92 : gap ? 0.1 + 0.62 * gapShade(grid.materialTested ? c.nearestDistance : null) : 0.3;
               return (
                 <g
                   key={`${c.col}-${c.row}`}
@@ -270,7 +341,7 @@ export function FlammabilityGrid({
                   onClick={() => onMove((c.o2Min + c.o2Max) / 2, (c.pMin + c.pMax) / 2)}
                   className="cursor-pointer"
                 >
-                  <rect x={cx + 1} y={cy + 1} width={CELL - 2} height={CELL - 2} rx={4} fill={fill} fillOpacity={solid ? 0.92 : 0.3} />
+                  <rect x={cx + 1} y={cy + 1} width={CELL - 2} height={CELL - 2} rx={4} fill={fill} fillOpacity={opacity} />
                   {striped && <rect x={cx + 1} y={cy + 1} width={CELL - 2} height={CELL - 2} rx={4} fill={`url(#${patternId})`} />}
                   {focused === c && <rect x={cx + 1} y={cy + 1} width={CELL - 2} height={CELL - 2} rx={4} fill="none" stroke="#e8e9ec" strokeWidth={1.5} strokeDasharray="3 2" />}
                 </g>
@@ -333,7 +404,14 @@ export function FlammabilityGrid({
             <Swatch color={TONE_COLOR.mixed} label="Mixed or other" />
             <Swatch color={TONE_COLOR.unstated} label="Run, outcome not stated" />
             <Swatch color={NEAR_FILL} label="No run inside, one nearby" />
-            <Swatch color="#62666e" striped label="Striped = untested" />
+            <span className="inline-flex items-center gap-1.5">
+              <span
+                aria-hidden
+                className="inline-block h-3 w-14 rounded-[3px] border border-white/10"
+                style={{ background: `linear-gradient(90deg, ${GAP_FILL}1f, ${GAP_FILL}b8), repeating-linear-gradient(135deg, ${UNTESTED_STRIPE}66 0 2px, transparent 2px 5px)` }}
+              />
+              Striped = untested: pale is just outside tested air, dark is far from any real run
+            </span>
             <span className="inline-flex items-center gap-1.5">
               <span aria-hidden className="inline-block size-3 rounded-full border-2 border-white bg-[#ff7a3d]" /> Your cabin
             </span>
@@ -350,7 +428,7 @@ export function FlammabilityGrid({
               evidence={evidence}
               acronym={acronym}
               materialTested={grid.materialTested}
-              materialClass={inputs.materialClass}
+              scopeLabel={scopeLabel}
               isCabin={shown === cabinCell}
             />
           ) : (
@@ -360,8 +438,8 @@ export function FlammabilityGrid({
             </p>
           )}
           <p className="border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
-            Click a square to move your cabin there. Each colour shows only what the real {MATERIAL_LABEL[inputs.materialClass].toLowerCase()} runs inside that
-            square recorded ({grid.evidenceRunCount} runs in the data; no prediction is made). Stripes mark squares with no run in or near them.
+            Click a square to move your cabin there. Each colour shows only what the real {scopeLabel} runs inside that
+            square recorded ({grid.evidenceRunCount} runs in the data; no prediction is made). Stripes mark squares with no run in or near them; the darker the square, the further it is from any real run (a bigger gap, not a riskier cabin).
             {grid.offChartRunCount > 0 && <> {grid.offChartRunCount} placeable runs lie outside this window.</>}
             {offChartPresets.length > 0 && (
               <> Off chart: {offChartPresets.map((s) => `${s.label} (${s.o2Percent}% O2, ${s.pressurePsi} psi)`).join(", ")}.</>
