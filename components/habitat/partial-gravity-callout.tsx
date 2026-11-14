@@ -7,8 +7,8 @@ import type { HabitatGravity } from "@/lib/schema";
 export function PartialGravityCallout({ gravity }: { gravity: HabitatGravity }) {
   if (gravity !== "lunar" && gravity !== "mars") return null;
   return (
-    <Alert className="border-[#9085e9]/40 bg-[#9085e9]/10">
-      <Orbit className="text-[#b3abf2]" aria-hidden />
+    <Alert className="border-link/30 bg-[oklch(0.22_0.015_235/0.85)]">
+      <Orbit className="text-link" aria-hidden />
       <AlertTitle>No partial-gravity combustion data for {GRAVITY_LABEL[gravity]}</AlertTitle>
       <AlertDescription className="space-y-1.5 text-sm leading-relaxed">
         <p>

@@ -28,9 +28,8 @@ export default function HabitatPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Main feature"
         title="Habitat Flammability Explorer"
-        description="Set a proposed cabin atmosphere and see where it sits relative to tested microgravity combustion conditions, which research covers it, what is untested, and a predicted ignition likelihood."
+        description="Pick a cabin air. See how likely a fire is and whether NASA has tested it, read the SI's explanation with its sources, then watch the same fire play out in a cabin module."
       />
       <Suspense fallback={<HabitatSkeleton />}>
         <HabitatView investigations={investigations} tests={tests} scenarios={scenarios} model={model} />

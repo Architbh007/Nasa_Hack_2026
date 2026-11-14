@@ -1,4 +1,5 @@
 import { computeRanges } from "@/lib/ranges";
+import { sourceUrlsFor } from "@/lib/sources";
 import type { Investigation, Scenario, TestRun } from "@/lib/schema";
 import { DESIGNS } from "./designs";
 import { buildKeyFindings } from "./findings";
@@ -12,8 +13,6 @@ export type GeneratedDataset = {
   tests: TestRun[];
   scenarios: Scenario[];
 };
-
-const PSI_PORTAL = "https://psi.nasa.gov";
 
 /**
  * Build the full synthetic dataset from a seed. Each investigation draws from
@@ -64,7 +63,7 @@ export function generateDataset(seed: number): GeneratedDataset {
       keyFindings: buildKeyFindings(d, runs),
       safetyPillars: [...d.safetyPillars],
       earthApplications: [...d.earthApplications],
-      sourceUrls: [PSI_PORTAL],
+      sourceUrls: sourceUrlsFor(d.id),
       dataSource: "synthetic" as const,
     };
   });

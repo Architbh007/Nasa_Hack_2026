@@ -10,20 +10,14 @@ export function SyntheticBanner() {
     <div
       role="note"
       aria-label="Synthetic demo data"
-      className="sticky top-0 z-40 flex items-center justify-center gap-2 border-b border-warning/30 bg-[#2a1f05]/95 px-4 py-1.5 text-xs text-amber-100 backdrop-blur"
+      className="sticky top-0 z-40 flex items-center justify-center gap-2 border-b border-warning/25 bg-[oklch(0.19_0.02_80/0.92)] px-4 py-1.5 text-xs text-foreground/85 backdrop-blur"
     >
       <FlaskConical className="size-3.5 shrink-0 text-warning" aria-hidden />
-      <span className="font-semibold tracking-wide text-warning">
-        Synthetic demo data
+      <span className="font-semibold text-warning">Synthetic demo data</span>
+      <span className="hidden sm:inline">
+        Real PSI investigation names, hardware and source links; generated measurements. Not NASA results.
       </span>
-      <span className="hidden text-amber-100/80 sm:inline">
-        Real PSI investigation names and hardware, generated measurements. Not
-        NASA results.
-      </span>
-      <Link
-        href="/about#data-policy"
-        className="underline decoration-amber-100/40 underline-offset-2 hover:text-white"
-      >
+      <Link href="/about#data-policy" className="underline decoration-foreground/30 underline-offset-2 hover:text-foreground">
         Data policy
       </Link>
     </div>

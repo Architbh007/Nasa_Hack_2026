@@ -22,7 +22,6 @@ export default function ExplorePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Explore"
         title="Investigation Explorer"
         description={`${investigations.length} PSI combustion investigations and ${tests.length} test runs. Filter by fuel phase, hardware, safety pillar, habitat relevance and tested oxygen range.`}
       />

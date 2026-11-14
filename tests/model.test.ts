@@ -33,7 +33,7 @@ describe("featurize", () => {
   it("encodes quiescent flow and one-hot phase", () => {
     const f = featurize({ o2Percent: 21, pressurePsi: 14.7, flowCmS: null, fuelPhase: "liquid", diluentPercent: null });
     expect(f[0]).toBeCloseTo(3.087, 3);
-    expect(f.slice(2)).toEqual([0, 1, 0, 1, 0, 0]);
+    expect(f.slice(2)).toEqual([0, 1, 0, 1, 0, 0, 0]);
   });
 });
 
@@ -70,6 +70,13 @@ describe("ignition model on the synthetic dataset", () => {
     const table = coefficientTable(model);
     expect(table.find((r) => r.key === "pO2")!.perUnitWeight).toBeGreaterThan(0);
     expect(table.find((r) => r.key === "diluent")!.perUnitWeight).toBeLessThan(0);
+  });
+
+  it("encodes plastic only for solid fuels", () => {
+    const base = { o2Percent: 21, pressurePsi: 14.7, flowCmS: 20, diluentPercent: null } as const;
+    expect(featurize({ ...base, fuelPhase: "solid", materialClass: "plastic" }).at(-1)).toBe(1);
+    expect(featurize({ ...base, fuelPhase: "solid", materialClass: "fabric" }).at(-1)).toBe(0);
+    expect(featurize({ ...base, fuelPhase: "gas", materialClass: "plastic" }).at(-1)).toBe(0);
   });
 
   it("assigns holdout deterministically", () => {

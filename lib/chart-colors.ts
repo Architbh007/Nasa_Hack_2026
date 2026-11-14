@@ -1,7 +1,7 @@
 import type { FuelPhase, Outcome } from "@/lib/schema";
 
 /**
- * Chart palette (dark surface #0d1422). Hues validated with the dataviz
+ * Chart palette (dark surface #16171b). Hues validated with the dataviz
  * palette checker. Assign categorical slots in this fixed order, never cycled.
  */
 export const SERIES_COLORS = ["#3987e5", "#d95926", "#199e70", "#c98500"] as const;
@@ -16,7 +16,7 @@ export const FUEL_PHASE_COLOR: Record<FuelPhase, string> = {
   gas: "#199e70",
 };
 
-export const NEUTRAL_MARK = "#5d6a7e";
+export const NEUTRAL_MARK = "#62666e";
 
 export type OutcomeGroup = "sustained" | "extinguished" | "cool-flame" | "no-ignition";
 
@@ -57,9 +57,9 @@ export const IGNITION_STYLE = {
 
 /** Chart chrome on the dark card surface. */
 export const CHART_INK = {
-  grid: "#1f2a3d",
-  axis: "#334155",
-  tick: "#8d9ab0",
-  label: "#a9b4c6",
-  surface: "#0d1422",
+  grid: "#25272c",
+  axis: "#3a3d44",
+  tick: "#9a9fa9",
+  label: "#b4b8c0",
+  surface: "#16171b",
 };

@@ -1,6 +1,5 @@
-import type Anthropic from "@anthropic-ai/sdk";
 import type { z } from "zod";
-import { aiConfig, anthropic, fallbackParams, textOf } from "@/lib/ai/client";
+import { aiConfig, openai, type ChatMessage } from "@/lib/ai/client";
 import { cacheKey, readCache, writeCache } from "@/lib/ai/cache";
 import { SiError } from "@/lib/ai/errors";
 import { PROMPT_VERSION, retryNote } from "@/lib/ai/prompts";
@@ -16,6 +15,7 @@ export type StructuredRequest<S extends z.ZodType> = {
   /** Grounded input; serialized into the user message and the cache key. */
   input: unknown;
   schema: S;
+  /** How much thinking the task needs; kept as a hint (not sent, so any chat model works). */
   effort?: Effort;
   maxTokens?: number;
 };
@@ -39,25 +39,19 @@ function describeIssues(err: z.ZodError): string {
     .join("; ");
 }
 
-async function callModel(
-  model: string,
-  system: string,
-  messages: Anthropic.Beta.Messages.BetaMessageParam[],
-  effort: Effort,
-  maxTokens: number
-): Promise<string> {
-  const response = await anthropic().beta.messages.create({
+async function callModel(model: string, system: string, messages: ChatMessage[], maxTokens: number): Promise<string> {
+  const response = await openai().chat.completions.create({
     model,
-    max_tokens: maxTokens,
-    system,
-    messages,
-    output_config: { effort },
-    ...fallbackParams(model),
+    max_completion_tokens: maxTokens,
+    // JSON mode: the reply must be a single JSON object (the prompts say so too).
+    response_format: { type: "json_object" },
+    messages: [{ role: "system", content: system }, ...messages],
   });
-  if (response.stop_reason === "refusal") {
+  const choice = response.choices[0];
+  if (choice?.message.refusal || choice?.finish_reason === "content_filter") {
     throw new SiError("refused", "The SI declined to answer this request. Try rephrasing or a different input.", 422);
   }
-  return textOf(response);
+  return (choice?.message.content ?? "").trim();
 }
 
 /**
@@ -76,13 +70,12 @@ export async function structuredCall<S extends z.ZodType>(req: StructuredRequest
   }
 
   const userText = `Data (JSON):\n${JSON.stringify(req.input, null, 1)}`;
-  const messages: Anthropic.Beta.Messages.BetaMessageParam[] = [{ role: "user", content: userText }];
-  const effort = req.effort ?? "low";
+  const messages: ChatMessage[] = [{ role: "user", content: userText }];
   const maxTokens = req.maxTokens ?? 8000;
 
   let lastError = "";
   for (let attempt = 0; attempt < 2; attempt++) {
-    const text = await callModel(req.model, req.system, messages, effort, maxTokens);
+    const text = await callModel(req.model, req.system, messages, maxTokens);
     try {
       const parsed = req.schema.safeParse(extractJson(text));
       if (parsed.success) {

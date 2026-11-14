@@ -3,7 +3,7 @@ import { z } from "zod";
 import { citedIds, linkifyCitations } from "@/lib/citations";
 import { habitatInterpretationSchema } from "@/lib/ai/schemas";
 
-// In-memory cache and a scripted fake Anthropic client.
+// In-memory cache and a scripted fake OpenAI client.
 const store = new Map<string, unknown>();
 vi.mock("@/lib/ai/cache", async (orig) => {
   const real = await orig<typeof import("@/lib/ai/cache")>();
@@ -18,19 +18,18 @@ vi.mock("@/lib/ai/cache", async (orig) => {
 
 const replies: string[] = [];
 const create = vi.fn(async () => ({
-  stop_reason: "end_turn",
-  content: [{ type: "text", text: replies.shift() ?? "" }],
+  choices: [{ finish_reason: "stop", message: { role: "assistant", content: replies.shift() ?? "", refusal: null as string | null } }],
 }));
 vi.mock("@/lib/ai/client", async (orig) => {
   const real = await orig<typeof import("@/lib/ai/client")>();
-  return { ...real, anthropic: () => ({ beta: { messages: { create } } }) };
+  return { ...real, openai: () => ({ chat: { completions: { create } } }) };
 });
 
 const { extractJson, structuredCall } = await import("@/lib/ai/structured");
 const { SiError } = await import("@/lib/ai/errors");
 
 const Schema = z.object({ answer: z.string().min(1) });
-const req = (input: unknown) => ({ kind: "test", label: "t", model: "claude-sonnet-5-5", system: "sys", input, schema: Schema });
+const req = (input: unknown) => ({ kind: "test", label: "t", model: "gpt-test", system: "sys", input, schema: Schema });
 
 beforeEach(() => {
   store.clear();
@@ -77,13 +76,12 @@ describe("structuredCall", () => {
     await expect(structuredCall(req({ q: 3 }))).rejects.toMatchObject({ code: "invalid_output" });
   });
 
-  it("opts the main model into server-side refusal fallbacks but not the fast model", async () => {
-    replies.push('{"answer":"a"}', '{"answer":"b"}');
+  it("sends the system prompt first and asks for JSON mode", async () => {
+    replies.push('{"answer":"a"}');
     await structuredCall(req({ q: 4 }));
-    await structuredCall({ ...req({ q: 5 }), model: "claude-haiku-5-5" });
-    const [main, fast] = create.mock.calls as unknown as Array<[Record<string, unknown>]>;
-    expect(main?.[0]).toMatchObject({ fallbacks: "default", betas: ["server-side-fallback-2026-07-01"] });
-    expect(fast?.[0]).not.toHaveProperty("fallbacks");
+    const [call] = create.mock.calls as unknown as Array<[{ messages: Array<{ role: string; content: string }>; response_format: unknown }]>;
+    expect(call?.[0].messages[0]).toEqual({ role: "system", content: "sys" });
+    expect(call?.[0].response_format).toEqual({ type: "json_object" });
   });
 
   it("never calls the API in cache-only mode", async () => {
@@ -94,7 +92,9 @@ describe("structuredCall", () => {
   });
 
   it("maps a refusal stop reason to a friendly error", async () => {
-    create.mockImplementationOnce(async () => ({ stop_reason: "refusal", content: [] }));
+    create.mockImplementationOnce(async () => ({
+      choices: [{ finish_reason: "stop", message: { role: "assistant", content: null as unknown as string, refusal: "I can't help with that." } }],
+    }));
     await expect(structuredCall(req({ q: 7 }))).rejects.toMatchObject({ code: "refused" });
   });
 });
@@ -102,6 +102,7 @@ describe("structuredCall", () => {
 describe("habitat interpretation schema", () => {
   const schema = habitatInterpretationSchema(new Set(["bass", "bass-ii"]));
   const base = {
+    plainSummary: "p",
     summary: "s",
     riskDrivers: ["r"],
     relevantEvidence: [{ investigationId: "bass", evidence: "e", relevance: "r" }],

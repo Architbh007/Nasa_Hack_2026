@@ -26,6 +26,7 @@ export const FEATURES = [
   { key: "liquid", label: "Fuel phase: liquid", unit: "0/1", continuous: false },
   { key: "gas", label: "Fuel phase: gas", unit: "0/1", continuous: false },
   { key: "diluent", label: "Diluent concentration", unit: "%", continuous: true },
+  { key: "plastic", label: "Solid material: plastic (vs fabric)", unit: "0/1", continuous: false },
 ] as const;
 
 export type FeatureKey = (typeof FEATURES)[number]["key"];
@@ -37,6 +38,8 @@ export type IgnitionInput = {
   flowCmS: number | null;
   fuelPhase: FuelPhase;
   diluentPercent: number | null;
+  /** Solid material class; only plastic vs fabric is learnable from the ignition studies. */
+  materialClass?: MaterialClass | null;
 };
 
 export function featurize(input: IgnitionInput): number[] {
@@ -50,6 +53,7 @@ export function featurize(input: IgnitionInput): number[] {
     input.fuelPhase === "liquid" ? 1 : 0,
     input.fuelPhase === "gas" ? 1 : 0,
     input.diluentPercent ?? 0,
+    input.fuelPhase === "solid" && input.materialClass === "plastic" ? 1 : 0,
   ];
 }
 
@@ -154,6 +158,7 @@ export function testToInput(t: TestRun, fuelPhase: FuelPhase): IgnitionInput {
     flowCmS: t.flowCmS,
     fuelPhase,
     diluentPercent: t.diluentPercent,
+    materialClass: materialClassForFuel(t.fuel),
   };
 }
 

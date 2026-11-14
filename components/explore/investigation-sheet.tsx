@@ -25,6 +25,7 @@ import {
   percent,
 } from "@/lib/format";
 import { HABITAT_KEYS, type Investigation, type TestRun } from "@/lib/schema";
+import { sourcesOf } from "@/lib/sources";
 import { ignitionRate } from "@/lib/test-metrics";
 import { cn } from "@/lib/utils";
 
@@ -156,11 +157,18 @@ export function InvestigationDetail({ inv, tests }: { inv: Investigation; tests:
       <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
         <SyntheticTag />
         <span>Record id {inv.id}</span>
-        {inv.sourceUrls.map((u) => (
-          <a key={u} href={u} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-link hover:underline">
-            Source <ExternalLink className="size-3" aria-hidden />
-          </a>
-        ))}
+      </div>
+      <div className="space-y-1.5">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Original NASA sources</p>
+        <ul className="space-y-1 text-xs">
+          {sourcesOf(inv).map((s) => (
+            <li key={s.url}>
+              <a href={s.url} target="_blank" rel="noreferrer" className="inline-flex items-start gap-1 text-link hover:underline">
+                {s.label} <ExternalLink className="mt-0.5 size-3 shrink-0" aria-hidden />
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

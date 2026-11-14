@@ -88,37 +88,46 @@
 }
 
 .dark {
-  /* FireSight space-mission theme: deep navy plane, flame-orange primary, cyan accent */
-  --background: #060a13;
-  --foreground: #e6ebf4;
-  --card: #0d1422;
-  --card-foreground: #e6ebf4;
-  --popover: #0f1828;
-  --popover-foreground: #e6ebf4;
+  /*
+   * FireSight mission-control theme: graphite grays (near-zero chroma, a hair
+   * cool) over a quiet deep-space backdrop. Flame orange is reserved for
+   * actions, selection and fire; data colours live in lib/chart-colors.ts.
+   */
+  --background: oklch(0.155 0.004 264);
+  --foreground: oklch(0.93 0.003 264);
+  --card: oklch(0.205 0.004 264);
+  --card-foreground: oklch(0.93 0.003 264);
+  --popover: oklch(0.235 0.005 264);
+  --popover-foreground: oklch(0.93 0.003 264);
   --primary: #ff7a3d;
   --primary-foreground: #160803;
-  --secondary: #172236;
-  --secondary-foreground: #e6ebf4;
-  --muted: #141e30;
-  --muted-foreground: #8d9ab0;
-  --accent: #1a2a44;
-  --accent-foreground: #e6ebf4;
+  --secondary: oklch(0.265 0.005 264);
+  --secondary-foreground: oklch(0.93 0.003 264);
+  --muted: oklch(0.24 0.004 264);
+  --muted-foreground: oklch(0.72 0.008 264);
+  --accent: oklch(0.29 0.006 264);
+  --accent-foreground: oklch(0.95 0.003 264);
   --destructive: #e66767;
-  --border: rgb(148 163 184 / 14%);
-  --input: rgb(148 163 184 / 18%);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
   --ring: #ff7a3d;
+  /* Deep-space backdrop: nebula light and the panel edge highlight. */
+  --space-deep: oklch(0.12 0.006 264);
+  --nebula-cool: oklch(0.55 0.05 240 / 0.16);
+  --nebula-ember: oklch(0.6 0.13 45 / 0.07);
+  --panel-highlight: oklch(1 0 0 / 0.05);
   --chart-1: #3987e5;
   --chart-2: #d95926;
   --chart-3: #199e70;
   --chart-4: #c98500;
   --chart-5: #9085e9;
-  --sidebar: #080e1a;
-  --sidebar-foreground: #c9d2e0;
+  --sidebar: oklch(0.175 0.004 264 / 0.88);
+  --sidebar-foreground: oklch(0.86 0.004 264);
   --sidebar-primary: #ff7a3d;
   --sidebar-primary-foreground: #160803;
-  --sidebar-accent: #13203a;
-  --sidebar-accent-foreground: #f0f4fa;
-  --sidebar-border: rgb(148 163 184 / 12%);
+  --sidebar-accent: oklch(0.27 0.005 264);
+  --sidebar-accent-foreground: oklch(0.96 0.003 264);
+  --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: #ff7a3d;
   --link: #5cc8ff;
   --warning: #fab219;
@@ -129,7 +138,23 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* Faint nebula light over deep space; the starfield canvas sits between this and the content. */
+    background-color: var(--space-deep, var(--background));
+    background-image:
+      radial-gradient(ellipse 70% 55% at 85% -5%, var(--nebula-cool, transparent), transparent 70%),
+      radial-gradient(ellipse 55% 45% at -5% 105%, var(--nebula-ember, transparent), transparent 70%),
+      radial-gradient(ellipse 90% 70% at 50% 50%, var(--background), var(--space-deep, var(--background)));
+    background-attachment: fixed;
+  }
+  /* Instrument-panel edge: a hairline of light along the top of every card. */
+  .dark [data-slot="card"] {
+    box-shadow: inset 0 1px 0 var(--panel-highlight);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -153,3 +178,36 @@
 }
 
 .tabular { font-variant-numeric: tabular-nums; }
+
+/* Fire Twin animation */
+@keyframes ft-flicker {
+  from { transform: scale(0.94); opacity: 0.88; }
+  to { transform: scale(1.06); opacity: 1; }
+}
+@keyframes ft-flow {
+  to { stroke-dashoffset: -28; }
+}
+@keyframes ft-pulse {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.ft-flicker {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ft-flicker 0.45s ease-in-out infinite alternate;
+}
+.ft-flow {
+  animation: ft-flow 1.4s linear infinite;
+}
+.ft-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ft-pulse 1.2s ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ft-flicker,
+  .ft-flow,
+  .ft-pulse {
+    animation: none;
+  }
+}

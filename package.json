@@ -17,17 +17,16 @@
     "prewarm": "tsx scripts/prewarm-cache.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.8.0",
     "@tanstack/react-table": "^9.3.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
     "fuse.js": "^7.5.0",
     "lucide-react": "^1.72.0",
     "next": "16.4.6",
+    "openai": "^7.57.0",
     "radix-ui": "^1.8.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-force-graph-2d": "^1.29.2",
     "react-markdown": "^10.1.0",
     "recharts": "^3.10.1",
     "remark-gfm": "^4.0.1",

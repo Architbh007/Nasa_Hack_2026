@@ -15,7 +15,7 @@ import { BrandMark, NavLinks } from "@/components/shell/app-sidebar";
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   return (
-    <div className="flex items-center justify-between border-b border-border bg-sidebar/90 px-4 py-2.5 backdrop-blur md:hidden">
+    <div className="sticky top-[30px] z-30 flex items-center justify-between border-b border-border bg-sidebar px-4 py-2.5 backdrop-blur-md md:hidden">
       <BrandMark />
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
@@ -23,7 +23,7 @@ export function MobileNav() {
             <Menu />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-72 bg-sidebar p-4">
+        <SheetContent side="left" className="w-72 bg-popover p-4">
           <SheetHeader className="p-0">
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <BrandMark />

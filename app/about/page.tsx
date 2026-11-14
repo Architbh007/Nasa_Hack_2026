@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { aiConfig } from "@/lib/ai/client";
 import { FUEL_PHASE_LABEL, SYNTHETIC_SOLID_GAP } from "@/lib/constants";
 import { getDataset } from "@/lib/data";
+import { ILLUSTRATIVE } from "@/lib/fire-twin";
+import { GRID_O2, GRID_PRESSURE, LEVEL_THRESHOLDS } from "@/lib/flammability-grid";
 import { coefficientTable } from "@/lib/model";
 import { DEFAULT_RANKING_WEIGHTS, RANKING_COMPONENTS, RANKING_LABEL } from "@/lib/ranking";
 import { FUEL_PHASES } from "@/lib/schema";
-import { DEFAULT_SIMILARITY_WEIGHTS, SIMILARITY_KEYS } from "@/lib/similarity";
 
 export const metadata: Metadata = { title: "About and Methods" };
 
@@ -36,15 +37,6 @@ function Bullets({ items }: { items: ReactNode[] }) {
 }
 
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
-const SIM_LABEL: Record<(typeof SIMILARITY_KEYS)[number], string> = {
-  hardware: "Hardware",
-  fuels: "Fuels",
-  fuelPhase: "Fuel phase",
-  measurements: "Instruments and measurements",
-  diluents: "Diluents",
-  safetyPillars: "Safety pillars",
-};
-
 export default function AboutPage() {
   const { investigations, tests, scenarios, model } = getDataset();
   const coef = coefficientTable(model);
@@ -54,9 +46,8 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader
-        eyebrow="About"
         title="About and Methods"
-        description="How FireSight's data, model, ranking, similarity and SI layer work, so every number on screen can be traced and challenged."
+        description="How FireSight's data, model, ranking and SI layer work, so every number on screen can be traced and challenged."
       />
       <div className="grid gap-6 xl:grid-cols-2">
         <div className="space-y-6">
@@ -132,21 +123,6 @@ export default function AboutPage() {
               </tbody>
             </table>
           </Section>
-
-          <Section title="Similarity method">
-            <p>
-              Weighted Jaccard similarity over set-valued attributes. Components where both records are empty are skipped and the
-              remaining weights renormalized. Edges are labelled by the strongest shared component: shared hardware, shared instrument,
-              shared fuel, or shared variable.
-            </p>
-            <div className="flex flex-wrap gap-2 text-xs">
-              {SIMILARITY_KEYS.map((k) => (
-                <span key={k} className="rounded-md border border-border px-2 py-1">
-                  {SIM_LABEL[k]} <span className="tabular text-muted-foreground">{DEFAULT_SIMILARITY_WEIGHTS[k].toFixed(2)}</span>
-                </span>
-              ))}
-            </div>
-          </Section>
         </div>
 
         <div className="space-y-6">
@@ -154,8 +130,10 @@ export default function AboutPage() {
             <p>
               A logistic regression implemented by hand and fit with batch gradient descent ({model.hyperparameters.iterations} iterations,
               learning rate {model.hyperparameters.learningRate}, L2 {model.hyperparameters.l2}) when the app is built. Continuous features
-              are standardized; the three fuel-phase indicators act as phase-specific baselines (no separate intercept). It is trained on
-              synthetic data and is a relative indicator, not a certified flammability limit.
+              are standardized; the three fuel-phase indicators act as phase-specific baselines (no separate intercept), and a plastic
+              indicator separates plastic from fabric among solids. Foam and wire insulation never appear in an ignition study (only in
+              smoke studies), so the app reports them as never ignition-tested instead of guessing. It is trained on synthetic data and is
+              a relative indicator, not a certified flammability limit.
             </p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
@@ -203,13 +181,35 @@ export default function AboutPage() {
             </p>
           </Section>
 
+          <Section id="grid" title="Flammability grid">
+            <Bullets
+              items={[
+                `A ${(GRID_O2.max - GRID_O2.min) / GRID_O2.step} × ${(GRID_PRESSURE.max - GRID_PRESSURE.min) / GRID_PRESSURE.step} square: O2 ${GRID_O2.min}–${GRID_O2.max}% in ${GRID_O2.step}% steps across, pressure ${GRID_PRESSURE.min}–${GRID_PRESSURE.max} psi in ${GRID_PRESSURE.step} psi steps up. Cabins above ${GRID_O2.max}% O2 (the spacesuit) are reported as off-chart.`,
+                `Each square is coloured by the ignition model at its centre: blue below ${Math.round(LEVEL_THRESHOLDS.possible * 100)}%, amber in between, red from ${Math.round(LEVEL_THRESHOLDS.likely * 100)}%. The palette stays readable with colour-vision deficiency.`,
+                "A square is solid when at least one ignition-study run of the same material lies inside it, and striped (a model extrapolation) when none does. Hovering lists the five nearest evidence runs.",
+              ]}
+            />
+          </Section>
+
+          <Section id="fire-twin" title="Fire Twin">
+            <Bullets
+              items={[
+                "From the data: whether each item ignites (ignition model; 50% or more counts as igniting) and how fast its flame spreads (the nearest-run flame-spread estimate above).",
+                `Illustrative, not in the dataset: smoke travel at the airflow speed (${ILLUSTRATIVE.stillAirSmokeCmS} cm/s in still air) plus a ${ILLUSTRATIVE.detectorDelayS} s detector delay, an alarm ${ILLUSTRATIVE.alarmAfterDetectS} s later, vent shutdown ${ILLUSTRATIVE.ventShutdownAfterAlarmS} s and a CO2 extinguisher ${ILLUSTRATIVE.extinguisherAfterAlarmS} s after the alarm, a ${Math.round(ILLUSTRATIVE.downstreamBoost * 100)}% spread boost toward downstream items, and microgravity flames going out ${ILLUSTRATIVE.selfExtinguishAfterFlowStopsS} s after forced flow stops.`,
+                "Items never ignition-tested (foam, wire insulation) are never set alight; the fire reaching them is shown as an open question.",
+                "The timeline marks data-backed events with filled dots and illustrative timings with hollow dots.",
+              ]}
+            />
+          </Section>
+
           <Section title="SI layer">
             <Bullets
               items={[
-                <>Main model <code className="rounded bg-muted px-1">{modelMain}</code> writes summaries, comparisons, habitat interpretations, readiness notes and Q&amp;A; the fast model <code className="rounded bg-muted px-1">{modelFast}</code> explains graph links.</>,
+                <>Main model <code className="rounded bg-muted px-1">{modelMain}</code> writes summaries, comparisons, habitat interpretations and cabin Q&amp;A; the fast model <code className="rounded bg-muted px-1">{modelFast}</code> narrates Fire Twin and the Then vs Now lessons.</>,
                 "All calls run in server-side route handlers; the API key never reaches the browser.",
                 "Prompts require answers grounded only in the provided records, citations by investigation id, plain statements when data is missing, no invented numbers, and a reminder that the data is synthetic.",
-                "Structured calls return JSON that is validated with zod and retried once with the error; habitat evidence may only cite ids from the ranked list sent.",
+                "Structured calls return JSON that is validated with zod and retried once with the error; habitat evidence may only cite ids from the ranked list sent, and Fire Twin and Then vs Now text may only cite the ids they were given.",
+                "Source links point to real NASA pages (NASA Science, nasa.gov and NASA Technical Reports Server), checked by hand. Only the links are real; the numbers stay synthetic.",
                 "Outputs are cached in data/cache by a hash of model, prompt version and grounded input. USE_CACHE_ONLY=true serves cached results only, for a safe offline demo.",
               ]}
             />

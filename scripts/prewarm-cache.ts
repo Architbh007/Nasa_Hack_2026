@@ -1,10 +1,8 @@
 /**
  * npm run prewarm  [-- --core]
  * Generates and caches SI outputs so the demo works offline with USE_CACHE_ONLY=true:
- *  - core: every investigation summary, every scenario readiness note, and a
- *    habitat interpretation for each preset
- *  - extras (skipped with --core): graph insight edges, Ask starter questions,
- *    and the demo comparison
+ *  - core: every investigation summary and a habitat interpretation for each preset
+ *  - extras (skipped with --core): cabin Ask starter questions and the demo comparison
  * Already-cached results are reused, so re-running is cheap.
  */
 import { loadEnv } from "./env";
@@ -16,13 +14,12 @@ process.env.USE_CACHE_ONLY = "false";
 type Task = { label: string; run: () => Promise<{ cached: boolean }> };
 
 async function main() {
-  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { INSIGHTS }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }] =
+  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { CABIN_STARTER_QUESTIONS, cabinQuestion }, { toSiError }, { aiConfig }] =
     await Promise.all([
       import("@/lib/data"),
       import("@/lib/ai/operations"),
       import("@/lib/ai/ask"),
       import("@/lib/habitat"),
-      import("@/lib/graph"),
       import("@/lib/ask"),
       import("@/lib/ai/errors"),
       import("@/lib/ai/client"),
@@ -36,17 +33,14 @@ async function main() {
     tasks.push({ label: `summary   ${inv.id}`, run: () => ops.summarizeInvestigation(inv.id) });
   }
   for (const s of scenarios) {
-    tasks.push({ label: `scenario  ${s.id}`, run: () => ops.summarizeScenario(s.id) });
     tasks.push({ label: `habitat   ${s.id}`, run: () => ops.interpretHabitat(normalizeHabitatInputs(inputsFromScenario(s))) });
   }
   if (!core) {
-    const edges = new Set(INSIGHTS.flatMap((i) => i.edgeIds));
-    for (const id of edges) {
-      const [a, b] = id.split("__");
-      if (a && b) tasks.push({ label: `edge      ${id}`, run: () => ops.explainEdge(a, b) });
-    }
-    for (const q of STARTER_QUESTIONS) {
-      tasks.push({ label: `ask       ${q.slice(0, 48)}`, run: () => answerOnce([{ role: "user", content: q }]) });
+    for (const s of scenarios) {
+      for (const q of CABIN_STARTER_QUESTIONS) {
+        const content = cabinQuestion(inputsFromScenario(s), q);
+        tasks.push({ label: `ask       ${s.id}: ${q.slice(0, 40)}`, run: () => answerOnce([{ role: "user", content }]) });
+      }
     }
     tasks.push({ label: "compare   bass,bass-ii,saffire-ii", run: () => ops.compareInvestigations(["bass", "bass-ii", "saffire-ii"]) });
   }
@@ -82,7 +76,7 @@ async function main() {
   const secs = ((Date.now() - started) / 1000).toFixed(0);
   console.log(`\nDone in ${secs}s: ${fresh} generated, ${cached} already cached, ${failures.length} failed.`);
   if (stop) {
-    console.log("\nNo API credentials found. Set ANTHROPIC_API_KEY in .env.local and run npm run prewarm again.");
+    console.log("\nNo API credentials found. Set OPENAI_API_KEY in .env.local and run npm run prewarm again.");
   }
   if (failures.length) {
     for (const f of failures.slice(0, 10)) console.log(`  - ${f}`);

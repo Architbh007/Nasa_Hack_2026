@@ -89,6 +89,7 @@
       "Fire modelling of burning surfaces for building codes"
     ],
     "sourceUrls": [
+      "https://science.nasa.gov/biological-physical/investigations/bre/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -185,6 +186,7 @@
       "Improved soot models for wildfire smoke prediction"
     ],
     "sourceUrls": [
+      "https://science.nasa.gov/biological-physical/investigations/cld-flame/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -281,6 +283,7 @@
       "Electric-field flame control for cleaner industrial combustion"
     ],
     "sourceUrls": [
+      "https://science.nasa.gov/biological-physical/investigations/e-field-flames/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -378,6 +381,7 @@
       "Cleaner, lower-soot burner design for furnaces and engines"
     ],
     "sourceUrls": [
+      "https://science.nasa.gov/biological-physical/investigations/s-flame/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -466,6 +470,8 @@
       "Low-temperature combustion chemistry for cleaner, knock-resistant engines"
     ],
     "sourceUrls": [
+      "https://www.nasa.gov/missions/station/cool-flames-created-during-a-first-for-international-space-station-research/",
+      "https://science.nasa.gov/biological-physical/investigations/acme/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -560,6 +566,8 @@
       "Liquid fuel spray combustion models for engines"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20150023456",
+      "https://ntrs.nasa.gov/citations/20090014812",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -649,6 +657,7 @@
       "Liquid fuel spray combustion models for engines"
     ],
     "sourceUrls": [
+      "https://svs.gsfc.nasa.gov/11640",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -739,6 +748,8 @@
       "Low-temperature combustion chemistry for cleaner, knock-resistant engines"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20205008449",
+      "https://ntrs.nasa.gov/citations/20140006750",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -837,6 +848,8 @@
       "Ventilation shutdown guidance for fires in enclosed spaces"
     ],
     "sourceUrls": [
+      "https://www.nasa.gov/general/combustion-continues-to-draw-researchers-to-space-station/",
+      "https://ntrs.nasa.gov/citations/20120017940",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -937,6 +950,8 @@
       "Material flammability standards: microgravity correction to upward-burning tests"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20210011385",
+      "https://ntrs.nasa.gov/citations/20160000593",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1028,6 +1043,7 @@
       "Cleaner, lower-soot burner design for furnaces and engines"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20140009169",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1117,6 +1133,8 @@
       "Flame stability limits for gas turbine and burner design"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20140009169",
+      "https://ntrs.nasa.gov/citations/20120017940",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1208,6 +1226,7 @@
       "Smoke detection: reduced false alarms in cleanrooms and data centers"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20070031686",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1300,6 +1319,7 @@
       "Smoke detection: particle-size-aware detectors for aircraft cargo bays"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20150010172",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1382,6 +1402,7 @@
       "Smoke detection: nuisance-dust rejection for smoke alarms"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20070031686",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1464,6 +1485,8 @@
       "Smoke detection: nuisance-dust rejection for smoke alarms"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20070031686",
+      "https://ntrs.nasa.gov/citations/20170007283",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1550,6 +1573,8 @@
       "Material flammability standards: large-scale validation of small-sample tests"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20170001636",
+      "https://www.nasa.gov/humans-in-space/the-flame-of-discovery-grows-as-saffire-sets-new-fires-in-space/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1645,6 +1670,8 @@
       "Smoke detection: smoke yield data for transport vehicle fires"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20170000230",
+      "https://ntrs.nasa.gov/citations/20170001636",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"
@@ -1737,6 +1764,8 @@
       "Firefighter gear: heat release data for protective clothing tests"
     ],
     "sourceUrls": [
+      "https://ntrs.nasa.gov/citations/20170000230",
+      "https://www.nasa.gov/humans-in-space/the-flame-of-discovery-grows-as-saffire-sets-new-fires-in-space/",
       "https://psi.nasa.gov"
     ],
     "dataSource": "synthetic"

@@ -1,8 +1,6 @@
 import { GRAVITY_LABEL, MATERIAL_LABEL, AIRFLOW_LABEL } from "@/lib/constants";
 import type { HabitatAssessment } from "@/lib/habitat";
-import type { ScenarioReadiness } from "@/lib/readiness";
 import { HABITAT_KEYS, type Investigation, type TestRun } from "@/lib/schema";
-import type { SimilarityResult } from "@/lib/similarity";
 
 /**
  * Compact, grounded context objects sent to the model. Everything the SI may
@@ -90,28 +88,17 @@ export function briefContext(inv: Investigation, tests: readonly TestRun[]) {
   };
 }
 
-export function edgeContext(a: Investigation, b: Investigation, sim: SimilarityResult) {
-  return {
-    link: { label: sim.label, similarityScore: r2(sim.score), sharedVariables: sim.sharedVariables },
-    sharedByComponent: Object.fromEntries(
-      Object.entries(sim.components).map(([k, c]) => [k, { jaccard: c.jaccard === null ? null : r2(c.jaccard), shared: c.shared }])
-    ),
-    investigations: [a, b].map((i) => ({
-      id: i.id,
-      acronym: i.acronym,
-      name: i.name,
-      hardware: i.hardware,
-      fuelPhase: i.fuelPhase,
-      fuels: i.fuels,
-      measurements: i.measurements,
-      variables: i.variables,
-      safetyPillars: i.safetyPillars,
-    })),
-    dataSource: a.dataSource,
-  };
-}
+export type GridSquareEvidence = {
+  materialIgnitionTested: boolean;
+  /** null when the cabin is off the grid (above its O2 range). */
+  square: { o2RangePercent: [number, number]; pressureRangePsi: [number, number]; runsOfThisMaterial: number; ignited: number } | null;
+};
 
-export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Investigation; tests: readonly TestRun[]; score: number }>) {
+export function habitatContext(
+  a: HabitatAssessment,
+  ranked: Array<{ inv: Investigation; tests: readonly TestRun[]; score: number }>,
+  grid?: GridSquareEvidence
+) {
   return {
     condition: {
       o2Percent: r2(a.inputs.o2Percent),
@@ -143,34 +130,10 @@ export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Invest
       nearestSamePhase: a.coverage.nearest.slice(0, 3).map((n) => ({ id: n.investigation.id, normalizedDistance: r2(n.distance) })),
       samePhaseRunsNearby: a.nearbyTestCount,
     },
+    gridSquare: grid ?? null,
     partialGravity: a.partialGravity
       ? "No partial-gravity combustion data exists in PSI; E-FIELD Flames is a simulated partial-gravity proxy; LUCI and FM2 are expected future sources."
       : null,
     topRanked: ranked.map((r) => ({ relevanceScore: Math.round(r.score * 100), ...briefContext(r.inv, r.tests) })),
-  };
-}
-
-export function scenarioContext(s: ScenarioReadiness, records: Array<{ inv: Investigation; tests: readonly TestRun[] }>) {
-  return {
-    preset: {
-      id: s.scenario.id,
-      label: s.scenario.label,
-      o2Percent: s.scenario.o2Percent,
-      pressurePsi: s.scenario.pressurePsi,
-      gravity: GRAVITY_LABEL[s.scenario.gravity],
-      typicalAirflow: s.scenario.typicalAirflow,
-      typicalMaterials: s.scenario.typicalMaterials,
-    },
-    readiness: {
-      overallScore: s.overall,
-      pillarScores: Object.fromEntries(s.pillars.map((p) => [p.pillar, { score: p.score, bestIds: p.best.map((b) => b.investigation.id) }])),
-      gaps: s.gaps,
-    },
-    fabricPrediction: {
-      ignitionProbabilityPercent: Math.round(s.assessment.ignitionProbability * 100),
-      o2PartialPressurePsi: r2(s.assessment.pO2.psi),
-      coverageGap: s.assessment.coverage.gap,
-    },
-    supportingInvestigations: records.map((r) => briefContext(r.inv, r.tests)),
   };
 }

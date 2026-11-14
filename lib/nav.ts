@@ -2,46 +2,21 @@ export type NavItem = {
   href: string;
   label: string;
   description: string;
-  icon:
-    | "habitat"
-    | "explore"
-    | "graph"
-    | "ask"
-    | "scenarios"
-    | "earth"
-    | "about";
+  icon: "habitat" | "explore" | "earth" | "about";
 };
 
 export const NAV_ITEMS: readonly NavItem[] = [
   {
     href: "/habitat",
     label: "Habitat Flammability",
-    description: "Place a cabin atmosphere against tested combustion conditions",
+    description: "See how likely a cabin fire is, watch it play out, and check the evidence",
     icon: "habitat",
   },
   {
     href: "/explore",
     label: "Investigation Explorer",
-    description: "Filter, inspect and compare PSI combustion investigations",
+    description: "Filter, inspect and compare PSI combustion investigations, plus spaceflight fire history",
     icon: "explore",
-  },
-  {
-    href: "/graph",
-    label: "Investigation Network",
-    description: "See shared hardware, fuels and instruments as a graph",
-    icon: "graph",
-  },
-  {
-    href: "/ask",
-    label: "Ask the Data",
-    description: "Grounded Q&A over investigation records",
-    icon: "ask",
-  },
-  {
-    href: "/scenarios",
-    label: "Mission Readiness",
-    description: "Coverage scorecard for each habitat preset",
-    icon: "scenarios",
   },
   {
     href: "/earth",
@@ -52,7 +27,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   {
     href: "/about",
     label: "About & Methods",
-    description: "Data policy, model, ranking and similarity methods",
+    description: "Data policy, model and ranking methods",
     icon: "about",
   },
 ] as const;

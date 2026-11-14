@@ -8,6 +8,8 @@ import { ExploreFiltersBar } from "@/components/explore/explore-filters";
 import { InvestigationTable, type InvestigationRow } from "@/components/explore/investigation-table";
 import { InvestigationSheet } from "@/components/explore/investigation-sheet";
 import { CompareDialog } from "@/components/explore/compare-dialog";
+import { ThenVsNow } from "@/components/explore/then-vs-now";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DEFAULT_FILTERS, HABITAT_MIN_SCORE, MAX_COMPARE, type ExploreFilters } from "@/components/explore/types";
 import { createInvestigationIndex } from "@/lib/search";
 import type { Investigation, TestRun } from "@/lib/schema";
@@ -23,6 +25,7 @@ export function ExploreView({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const openId = searchParams.get("id");
+  const tab = searchParams.get("tab") === "history" ? "history" : "table";
   // ?compare=a,b preselects and opens compare mode (handy for demos and SI links).
   const initialCompare = (searchParams.get("compare") ?? "")
     .split(",")
@@ -73,6 +76,17 @@ export function ExploreView({
     [pathname, router, searchParams]
   );
 
+  const setTab = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value === "history") params.set("tab", "history");
+      else params.delete("tab");
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
   const toggleSelect = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
@@ -85,51 +99,62 @@ export function ExploreView({
   const selectedInvestigations = investigations.filter((i) => selected.has(i.id));
 
   return (
-    <div className="space-y-4">
-      <ExploreFiltersBar
-        filters={filters}
-        onChange={setFilters}
-        hardwareOptions={hardwareOptions}
-        resultCount={rows.length}
-        totalCount={investigations.length}
-      />
+    <Tabs value={tab} onValueChange={setTab} className="gap-4">
+      <TabsList>
+        <TabsTrigger value="table">Investigations</TabsTrigger>
+        <TabsTrigger value="history">Then vs Now</TabsTrigger>
+      </TabsList>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          variant={compareMode ? "secondary" : "outline"}
-          onClick={() => {
-            setCompareMode((v) => !v);
-            if (compareMode) setSelected(new Set());
-          }}
-          aria-pressed={compareMode}
-        >
-          {compareMode ? <X /> : <GitCompareArrows />}
-          {compareMode ? "Exit compare mode" : "Compare mode"}
-        </Button>
-        {compareMode && (
-          <>
-            <span className="text-xs text-muted-foreground">
-              Select 2 to {MAX_COMPARE} investigations ({selected.size} selected)
-            </span>
-            <Button disabled={selected.size < 2} onClick={() => setCompareOpen(true)}>
-              Compare {selected.size >= 2 ? selected.size : ""}
-            </Button>
-          </>
-        )}
-        {!compareMode && (
-          <span className="text-xs text-muted-foreground">Click a row for the full record, test runs and SI summary.</span>
-        )}
-      </div>
+      <TabsContent value="history">
+        <ThenVsNow investigations={investigations} onOpen={setOpenId} />
+      </TabsContent>
 
-      <InvestigationTable
-        rows={rows}
-        habitat={filters.habitat}
-        compareMode={compareMode}
-        selected={selected}
-        onToggleSelect={toggleSelect}
-        onOpen={setOpenId}
-        canSelectMore={selected.size < MAX_COMPARE}
-      />
+      <TabsContent value="table" className="space-y-4">
+        <ExploreFiltersBar
+          filters={filters}
+          onChange={setFilters}
+          hardwareOptions={hardwareOptions}
+          resultCount={rows.length}
+          totalCount={investigations.length}
+        />
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant={compareMode ? "secondary" : "outline"}
+            onClick={() => {
+              setCompareMode((v) => !v);
+              if (compareMode) setSelected(new Set());
+            }}
+            aria-pressed={compareMode}
+          >
+            {compareMode ? <X /> : <GitCompareArrows />}
+            {compareMode ? "Exit compare mode" : "Compare mode"}
+          </Button>
+          {compareMode && (
+            <>
+              <span className="text-xs text-muted-foreground">
+                Select 2 to {MAX_COMPARE} investigations ({selected.size} selected)
+              </span>
+              <Button disabled={selected.size < 2} onClick={() => setCompareOpen(true)}>
+                Compare {selected.size >= 2 ? selected.size : ""}
+              </Button>
+            </>
+          )}
+          {!compareMode && (
+            <span className="text-xs text-muted-foreground">Click a row for the full record, test runs and SI summary.</span>
+          )}
+        </div>
+
+        <InvestigationTable
+          rows={rows}
+          habitat={filters.habitat}
+          compareMode={compareMode}
+          selected={selected}
+          onToggleSelect={toggleSelect}
+          onOpen={setOpenId}
+          canSelectMore={selected.size < MAX_COMPARE}
+        />
+      </TabsContent>
 
       <InvestigationSheet
         inv={openInv}
@@ -146,6 +171,6 @@ export function ExploreView({
           testsByInvestigation={testsByInvestigation}
         />
       )}
-    </div>
+    </Tabs>
   );
 }

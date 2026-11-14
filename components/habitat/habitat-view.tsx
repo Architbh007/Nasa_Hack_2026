@@ -4,21 +4,15 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HabitatControls } from "@/components/habitat/controls";
-import { FlammabilityMap } from "@/components/habitat/flammability-map";
+import { FlammabilityGrid } from "@/components/habitat/flammability-grid";
+import { FireTwin } from "@/components/habitat/fire-twin";
+import { CabinAsk } from "@/components/habitat/cabin-ask";
 import { HabitatReadouts } from "@/components/habitat/readouts";
-import { SensitivityChart } from "@/components/habitat/sensitivity-chart";
 import { RankingPanel } from "@/components/habitat/ranking-panel";
 import { PartialGravityCallout } from "@/components/habitat/partial-gravity-callout";
 import { InterpretationPanel } from "@/components/habitat/interpretation-panel";
-import { FUEL_PHASE_LABEL, MATERIAL_LABEL, O2_SLIDER, PRESSURE_SLIDER, SYNTHETIC_SOLID_GAP } from "@/lib/constants";
-import {
-  assessHabitat,
-  ignitionStudyTests,
-  inputsFromScenario,
-  matchingScenario,
-  phaseLookup,
-  type HabitatInputs,
-} from "@/lib/habitat";
+import { MATERIAL_LABEL, O2_SLIDER, PRESSURE_SLIDER } from "@/lib/constants";
+import { assessHabitat, inputsFromScenario, matchingScenario, type HabitatInputs } from "@/lib/habitat";
 import type { ModelArtifact } from "@/lib/model";
 import { DEFAULT_RANKING_WEIGHTS, type RankingWeights } from "@/lib/ranking";
 import {
@@ -26,6 +20,7 @@ import {
   HabitatGravitySchema,
   MaterialClassSchema,
   type Investigation,
+  type MaterialClass,
   type Scenario,
   type TestRun,
 } from "@/lib/schema";
@@ -56,9 +51,21 @@ function initialState(params: URLSearchParams, scenarios: readonly Scenario[]): 
   return { presetId: matchingScenario(scenarios, inputs)?.id ?? "custom", inputs };
 }
 
-function Section({ title, description, children, action }: { title: string; description?: ReactNode; children: ReactNode; action?: ReactNode }) {
+function Section({
+  id,
+  title,
+  description,
+  children,
+  action,
+}: {
+  id?: string;
+  title: string;
+  description?: ReactNode;
+  children: ReactNode;
+  action?: ReactNode;
+}) {
   return (
-    <Card>
+    <Card id={id} className="scroll-mt-20">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle className="text-base">{title}</CardTitle>
@@ -96,33 +103,19 @@ export function HabitatView({
       p.set("m", inputs.materialClass);
       p.set("a", inputs.airflow);
       p.set("g", inputs.gravity);
-      window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}`);
+      window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}${window.location.hash}`);
     }, 300);
     return () => window.clearTimeout(id);
   }, [presetId, inputs]);
 
+  // This view renders on the client, after the browser's own hash scroll, so honour #fire-twin etc. here.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) document.getElementById(hash)?.scrollIntoView({ block: "start" });
+  }, []);
+
   const data = useMemo(() => ({ investigations, tests, model }), [investigations, tests, model]);
   const assessment = useMemo(() => assessHabitat(inputs, data, weights), [inputs, data, weights]);
-
-  const phaseOf = useMemo(() => phaseLookup(investigations), [investigations]);
-  const chartRuns = useMemo(
-    () => ignitionStudyTests(investigations, tests).filter((t) => phaseOf(t) === assessment.fuelPhase),
-    [investigations, tests, phaseOf, assessment.fuelPhase]
-  );
-
-  // Shade the generated gap only for synthetic solid-fuel data, and only if it really is empty.
-  const showSyntheticGap = useMemo(
-    () =>
-      assessment.fuelPhase === "solid" &&
-      investigations.every((i) => i.dataSource === "synthetic") &&
-      !chartRuns.some(
-        (t) =>
-          t.o2Percent >= SYNTHETIC_SOLID_GAP.o2Min &&
-          t.o2Percent <= SYNTHETIC_SOLID_GAP.o2Max &&
-          t.pressurePsi < SYNTHETIC_SOLID_GAP.pressureMaxPsi
-      ),
-    [assessment.fuelPhase, investigations, chartRuns]
-  );
 
   const onPreset = (id: string) => {
     const s = scenarios.find((x) => x.id === id);
@@ -139,7 +132,10 @@ export function HabitatView({
   const onChange = (next: HabitatInputs) =>
     setState({ presetId: matchingScenario(scenarios, next)?.id ?? "custom", inputs: next });
 
-  const phaseLabel = FUEL_PHASE_LABEL[assessment.fuelPhase].toLowerCase();
+  const snap = (v: number, step: number) => Math.round(v / step) * step;
+  const onMove = (o2Percent: number, pressurePsi: number) =>
+    onChange({ ...inputs, o2Percent: snap(o2Percent, O2_SLIDER.step), pressurePsi: Math.round(snap(pressurePsi, PRESSURE_SLIDER.step) * 10) / 10 });
+  const onMaterial = (materialClass: MaterialClass) => onChange({ ...inputs, materialClass });
 
   return (
     <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
@@ -151,30 +147,49 @@ export function HabitatView({
         <HabitatReadouts a={assessment} />
 
         <Section
-          title="Where this atmosphere sits among tested conditions"
-          description={`${MATERIAL_LABEL[inputs.materialClass]} maps to ${phaseLabel} fuels. Each point is one test run; the large marker is your cabin.`}
+          title="Is this air dangerous?"
+          description={`Each square is one possible cabin air. Colour = predicted chance a ${MATERIAL_LABEL[inputs.materialClass].toLowerCase()} fire starts; stripes = nobody has tested it there.`}
         >
-          <FlammabilityMap
-            runs={chartRuns}
-            fuelPhase={assessment.fuelPhase}
+          <FlammabilityGrid
+            inputs={inputs}
+            model={model}
+            investigations={investigations}
+            tests={tests}
             scenarios={scenarios}
-            point={{ o2Percent: inputs.o2Percent, pressurePsi: inputs.pressurePsi }}
-            showSyntheticGap={showSyntheticGap}
+            onMove={onMove}
+            onMaterial={onMaterial}
           />
         </Section>
 
-        <Section title="SI interpretation" description="Structured risk drivers, evidence, gaps, recommended tests and design implications.">
-          <InterpretationPanel assessment={assessment} weights={weights} />
+        <Section title="SI explanation and sources" description="Plain-words reading of this cabin, with links to the original NASA pages behind it.">
+          <div className="space-y-6">
+            <InterpretationPanel assessment={assessment} weights={weights} investigations={investigations} />
+            <div className="space-y-2 border-t border-border pt-5">
+              <h3 className="text-sm font-medium">Ask about this cabin</h3>
+              <CabinAsk inputs={inputs} />
+            </div>
+          </div>
         </Section>
 
-        <div className="grid gap-6 2xl:grid-cols-2">
-          <Section title="Sensitivity to oxygen" description="Predicted ignition probability as O2 sweeps at your pressure.">
-            <SensitivityChart model={model} inputs={inputs} currentProbability={assessment.ignitionProbability} />
-          </Section>
-          <Section title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">
-            <RankingPanel ranked={assessment.ranked} weights={weights} onWeights={setWeights} limit={6} />
-          </Section>
-        </div>
+        <Section
+          id="fire-twin"
+          title="Fire Twin: what would a fire look like?"
+          description="A top-down cabin module running this exact air. Ignition and spread come from the data; detection and crew response times are illustrative."
+        >
+          <FireTwin
+            inputs={inputs}
+            scenarios={scenarios}
+            presetId={presetId}
+            onPreset={onPreset}
+            model={model}
+            investigations={investigations}
+            tests={tests}
+          />
+        </Section>
+
+        <Section title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">
+          <RankingPanel ranked={assessment.ranked} weights={weights} onWeights={setWeights} limit={6} />
+        </Section>
       </div>
     </div>
   );

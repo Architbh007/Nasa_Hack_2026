@@ -56,27 +56,24 @@ export async function POST(req: Request) {
       throw new SiError("cache_miss", "Cache-only demo mode is on and this question has no precomputed answer. Try a starter question.", 503);
     }
 
-    const stream = startAskStream(plan);
-    const iterator = stream[Symbol.asyncIterator]();
-    // Pull the first event before responding so credential and connection errors return as JSON.
-    const first = await iterator.next();
+    // Awaiting the request before responding lets credential and connection errors return as JSON.
+    const stream = await startAskStream(plan);
 
     const body = new ReadableStream<Uint8Array>({
       async start(controller) {
         let full = "";
-        const emit = (text: string) => {
-          full += text;
-          controller.enqueue(encoder.encode(text));
-        };
+        let refused = false;
         try {
-          let step = first;
-          while (!step.done) {
-            const event = step.value;
-            if (event.type === "content_block_delta" && event.delta.type === "text_delta") emit(event.delta.text);
-            step = await iterator.next();
+          for await (const chunk of stream) {
+            const choice = chunk.choices[0];
+            const text = choice?.delta?.content;
+            if (text) {
+              full += text;
+              controller.enqueue(encoder.encode(text));
+            }
+            if (choice?.delta?.refusal || choice?.finish_reason === "content_filter") refused = true;
           }
-          const final = await stream.finalMessage();
-          if (final.stop_reason === "refusal") {
+          if (refused) {
             controller.enqueue(encoder.encode(`${STREAM_ERROR_MARKER}The SI declined to answer this question. Try rephrasing it.`));
           } else if (full.trim()) {
             await saveAnswer(plan, full, question);
@@ -88,7 +85,7 @@ export async function POST(req: Request) {
         }
       },
       cancel() {
-        stream.abort();
+        stream.controller.abort();
       },
     });
     return new Response(body, { headers: { ...headers, [CACHED_HEADER]: "0" } });

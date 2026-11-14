@@ -23,7 +23,6 @@ export default function EarthPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Earth"
         title="Spinoffs and Earth Applications"
         description={`Microgravity removes buoyancy, so flames reveal the chemistry and transport that Earth-bound tests hide. ${total} application notes from the investigation records, grouped by where they help on Earth.`}
       />

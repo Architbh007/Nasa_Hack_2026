@@ -110,6 +110,7 @@ export function assessHabitat(
     flowCmS,
     fuelPhase,
     diluentPercent: null,
+    materialClass: inputs.materialClass,
   });
   const relevantRuns = ignitionStudyTests(data.investigations, data.tests).filter(
     (t) => phaseOf(t) === fuelPhase
@@ -154,7 +155,7 @@ export function sensitivityCurve(
   const flowCmS = AIRFLOW_CM_S[inputs.airflow];
   const out: SensitivityPoint[] = [];
   for (let o2 = range.from; o2 <= range.to + 1e-9; o2 += range.step) {
-    const base = { o2Percent: o2, flowCmS, fuelPhase, diluentPercent: null };
+    const base = { o2Percent: o2, flowCmS, fuelPhase, diluentPercent: null, materialClass: inputs.materialClass };
     out.push({
       o2: Math.round(o2 * 10) / 10,
       probability: predictIgnitionProbability(model, { ...base, pressurePsi: inputs.pressurePsi }),
