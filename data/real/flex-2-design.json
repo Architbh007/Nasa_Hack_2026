@@ -1,0 +1,281 @@
+{
+ "investigationId": "flex-2",
+ "accession": "PSI-68",
+ "kind": "planned-test-matrix",
+ "note": "Planned conditions only; it does not record which runs flew or their outcomes.",
+ "sourceFile": "PSI-68_Experimental table_Flex2.csv",
+ "fuels": [
+  {
+   "plannedRow": 2,
+   "fuelRaw": "IsoOctane (pure)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 3,
+   "fuelRaw": "n-Octane (pure)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 4,
+   "fuelRaw": "Heptane (pure)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 5,
+   "fuelRaw": "Decane (pure)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 6,
+   "fuelRaw": "Ethanol (pure)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 7,
+   "fuelRaw": "Propanol (95%) Glycerol (5%) (mixture)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 8,
+   "fuelRaw": "Heptane (50%) IsoOctane (50%) (mixture)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  },
+  {
+   "plannedRow": 9,
+   "fuelRaw": "Propanol (80%) Glycerol (20%) (mixture)",
+   "initialDropletDiameterMmRange": [
+    1.5,
+    5
+   ],
+   "ambientGasMixtureRaw": "O2/N2 or O2/He",
+   "o2PercentLevels": [
+    17,
+    21,
+    25,
+    30
+   ],
+   "pressureAtmLevels": [
+    0.5,
+    1,
+    1.5,
+    2,
+    3
+   ],
+   "pressurePsiLevels": [
+    7.35,
+    14.7,
+    22.04,
+    29.39,
+    44.09
+   ],
+   "ambientTemperatureC": 25,
+   "flowVelocityCmSRange": [
+    0.1,
+    5
+   ]
+  }
+ ]
+}

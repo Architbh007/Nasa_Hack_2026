@@ -1,0 +1,374 @@
+{
+ "retrievedOn": "2026-11-14",
+ "source": "DataCite public API, prefix 10.60555",
+ "records": [
+  {
+   "accession": "PSI-10",
+   "short": "ACME Flame Design",
+   "doi": "10.60555/w4zy-bt45",
+   "doiUrl": "http://doi.org/10.60555/w4zy-bt45",
+   "title": "Advanced Combustion via Microgravity Experiments / Flame Design",
+   "authorsAsRegistered": [
+    "Axelbaum, Richard L.",
+    "Sunderland, Peter B.",
+    "Urban, David L.",
+    "Frolov, Sergey M.",
+    "Stocker, Dennis P."
+   ],
+   "year": 2025,
+   "version": "1",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-10",
+   "licenceIdentifiers": [],
+   "licenceUri": null,
+   "citationText": "Axelbaum R, Sunderland P, Urban D, Frolov S, Stocker D. \"Advanced Combustion via Microgravity Experiments / Flame Design\", NASA PSI Data Repository, Version 1, http://doi.org/10.60555/w4zy-bt45"
+  },
+  {
+   "accession": "PSI-20",
+   "short": "ACME BRE",
+   "doi": null,
+   "citationText": null,
+   "note": "No DOI record found in DataCite. Cite the PSI accession and URL; licence not stated by a registry record."
+  },
+  {
+   "accession": "PSI-21",
+   "short": "ACME CLD Flame",
+   "doi": "10.60555/23e1-9950",
+   "doiUrl": "http://doi.org/10.60555/23e1-9950",
+   "title": "Advanced Combustion via Microgravity Experiments / Coflow Laminar Diffusion Flame",
+   "authorsAsRegistered": [
+    "Smooke, Mitchell",
+    "Stocker, Dennis",
+    "Long, Marshall B."
+   ],
+   "year": 2023,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-21",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Smooke M, Stocker D, Long M. \"Advanced Combustion via Microgravity Experiments / Coflow Laminar Diffusion Flame\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/23e1-9950"
+  },
+  {
+   "accession": "PSI-22",
+   "short": "ACME E-FIELD Flames",
+   "doi": null,
+   "citationText": null,
+   "note": "No DOI record found in DataCite. Cite the PSI accession and URL; licence not stated by a registry record."
+  },
+  {
+   "accession": "PSI-23",
+   "short": "ACME s-Flame",
+   "doi": "10.60555/k57n-p030",
+   "doiUrl": "http://doi.org/10.60555/k57n-p030",
+   "title": "Advanced Combustion via Microgravity Experiments-Structure and Response of Spherical Diffusion Flames",
+   "authorsAsRegistered": [
+    "Stocker, Dennis",
+    "Law, Chung K.",
+    "Tse, Stephen"
+   ],
+   "year": 2018,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Stocker D, Law C, Tse S. \"Advanced Combustion via Microgravity Experiments-Structure and Response of Spherical Diffusion Flames\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/k57n-p030"
+  },
+  {
+   "accession": "PSI-25",
+   "short": "BASS-II",
+   "doi": "10.60555/4qc4-de67",
+   "doiUrl": "http://doi.org/10.60555/4qc4-de67",
+   "title": "Burning and Suppression of Solids - II",
+   "authorsAsRegistered": [
+    "Ferkul, Paul",
+    "Fernandez-Pello, Carlos",
+    "Miller, Fletcher J.",
+    "T'ien, James",
+    "Bhattachjee, Subrata"
+   ],
+   "year": 2022,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Ferkul P, Fernandez-Pello C, Miller F, T'ien J, Bhattachjee S. \"Burning and Suppression of Solids - II\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/4qc4-de67"
+  },
+  {
+   "accession": "PSI-26",
+   "short": "BASS",
+   "doi": "10.60555/58h4-dy80",
+   "doiUrl": "http://doi.org/10.60555/58h4-dy80",
+   "title": "Burning and Suppression of Solids",
+   "authorsAsRegistered": [
+    "Olson, Sandra L.",
+    "Ferkul, Paul",
+    "Takahashi, Funiaki",
+    "T'ien, James"
+   ],
+   "year": 2013,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-26",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Olson S, Ferkul P, Takahashi F, T'ien J. \"Burning and Suppression of Solids\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/58h4-dy80"
+  },
+  {
+   "accession": "PSI-39",
+   "short": "CFI",
+   "doi": "10.60555/m6pj-a914",
+   "doiUrl": "http://doi.org/10.60555/m6pj-a914",
+   "title": "Cool Flames Investigation",
+   "authorsAsRegistered": [
+    "Dryer, Frederick",
+    "Dietrich, Daniel",
+    "Farouk, Tanvir",
+    "Nayagam, Vedha",
+    "Williams, Forman"
+   ],
+   "year": 2024,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-39",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Dryer F, Dietrich D, Farouk T, Nayagam V, Williams F. \"Cool Flames Investigation\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/m6pj-a914"
+  },
+  {
+   "accession": "PSI-47",
+   "short": "DAFT / DAFT-2",
+   "doi": "10.60555/ztgj-d202",
+   "doiUrl": "http://doi.org/10.60555/ztgj-d202",
+   "title": "Dust and Aerosol Measurement Feasibility Test / Dust and Aerosol Measurement Feasibility Test-2",
+   "authorsAsRegistered": [
+    "Urban, David L",
+    "Fortenberry, Claire"
+   ],
+   "year": 2009,
+   "version": "5",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-47",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Urban D, Fortenberry C. \"Dust and Aerosol Measurement Feasibility Test / Dust and Aerosol Measurement Feasibility Test-2\", NASA PSI Data Repository, Version 5, http://doi.org/10.60555/ztgj-d202"
+  },
+  {
+   "accession": "PSI-68",
+   "short": "FLEX-2",
+   "doi": "10.60555/byp8-h018",
+   "doiUrl": "http://doi.org/10.60555/byp8-h018",
+   "title": "Flame Extinguishment Experiment - 2",
+   "authorsAsRegistered": [
+    "Dryer, Frederick",
+    "Shaw, Benjamin D.",
+    "Choi, Mun",
+    "Nayagam, Vedha",
+    "Avedisian, Thomas",
+    "Dietrich, Daniel",
+    "Hicks, Michael",
+    "Williams, Forman A."
+   ],
+   "year": 2019,
+   "version": "6",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-68",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Dryer F, Shaw B, Choi M, Nayagam V, Avedisian T, Dietrich D, Hicks M, Williams F. \"Flame Extinguishment Experiment - 2\", NASA PSI Data Repository, Version 6, http://doi.org/10.60555/byp8-h018"
+  },
+  {
+   "accession": "PSI-69",
+   "short": "FLEX",
+   "doi": "10.60555/mbq8-0451",
+   "doiUrl": "http://doi.org/10.60555/mbq8-0451",
+   "title": "Flame Extinguishment Experiment",
+   "authorsAsRegistered": [
+    "Shaw, Benjamin D",
+    "Hicks, Michael C",
+    "Williams, Forman A",
+    "Nayagam, Vedha",
+    "Choi, Mun Y",
+    "Dryer, Frederick L",
+    "Dietrich, Daniel"
+   ],
+   "year": 2016,
+   "version": "5",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Shaw B, Hicks M, Williams F, Nayagam V, Choi M, Dryer F, Dietrich D. \"Flame Extinguishment Experiment\", NASA PSI Data Repository, Version 5, http://doi.org/10.60555/mbq8-0451"
+  },
+  {
+   "accession": "PSI-98",
+   "short": "Saffire-I",
+   "doi": "10.60555/0t15-1z43",
+   "doiUrl": "http://doi.org/10.60555/0t15-1z43",
+   "title": "Spacecraft Fire Safety Experiment-I",
+   "authorsAsRegistered": [
+    "Urban, David L."
+   ],
+   "year": 2024,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Urban D. \"Spacecraft Fire Safety Experiment-I\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/0t15-1z43"
+  },
+  {
+   "accession": "PSI-99",
+   "short": "Saffire-II",
+   "doi": "10.60555/2chp-m469",
+   "doiUrl": "http://doi.org/10.60555/2chp-m469",
+   "title": "Spacecraft Fire Experiment-II",
+   "authorsAsRegistered": [
+    "Urban, David L.",
+    "Ruff, Gary"
+   ],
+   "year": 2024,
+   "version": "5",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Urban D, Ruff G. \"Spacecraft Fire Experiment-II\", NASA PSI Data Repository, Version 5, http://doi.org/10.60555/2chp-m469"
+  },
+  {
+   "accession": "PSI-100",
+   "short": "Saffire-III",
+   "doi": "10.60555/040q-4h36",
+   "doiUrl": "http://doi.org/10.60555/040q-4h36",
+   "title": "Spacecraft Fire Experiment-III",
+   "authorsAsRegistered": [
+    "Urban, David L."
+   ],
+   "year": 2024,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-100",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Urban D. \"Spacecraft Fire Experiment-III\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/040q-4h36"
+  },
+  {
+   "accession": "PSI-101",
+   "short": "SAME-R",
+   "doi": "10.60555/2np7-jv14",
+   "doiUrl": "http://doi.org/10.60555/2np7-jv14",
+   "title": "Smoke Aerosol Measurement Experiment-Reflight",
+   "authorsAsRegistered": [
+    "Yuan, Zeng-guang",
+    "Fortenberry, Claire",
+    "Urban, David",
+    "Yang, Jiann C",
+    "Cleary, Thomas",
+    "Mulholland, George W"
+   ],
+   "year": 2024,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-101",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Yuan Z, Fortenberry C, Urban D, Yang J, Cleary T, Mulholland G. \"Smoke Aerosol Measurement Experiment-Reflight\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/2np7-jv14"
+  },
+  {
+   "accession": "PSI-102",
+   "short": "SAME",
+   "doi": "10.60555/gd4k-8h62",
+   "doiUrl": "http://doi.org/10.60555/gd4k-8h62",
+   "title": "Smoke and Aerosol Measurement Experiment",
+   "authorsAsRegistered": [
+    "Urban, David",
+    "Mulholland, George",
+    "Fortenberry, Claire",
+    "Cleary, Thomas",
+    "Yang, Jiann"
+   ],
+   "year": 2024,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-102",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Urban D, Mulholland G, Fortenberry C, Cleary T, Yang J. \"Smoke and Aerosol Measurement Experiment\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/gd4k-8h62"
+  },
+  {
+   "accession": "PSI-106",
+   "short": "SLICE",
+   "doi": "10.60555/pm12-rg61",
+   "doiUrl": "http://doi.org/10.60555/pm12-rg61",
+   "title": "Structure and Liftoff In Combustion Experiment",
+   "authorsAsRegistered": [
+    "Smooke, Mitchell D.",
+    "Takahashi, Fumiaki",
+    "Long, Marshall",
+    "Stocker, Dennis"
+   ],
+   "year": 2024,
+   "version": "3",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-106",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Smooke M, Takahashi F, Long M, Stocker D. \"Structure and Liftoff In Combustion Experiment\", NASA PSI Data Repository, Version 3, http://doi.org/10.60555/pm12-rg61"
+  },
+  {
+   "accession": "PSI-107",
+   "short": "SPICE",
+   "doi": "10.60555/9kbh-e962",
+   "doiUrl": "http://doi.org/10.60555/9kbh-e962",
+   "title": "Smoke Point In Co-flow Experiment",
+   "authorsAsRegistered": [
+    "Sunderland, Peter",
+    "Urban, David"
+   ],
+   "year": 2024,
+   "version": "4",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-107",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Sunderland P, Urban D. \"Smoke Point In Co-flow Experiment\", NASA PSI Data Repository, Version 4, http://doi.org/10.60555/9kbh-e962"
+  },
+  {
+   "accession": "PSI-159",
+   "short": "ACME CFI-G",
+   "doi": "10.60555/cyt1-kh64",
+   "doiUrl": "http://doi.org/10.60555/cyt1-kh64",
+   "title": "Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases",
+   "authorsAsRegistered": [
+    "Stocker, Dennis P.",
+    "Sunderland, Peter B.",
+    "Axelbaum, Richard L.",
+    "Williams, Forman"
+   ],
+   "year": 2025,
+   "version": "1",
+   "pageUrl": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-159",
+   "licenceIdentifiers": [
+    "cc0-1.0"
+   ],
+   "licenceUri": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+   "citationText": "Stocker D, Sunderland P, Axelbaum R, Williams F. \"Advanced Combustion via Microgravity Experiments / Cool Flames Investigation with Gases\", NASA PSI Data Repository, Version 1, http://doi.org/10.60555/cyt1-kh64"
+  }
+ ]
+}

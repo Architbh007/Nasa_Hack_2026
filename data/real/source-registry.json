@@ -1,0 +1,232 @@
+{
+  "title": "FireSight source registry",
+  "purpose": "Every dataset shown in the app, where it came from, how it was extracted, and how far it has been verified. If a number on screen is not traceable here, it should not be on screen.",
+  "accessedOn": "2026-11-14",
+  "retrievalMethod": "Files downloaded manually in a browser from psi.nasa.gov (Science Documents, Experimental table and Reference Data folders) by a team member, then placed in data/raw/ (not committed to git). Investigation metadata was read from the PSI site's own search endpoint.",
+  "reuseTerms": {
+    "status": "PARTLY CHECKED (not legal advice)",
+    "psiInvestigations": {
+      "licenceFromRegistry": "16 of the 19 investigations have a DOI record in DataCite listing Creative Commons Zero v1.0 Universal (CC0 1.0, a public-domain dedication): https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+      "noLicenceListed": ["PSI-10 ACME Flame Design (DOI exists, no rights field)", "PSI-20 ACME BRE (no DOI record found)", "PSI-22 ACME E-FIELD Flames (no DOI record found)"],
+      "dataUserAgreement": "A team member clicked a download button on a PSI investigation page and no Data User Agreement dialog appeared. PSI's site code does contain agreement text for some download paths, so this is not proof that no terms apply.",
+      "howCited": "PSI's own BibTeX download uses: Authors. \"Title\", NASA PSI Data Repository, Version N, http://doi.org/DOI. Per-investigation citation strings are in data/real/citations.json (built by scripts/real/fetch-citations.ts). Use PSI's BibTeX where it differs; it is authoritative. Verified against PSI-25's BibTeX: identical except PSI appends the acronym to the title.",
+      "citationFile": "data/real/citations.json",
+      "note": "CC0 waives copyright, so attribution is not a legal condition, but the team cites every dataset anyway so each number is traceable. For BRE and E-FIELD, cite the PSI accession and page URL and avoid claiming a licence."
+    },
+    "ntrsPapers": {
+      "status": "NOT YET CHECKED",
+      "action": "Open each paper's NTRS record and read its Rights / Copyright / Distribution field. We only quote table values with the paper, table and page, not whole documents."
+    },
+    "nasaWebPages": {
+      "status": "NOT YET CHECKED",
+      "action": "Confirm NASA's media usage guidelines for quoting values from the ECLSS brief and MSIS pages, which we cite with links."
+    },
+    "citationText": "see data/real/citations.json"
+  },
+  "psiMetadata": {
+    "pageUrlPattern": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-<number> (note: 'investigations', plural, as in PSI's own BibTeX; earlier notes used the singular)",
+    "what": "Names, acronyms, accession IDs, hardware, platform, dates, objectives, approach and publication lists for the 19 microgravity combustion investigations (24 combustion-science records in total, 5 of them ground-based).",
+    "endpoint": "https://psi.nasa.gov/geode-py/ws/repo/search?data_source=psi&data_type=investigation&ffield=Research%20Area&fvalue=combustion%20science&size=200",
+    "note": "Read-only JSON endpoint used by the PSI website's own front end. It is not a documented public API and could change. The study and file listing endpoints returned 403 to anonymous requests and were not used.",
+    "verification": "Not yet compared line by line; derived from a single response."
+  },
+  "pressurePolicy": {
+    "rule": "Measured pressure and cited-nominal pressure are never merged. A value is either 'measured in the source', 'supplied by a cited paper', or 'not recorded'.",
+    "measured": ["BASS (atm per test)", "FLEX (mmHg per test)", "CFI (atm per test)", "Saffire IV-VI (kPa per sample, published paper)"],
+    "suppliedByPaper": ["Saffire I, II, III: 100 kPa in the thin-sample table (paper not yet identified, see saffire-iv-vi-tests.json)"],
+    "notRecorded": ["BASS-II", "BRE (the source says pressure was varied but not identified)", "SPICE", "SLICE", "Saffire I, II, III in the PSI tables themselves"],
+    "citedNominalReferences": [
+      { "claim": "ISS cabin nominal about 14.7 psi (101.4 kPa), about 21% O2; operating band 14.0 to 14.9 psia", "url": "https://www.nasa.gov/wp-content/uploads/2023/07/eclss-technical-brief-ochmo.pdf", "title": "NASA-STD-3001 Technical Brief, Relevant Technical Requirements (ECLSS)" },
+      { "claim": "Sea-level and ISS reference atmosphere tables", "url": "https://msis.jsc.nasa.gov/sections/section05.htm", "title": "NASA Man-Systems Integration Standards, Natural and Induced Environments" },
+      { "claim": "Cygnus O2 'nearly 21% by volume, the same as in the ISS' (page 4); exploration atmospheres up to 0.34 O2 mole fraction and 8.2 psia (page 7)", "url": "https://ntrs.nasa.gov/api/citations/20170000230/downloads/20170000230.pdf", "title": "Operation and Development Status of the Spacecraft Fire Experiments (Saffire), ICES" }
+    ]
+  },
+  "datasets": [
+    {
+      "id": "bass",
+      "investigation": "BASS, Burning and Suppression of Solids",
+      "accession": "PSI-26",
+      "kind": "run-level",
+      "rows": 121,
+      "sourceFiles": ["data/raw/BASS test matrix.xlsx (sheet 'as run matrix')"],
+      "psiFolder": "PSI-26 / Science Documents",
+      "extractedTo": "data/real/bass-tests.json",
+      "extractor": "scripts/real/extract-bass.ts",
+      "fieldsFromSource": ["date", "start time", "material", "igniter", "flow restrictor", "fan and air display", "O2 (stored as a fraction)", "pressure (atm)", "CO2 (mmHg)", "investigator observation notes"],
+      "derived": ["o2Percent = source fraction x 100", "pressurePsi = atm x 14.6959", "outcome flags are keyword reads of the observation notes"],
+      "verification": "All 121 rows compared programmatically against the workbook; 6 start-time mismatches found and fixed (Excel elapsed-time cells). Outcome flags checked by hand by a team member.",
+      "knownIssues": ["Material names are inconsistent in the source (e.g. 'pmma 2 cm' and 'PMMA 2 cm'); kept as written", "Test 104 date reads 2103-05-15, almost certainly 2013; kept and flagged dateSuspect", "Mixed date formats; kept as written", "Air-speed cells are often free text; only plain number lists are parsed"]
+    },
+    {
+      "id": "bass-ii",
+      "investigation": "BASS-II, Burning and Suppression of Solids II",
+      "accession": "PSI-25",
+      "kind": "run-level",
+      "rows": 129,
+      "sourceFiles": ["data/raw/BASS-II Test Matrix by PI Final.xlsx (six tabs, one per researcher)", "data/raw/BASS-II data FAQ.docx (column explanations and publication list)"],
+      "psiFolder": "PSI-25 / Science Documents",
+      "extractedTo": "data/real/bass-ii-tests.json",
+      "extractor": "scripts/real/extract-bass2.ts",
+      "fieldsFromSource": ["date", "test and sample number", "material", "flow restrictor", "fan and air display", "calibrated initial and final O2 (%)", "CO2 and CO readings"],
+      "derived": ["outcome and outcomeEvidence are keyword reads of the fan and air display text", "o2FinalSuspect = final and initial O2 differ by more than 5 points"],
+      "verification": "All 129 rows compared programmatically; no mismatches. Outcome flags checked by hand by a team member.",
+      "knownIssues": ["No pressure column anywhere in the source", "5 final-O2 readings look like sensor faults (e.g. 22.2 to 1.6); flagged, not corrected", "Outcome is stated in text for only about 24 of 129 tests"]
+    },
+    {
+      "id": "flex",
+      "investigation": "FLEX, Flame Extinguishment Experiment",
+      "accession": "PSI-69",
+      "kind": "run-level",
+      "rows": 274,
+      "sourceFiles": ["data/raw/PSI-69_Experimental table_FLEX.csv", "data/raw/FLEX_Test_Plan.pdf (used to identify the 'CO' column)", "data/raw/FLEX DoD.docx"],
+      "psiFolder": "PSI-69 / Experimental table; Science Documents",
+      "extractedTo": "data/real/flex-tests.json",
+      "extractor": "scripts/real/extract-flex.ts",
+      "fieldsFromSource": ["fuel", "ambient pressure (mmHg)", "O, N, 'CO' and He mole fractions", "droplet and extinction diameters", "burning rate", "burn time", "test end"],
+      "derived": ["pressurePsi = mmHg x 0.0193368", "gas percentages = mole fraction x 100"],
+      "verification": "All 274 rows compared programmatically; no unexplained mismatches.",
+      "knownIssues": ["The source header says 'CO'; the FLEX Test Plan (tables 8 and 9; page 3 on CO2 as the ISS suppressant) shows the suppressant is CO2 and never mentions carbon monoxide. Show as 'CO2 (labelled CO in the PSI table)'", "Test 114 has a pressure of 0 mmHg (impossible); stored as null with pressureInvalid", "34 cells hold a corrupted character; stored as null", "Nine tests at 30 to 45 psi with 70% CO2"]
+    },
+    {
+      "id": "cfi",
+      "investigation": "CFI, Cool Flames Investigation",
+      "accession": "PSI-39",
+      "kind": "run-level",
+      "rows": 227,
+      "sourceFiles": ["data/raw/CFI_DataSummary_Spreadsheet_Jan2021.xlsx (sheets Master, DATA, Igniter, Comments)", "data/raw/PSI-39_Experimental table_CFI.csv (87-row subset)"],
+      "psiFolder": "PSI-39 / Science Documents; Experimental table",
+      "extractedTo": "data/real/cfi-tests.json",
+      "extractor": "scripts/real/extract-cfi.ts",
+      "fieldsFromSource": ["fuel", "pressure (atm)", "O2, N2, He fractions", "droplet and extinction diameters", "burn-rate constants", "reignitions", "igniter power and time", "investigator comments"],
+      "derived": ["pressurePsi = atm x 14.6959", "gas percentages = fraction x 100", "notesMentionCoolFlame is a keyword read of the comments"],
+      "verification": "All 227 rows compared programmatically across the four sheets; no unexplained mismatches.",
+      "knownIssues": ["Tests 1219 to 1222: O2 0.21 + N2 0.76 + He 0 = 97%", "Two cool-flame cells literally say NaN in the source (tests 1331 and 1338); stored as null without the raw text", "The Camera Settings sheet is not extracted"]
+    },
+    {
+      "id": "saffire-i",
+      "investigation": "Saffire-I",
+      "accession": "PSI-98",
+      "kind": "run-level",
+      "rows": 2,
+      "sourceFiles": ["data/raw/PSI-98_Experimental table_SAFFIRE-1.csv", "data/raw/SAFFIRE-I and SAFFIRE-III DoD.docx"],
+      "extractedTo": "data/real/saffire-i-tests.json",
+      "extractor": "scripts/real/extract-saffire1.ts",
+      "verification": "2 of 2 rows match the CSV.",
+      "knownIssues": ["Sample length and width look swapped in the PSI table (paper says width 41 cm, length 94 cm)", "Thickness listed as 0.37 cm; unconfirmed", "O2 given as a range (S1) and an approximate value (S2)", "No pressure in the table; a published thin-sample table gives 100 kPa"]
+    },
+    {
+      "id": "saffire-ii",
+      "investigation": "Saffire-II",
+      "accession": "PSI-99",
+      "kind": "run-level",
+      "rows": 9,
+      "sourceFiles": ["data/raw/PSI-99_Experimental table_SAFFIRE-2.csv", "data/raw/SAFFIRE-II DoD.docx (Table 1 is an embedded image)"],
+      "extractedTo": "data/real/saffire-ii-tests.json",
+      "extractor": "scripts/real/extract-saffire2.ts",
+      "verification": "9 of 9 rows match the CSV. The readme Table 1 values (transcribed from an image) were checked by hand by a team member.",
+      "knownIssues": ["Experimental table and readme disagree on thickness (several samples) and on air flow for samples 2-6 and 2-9", "A published thin-sample table gives yet another flow for II-6 (25 cm/s versus 20 and 30)", "Source writes '037 mm' for thickness; kept verbatim", "O2 is approximate for most rows (derived from CO2 production, per the table's own note 1)"]
+    },
+    {
+      "id": "saffire-iii",
+      "investigation": "Saffire-III",
+      "accession": "PSI-100",
+      "kind": "run-level (conditions only)",
+      "rows": 2,
+      "sourceFiles": ["data/raw/PSI-100_Experimental table_SAFFIRE-3.csv"],
+      "extractedTo": "data/real/saffire-iii-tests.json",
+      "extractor": "scripts/real/extract-saffire3.ts",
+      "verification": "2 of 2 rows match the CSV.",
+      "knownIssues": ["No O2, pressure, ignition or burn time in the PSI table", "PSI says 30 cm/s; a published thin-sample table says 25 cm/s for III-1"]
+    },
+    {
+      "id": "saffire-iv-vi",
+      "investigation": "Saffire IV, V, VI (NOT in the PSI combustion archive)",
+      "accession": null,
+      "kind": "published paper, hand-transcribed",
+      "rows": 8,
+      "sourceFiles": ["Team screenshots of NASA papers; not stored in the repository"],
+      "extractedTo": "data/real/saffire-iv-vi-tests.json",
+      "extractor": "none (hand transcription)",
+      "citations": [
+        { "label": "Preliminary Results from the Saffire VI Experiment (ICES-2024-365)", "url": "https://ntrs.nasa.gov/citations/20240002981", "tablesUsed": "Table 1 'Saffire IV-VI Sample Test Conditions' (page 3); Table 2 'Saffire IV-VI Heat release and increase of carbon oxides*' (page 6; footnote: 'Empty fields were cases where the data were not available.')", "confirmed": "by team member" },
+        { "label": "Slide deck 'Preliminary Results from the Saffire VI Experiment'", "url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf", "tablesUsed": "'Test Matrix (as executed)', slide 11", "confirmed": "by team member and slide number visible in screenshot" },
+        { "label": "Fire Safety Implications of Preliminary Results from Saffire IV and V Experiments on Large Scale Spacecraft Fires (ICES 2021-266)", "url": "https://ntrs.nasa.gov/citations/20210011521", "tablesUsed": "Table 1 'Saffire IV-V Sample Test Conditions' (page 3); Table 2 'Test Conditions and flame size for thin samples' (page 8)", "confirmed": "by team member; caption matches screenshot" },
+        { "label": "NASA Saffire overview (flight dates and goals)", "url": "https://www.nasa.gov/wp-content/uploads/2025/07/spacecraft-fire-safety-demonstration-saffire.pdf", "confirmed": true }
+      ],
+      "verification": "Transcribed by Claude from screenshots; values repeated across several tables agree. Not yet checked cell by cell against the PDFs by a person. Mark every point shown from this file as 'published paper'.",
+      "knownIssues": ["Blank cells in the results table mean 'data not available' (footnote to Table 2, page 6); stored as null, never as zero", "VI-2 fuel-calorimetry total (409 kJ) equals IV-1's; confirm it is not a copy error", "Preliminary results; Saffire-VI was the final flight"]
+    },
+    {
+      "id": "flex-2",
+      "investigation": "FLEX-2",
+      "accession": "PSI-68",
+      "kind": "planned test matrix (not runs)",
+      "rows": 8,
+      "sourceFiles": ["data/raw/PSI-68_Experimental table_Flex2.csv", "data/raw/FLEX-2 DoD.docx"],
+      "extractedTo": "data/real/flex-2-design.json",
+      "extractor": "scripts/real/extract-flex2.ts",
+      "verification": "All 8 rows match.",
+      "knownIssues": ["States planned fuels and condition ranges only; does not say what was flown or the results"]
+    },
+    {
+      "id": "bre",
+      "investigation": "ACME BRE, Burning Rate Emulator",
+      "accession": "PSI-20",
+      "kind": "day-level summary",
+      "rows": 18,
+      "sourceFiles": ["data/raw/PSI-20_Experimental table_ACME BRE.csv"],
+      "extractedTo": "data/real/bre-test-days.json",
+      "extractor": "scripts/real/summarize-bre.ts",
+      "verification": "All 18 rows and the totals match.",
+      "knownIssues": ["Pressure was varied but is not identified in the table (stated in the source)", "Two O2 cells read '3400%' and '2100%'; left unparsed", "Gives O2 levels per day, not per run"]
+    },
+    {
+      "id": "spice",
+      "investigation": "SPICE, Smoke Point In Co-flow Experiment",
+      "accession": "PSI-107",
+      "kind": "burner operating log summary",
+      "rows": 469,
+      "sourceFiles": ["data/raw/PSI-107_Experimental table_Spice.csv"],
+      "extractedTo": "data/real/spice-envelope.json",
+      "extractor": "scripts/real/summarize-spice.ts",
+      "verification": "All summary statistics recomputed and match.",
+      "knownIssues": ["No O2, pressure or outcome column", "34 exact duplicate rows and more near-duplicates, so not converted to runs", "8 negative air-speed readings"]
+    },
+    {
+      "id": "slice",
+      "investigation": "SLICE, Structure and Liftoff In Combustion Experiment",
+      "accession": "PSI-106",
+      "kind": "test-day schedule",
+      "rows": 12,
+      "sourceFiles": ["data/raw/PSI-106_Experimental table_Slice.csv"],
+      "extractedTo": "data/real/slice-schedule.json",
+      "extractor": "scripts/real/summarize-slice.ts",
+      "verification": "All 12 rows match.",
+      "knownIssues": ["Dates and fuel notes share a cell in some rows; kept verbatim", "No O2, pressure, flow or outcomes"]
+    }
+  ],
+  "metadataOnly": [
+    { "investigation": "ACME CLD Flame", "accession": "PSI-21" },
+    { "investigation": "ACME E-FIELD Flames", "accession": "PSI-22" },
+    { "investigation": "ACME s-Flame", "accession": "PSI-23" },
+    { "investigation": "ACME Flame Design", "accession": "PSI-10" },
+    { "investigation": "ACME CFI-G", "accession": "PSI-159" },
+    { "investigation": "SAME", "accession": "PSI-102" },
+    { "investigation": "SAME-R", "accession": "PSI-101" },
+    { "investigation": "DAFT and DAFT-2", "accession": "PSI-47" }
+  ],
+  "excludedOnPurpose": [
+    "Raw Data folders: mostly video and images, which cannot be turned into reliable numbers",
+    "Analyzed Data folders: PDFs of plots and reports",
+    "SAFFIRE-II MergeResult spreadsheet: an index of camera image files, no sensor data",
+    "BASS planned test matrix (050213): contained login credentials in a header cell; deleted and never extracted"
+  ],
+  "openItems": [
+    "Check the Rights / Copyright line on each of the three NTRS papers, and NASA's media guidelines for the cited web pages (reuseTerms above)",
+    "BRE (PSI-20) and E-FIELD (PSI-22) have no DOI record; PSI-10 lists no licence. Ask the PSI team or check the investigation page for a licence and citation",
+    "Check VI-2's 409 kJ fuel-calorimetry total",
+    "Have a second person check the Saffire IV-VI transcription cell by cell against the PDFs",
+    "Decide how the app shows the Saffire flow and size conflicts (show every value with its source)",
+    "Check PSI investigation metadata line by line before it appears in the Explorer"
+  ]
+}

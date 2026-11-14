@@ -1,0 +1,38 @@
+[
+ {
+  "testId": "saffire-iii-s1",
+  "investigationId": "saffire-iii",
+  "accession": "PSI-100",
+  "sourceFile": "PSI-100_Experimental table_SAFFIRE-3.csv",
+  "sourceRow": 2,
+  "sampleNumber": "S1",
+  "material": "SIBAL Fabric",
+  "thicknessCm": 0.33,
+  "lengthCm": 94,
+  "widthCm": 40.6,
+  "airFlowCmS": 30,
+  "flowDirection": "Concurrent",
+  "o2Percent": null,
+  "pressure": null,
+  "burnTimeS": null,
+  "dataSource": "psi"
+ },
+ {
+  "testId": "saffire-iii-s2",
+  "investigationId": "saffire-iii",
+  "accession": "PSI-100",
+  "sourceFile": "PSI-100_Experimental table_SAFFIRE-3.csv",
+  "sourceRow": 3,
+  "sampleNumber": "S2",
+  "material": "SIBAL Fabric",
+  "thicknessCm": 0.33,
+  "lengthCm": 94,
+  "widthCm": 40.6,
+  "airFlowCmS": 30,
+  "flowDirection": "Opposed",
+  "o2Percent": null,
+  "pressure": null,
+  "burnTimeS": null,
+  "dataSource": "psi"
+ }
+]

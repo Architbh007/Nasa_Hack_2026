@@ -1,0 +1,69 @@
+{
+ "investigationId": "slice",
+ "accession": "PSI-106",
+ "kind": "test-day-schedule",
+ "note": "Test days and fuel mixes only: no O2, pressure, flow or outcomes. Not converted to test runs.",
+ "sourceFile": "PSI-106_Experimental table_Slice.csv",
+ "testDays": [
+  {
+   "sourceRow": 2,
+   "dateCellRaw": "2012-FEB-09",
+   "fuelCellRaw": "100% CH4"
+  },
+  {
+   "sourceRow": 3,
+   "dateCellRaw": "2012-FEB-13 SLICE testing with",
+   "fuelCellRaw": "40% CH4 (balance N2) including 2 pyrometry calibration tests and 2 fan calibrations"
+  },
+  {
+   "sourceRow": 4,
+   "dateCellRaw": "2012-FEB-17",
+   "fuelCellRaw": "70% CH4 (balance N2) including 1 pyrometry calibration test"
+  },
+  {
+   "sourceRow": 5,
+   "dateCellRaw": "2012-FEB-20",
+   "fuelCellRaw": "20% C2H4 (balance N2)"
+  },
+  {
+   "sourceRow": 6,
+   "dateCellRaw": "2012-FEB-27",
+   "fuelCellRaw": "100% CH4"
+  },
+  {
+   "sourceRow": 7,
+   "dateCellRaw": "2012-MAR-01",
+   "fuelCellRaw": "40% CH4 (balance N2)"
+  },
+  {
+   "sourceRow": 8,
+   "dateCellRaw": "2012-MAR-05 SLICE testing with",
+   "fuelCellRaw": "70% CH4 (balance N2) where the fuel bottle was not emptied (in contrast to most days)"
+  },
+  {
+   "sourceRow": 9,
+   "dateCellRaw": "2012-MAR-09",
+   "fuelCellRaw": "100% C2H6"
+  },
+  {
+   "sourceRow": 10,
+   "dateCellRaw": "2012-MAR-12",
+   "fuelCellRaw": "100% CH4"
+  },
+  {
+   "sourceRow": 11,
+   "dateCellRaw": "2012-MAR-15",
+   "fuelCellRaw": "20% C2H4 (balance N2)"
+  },
+  {
+   "sourceRow": 12,
+   "dateCellRaw": "2012-MAR-19 SLICE testing with",
+   "fuelCellRaw": "70% CH4 (balance N2) including 1 pyrometry calibration test and 2 fan calibrations"
+  },
+  {
+   "sourceRow": 13,
+   "dateCellRaw": "2012-MAR-23 Last day of testing: SPICE testing with 100% C3H8 and then 100%",
+   "fuelCellRaw": "100% C2H4"
+  }
+ ]
+}
