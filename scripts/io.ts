@@ -4,9 +4,9 @@ import { dirname, join } from "node:path";
 export const DATA_DIR = "data";
 export const FILES = {
   investigations: join(DATA_DIR, "investigations.json"),
-  tests: join(DATA_DIR, "tests.json"),
+  runs: join(DATA_DIR, "runs.json"),
+  summaries: join(DATA_DIR, "summaries.json"),
   scenarios: join(DATA_DIR, "scenarios.json"),
-  model: join(DATA_DIR, "model.json"),
 } as const;
 
 export function readJson(path: string): unknown {

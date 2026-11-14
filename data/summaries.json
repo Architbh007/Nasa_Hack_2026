@@ -1,0 +1,690 @@
+[
+  {
+    "investigationId": "flex-2",
+    "kind": "planned-matrix",
+    "title": "FLEX-2 planned test matrix",
+    "note": "Planned conditions only; it does not record which runs flew or their outcomes.",
+    "sourceFile": "PSI-68_Experimental table_Flex2.csv",
+    "data": [
+      {
+        "plannedRow": 2,
+        "fuelRaw": "IsoOctane (pure)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 3,
+        "fuelRaw": "n-Octane (pure)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 4,
+        "fuelRaw": "Heptane (pure)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 5,
+        "fuelRaw": "Decane (pure)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 6,
+        "fuelRaw": "Ethanol (pure)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 7,
+        "fuelRaw": "Propanol (95%) Glycerol (5%) (mixture)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 8,
+        "fuelRaw": "Heptane (50%) IsoOctane (50%) (mixture)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      },
+      {
+        "plannedRow": 9,
+        "fuelRaw": "Propanol (80%) Glycerol (20%) (mixture)",
+        "initialDropletDiameterMmRange": [
+          1.5,
+          5
+        ],
+        "ambientGasMixtureRaw": "O2/N2 or O2/He",
+        "o2PercentLevels": [
+          17,
+          21,
+          25,
+          30
+        ],
+        "pressureAtmLevels": [
+          0.5,
+          1,
+          1.5,
+          2,
+          3
+        ],
+        "pressurePsiLevels": [
+          7.35,
+          14.7,
+          22.04,
+          29.39,
+          44.09
+        ],
+        "ambientTemperatureC": 25,
+        "flowVelocityCmSRange": [
+          0.1,
+          5
+        ]
+      }
+    ]
+  },
+  {
+    "investigationId": "bre",
+    "kind": "day-summary",
+    "title": "ACME BRE test days",
+    "note": "Day-level summary: O2 levels used that day and flames ignited that day. Pressure was varied but is not identified in the table. Not individual runs.",
+    "sourceFile": "PSI-20_Experimental table_ACME BRE.csv",
+    "data": {
+      "testDays": [
+        {
+          "sourceRow": 2,
+          "year": 2019,
+          "month": "Feb",
+          "day": 8,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "21; 26.5; 40",
+          "o2PercentLevels": [
+            21,
+            26.5,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 10,
+          "notesRaw": "Oxygen Conc. (as diluted with nitrogen on a volume basis) was varied between tests where approximate concentrations for tests that ignited are listed. The chamber pressures were also varied but are not identified in this summary table."
+        },
+        {
+          "sourceRow": 3,
+          "year": 2019,
+          "month": "Feb",
+          "day": 20,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "26.5; 34",
+          "o2PercentLevels": [
+            26.5,
+            34
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 8,
+          "notesRaw": "Flames Ignited is the number ignited on that day (neglecting the day change on ISS)."
+        },
+        {
+          "sourceRow": 4,
+          "year": 2019,
+          "month": "Feb",
+          "day": 25,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "50% C2H4",
+          "o2PercentRaw": "21; 26.5; 34; 40",
+          "o2PercentLevels": [
+            21,
+            26.5,
+            34,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 8,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 5,
+          "year": 2019,
+          "month": "March",
+          "day": 4,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "50% C2H4",
+          "o2PercentRaw": "26.5; 40",
+          "o2PercentLevels": [
+            26.5,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 6,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 6,
+          "year": 2019,
+          "month": "March",
+          "day": 7,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "50% C2H4",
+          "o2PercentRaw": "3400%",
+          "o2PercentLevels": [],
+          "o2Unparsed": [
+            "3400%"
+          ],
+          "flamesIgnited": 6,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 7,
+          "year": 2019,
+          "month": "March",
+          "day": 11,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "50% C2H4",
+          "o2PercentRaw": "26.5; 34",
+          "o2PercentLevels": [
+            26.5,
+            34
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 7,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 8,
+          "year": 2019,
+          "month": "March",
+          "day": 28,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100%C2H4",
+          "o2PercentRaw": "26.5; 34",
+          "o2PercentLevels": [
+            26.5,
+            34
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 8,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 9,
+          "year": 2019,
+          "month": "April",
+          "day": 1,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100%C2H4",
+          "o2PercentRaw": "2100%",
+          "o2PercentLevels": [],
+          "o2Unparsed": [
+            "2100%"
+          ],
+          "flamesIgnited": 0,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 10,
+          "year": 2019,
+          "month": "April",
+          "day": 4,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100%C2H4",
+          "o2PercentRaw": "21; 26.5; 34",
+          "o2PercentLevels": [
+            21,
+            26.5,
+            34
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 9,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 11,
+          "year": 2020,
+          "month": "Sept",
+          "day": 3,
+          "burnerSizeMm": 50,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "25; 34; 40",
+          "o2PercentLevels": [
+            25,
+            34,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 13,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 12,
+          "year": 2020,
+          "month": "Oct",
+          "day": 17,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "26.5; 34",
+          "o2PercentLevels": [
+            26.5,
+            34
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 13,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 13,
+          "year": 2020,
+          "month": "Dec",
+          "day": 5,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% CH4",
+          "o2PercentRaw": "25; 34; 40",
+          "o2PercentLevels": [
+            25,
+            34,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 21,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 14,
+          "year": 2020,
+          "month": "Dec",
+          "day": 4,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% CH4",
+          "o2PercentRaw": "25; 40",
+          "o2PercentLevels": [
+            25,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 18,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 15,
+          "year": 2020,
+          "month": "Dec",
+          "day": 11,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "50% C2H4",
+          "o2PercentRaw": "25; 40",
+          "o2PercentLevels": [
+            25,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 12,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 16,
+          "year": 2020,
+          "month": "Dec",
+          "day": 17,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "34; 40",
+          "o2PercentLevels": [
+            34,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 10,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 17,
+          "year": 2020,
+          "month": "Dec",
+          "day": 23,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "25; 34; 40",
+          "o2PercentLevels": [
+            25,
+            34,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 17,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 18,
+          "year": 2021,
+          "month": "Jan",
+          "day": 20,
+          "burnerSizeMm": 25,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "21; 26.5; 34",
+          "o2PercentLevels": [
+            21,
+            26.5,
+            34
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 15,
+          "notesRaw": ""
+        },
+        {
+          "sourceRow": 19,
+          "year": 2021,
+          "month": "Jan",
+          "day": 28,
+          "burnerSizeMm": 50,
+          "fuelBottleRaw": "100% C2H4",
+          "o2PercentRaw": "25; 34; 40",
+          "o2PercentLevels": [
+            25,
+            34,
+            40
+          ],
+          "o2Unparsed": [],
+          "flamesIgnited": 13,
+          "notesRaw": ""
+        }
+      ],
+      "totals": {
+        "days": 18,
+        "flamesIgnited": 194,
+        "o2PercentMin": 21,
+        "o2PercentMax": 40,
+        "o2PercentDistinctLevels": [
+          21,
+          25,
+          26.5,
+          34,
+          40
+        ]
+      }
+    }
+  },
+  {
+    "investigationId": "spice",
+    "kind": "log-summary",
+    "title": "SPICE burner operating log",
+    "note": "Burner settings only: no O2, no pressure, no outcome column. Not converted to test runs.",
+    "sourceFile": "PSI-107_Experimental table_Spice.csv",
+    "data": {
+      "rows": 469,
+      "fuelLabelsAsWritten": {
+        "Ethylene": 47,
+        "Propane": 50,
+        "75% Propylene": 16,
+        "75 % Propylene": 119,
+        "50 % Propylene": 111,
+        "Propylene": 122,
+        "Methane": 4
+      }
+    }
+  },
+  {
+    "investigationId": "slice",
+    "kind": "schedule",
+    "title": "SLICE test-day schedule",
+    "note": "Test days and fuel mixes only: no O2, pressure, flow or outcomes. Not converted to test runs.",
+    "sourceFile": "PSI-106_Experimental table_Slice.csv",
+    "data": [
+      {
+        "sourceRow": 2,
+        "dateCellRaw": "2012-FEB-09",
+        "fuelCellRaw": "100% CH4"
+      },
+      {
+        "sourceRow": 3,
+        "dateCellRaw": "2012-FEB-13 SLICE testing with",
+        "fuelCellRaw": "40% CH4 (balance N2) including 2 pyrometry calibration tests and 2 fan calibrations"
+      },
+      {
+        "sourceRow": 4,
+        "dateCellRaw": "2012-FEB-17",
+        "fuelCellRaw": "70% CH4 (balance N2) including 1 pyrometry calibration test"
+      },
+      {
+        "sourceRow": 5,
+        "dateCellRaw": "2012-FEB-20",
+        "fuelCellRaw": "20% C2H4 (balance N2)"
+      },
+      {
+        "sourceRow": 6,
+        "dateCellRaw": "2012-FEB-27",
+        "fuelCellRaw": "100% CH4"
+      },
+      {
+        "sourceRow": 7,
+        "dateCellRaw": "2012-MAR-01",
+        "fuelCellRaw": "40% CH4 (balance N2)"
+      },
+      {
+        "sourceRow": 8,
+        "dateCellRaw": "2012-MAR-05 SLICE testing with",
+        "fuelCellRaw": "70% CH4 (balance N2) where the fuel bottle was not emptied (in contrast to most days)"
+      },
+      {
+        "sourceRow": 9,
+        "dateCellRaw": "2012-MAR-09",
+        "fuelCellRaw": "100% C2H6"
+      },
+      {
+        "sourceRow": 10,
+        "dateCellRaw": "2012-MAR-12",
+        "fuelCellRaw": "100% CH4"
+      },
+      {
+        "sourceRow": 11,
+        "dateCellRaw": "2012-MAR-15",
+        "fuelCellRaw": "20% C2H4 (balance N2)"
+      },
+      {
+        "sourceRow": 12,
+        "dateCellRaw": "2012-MAR-19 SLICE testing with",
+        "fuelCellRaw": "70% CH4 (balance N2) including 1 pyrometry calibration test and 2 fan calibrations"
+      },
+      {
+        "sourceRow": 13,
+        "dateCellRaw": "2012-MAR-23 Last day of testing: SPICE testing with 100% C3H8 and then 100%",
+        "fuelCellRaw": "100% C2H4"
+      }
+    ]
+  }
+]

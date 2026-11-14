@@ -1,31 +1,46 @@
 import { z } from "zod";
 
 /**
- * Dataset schemas. These are the contract between the data files in /data and
- * the app. Swapping the synthetic JSON for real PSI exports only requires
- * producing files that satisfy these schemas (with dataSource: "psi").
+ * Real-data contract. Every value shown in the app comes from a NASA PSI file or a cited NASA
+ * paper, and every record says which. Missing values stay null; nothing is filled in.
  */
 
-export const DataSourceSchema = z.enum(["synthetic", "psi"]);
-export const FuelPhaseSchema = z.enum(["solid", "liquid", "gas"]);
-export const GravityLevelSchema = z.enum([
-  "microgravity",
-  "normal",
-  "simulated-partial",
+export const DataSourceSchema = z.enum(["psi", "published"]);
+export const SourceKindSchema = z.enum(["psi-table", "paper"]);
+
+/** Team classification of what an investigation burned (basis recorded per investigation). */
+export const CategorySchema = z.enum(["solid", "liquid", "gas", "smoke-dust"]);
+
+/** How detailed the data we hold for an investigation is. */
+export const DataLevelSchema = z.enum([
+  "runs",
+  "planned-matrix",
+  "day-summary",
+  "log-summary",
+  "schedule",
+  "metadata-only",
 ]);
-export const SafetyPillarSchema = z.enum([
-  "prevention",
-  "detection",
-  "suppression",
-]);
+
+/**
+ * measured: recorded per test in the source table. paper: stated in a cited NASA paper.
+ * not-recorded: the source does not give it (a cited ISS nominal may be supplied separately
+ * in pressureAssumedPsi, never in pressurePsi).
+ */
+export const PressureStatusSchema = z.enum(["measured", "paper", "not-recorded"]);
+
 export const OutcomeSchema = z.enum([
-  "sustained",
-  "self-extinguished",
+  "burned",
+  "extinguished",
   "blowoff",
-  "quenched",
-  "cool-flame",
   "no-ignition",
+  "disruption",
+  "cool-flame",
+  "unknown",
 ]);
+/** source-field: the table states it. notes-keyword: read from free-text notes (reviewed by a person). */
+export const OutcomeBasisSchema = z.enum(["source-field", "notes-keyword", "none"]);
+
+export const SafetyPillarSchema = z.enum(["prevention", "detection", "suppression"]);
 export const MaterialClassSchema = z.enum([
   "fabric",
   "plastic",
@@ -34,152 +49,150 @@ export const MaterialClassSchema = z.enum([
   "liquid-fuel",
   "gas-leak",
 ]);
-export const HabitatKeySchema = z.enum(["iss", "lunarBase", "rover", "marsTransit"]);
 export const AirflowSchema = z.enum(["quiescent", "low", "ventilated"]);
 export const HabitatGravitySchema = z.enum(["micro", "lunar", "mars", "earth"]);
 
-const finite = z.number().finite();
+const num = z.number().finite();
+const range = z.object({ min: num, max: num }).refine((r) => r.min <= r.max, "min must be <= max");
 
-export const OxygenRangeSchema = z
-  .object({ min: finite.min(0).max(100), max: finite.min(0).max(100) })
-  .refine((r) => r.min <= r.max, { message: "oxygenRange.min must be <= max" });
+export const RunSchema = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  investigationId: z.string(),
+  dataSource: DataSourceSchema,
+  sourceKind: SourceKindSchema,
+  /** File (or paper) and the exact place in it, e.g. "sheet 'as run matrix', row 70" or "Table 1, p. 3". */
+  source: z.object({ file: z.string().min(1), ref: z.string().min(1) }),
+  date: z.string().nullable(),
+  material: z.string().nullable(),
+  materialClass: MaterialClassSchema.nullable(),
+  category: CategorySchema,
 
-export const PressureRangeSchema = z
-  .object({
-    minPsi: finite.positive(),
-    maxPsi: finite.positive(),
-    minKPa: finite.positive(),
-    maxKPa: finite.positive(),
-  })
-  .refine((r) => r.minPsi <= r.maxPsi, {
-    message: "pressureRange.minPsi must be <= maxPsi",
-  });
+  o2Percent: num.min(0).max(100).nullable(),
+  /** Verbatim O2 text when the source gives a range or an approximate value. */
+  o2Text: z.string().nullable(),
+  o2Approximate: z.boolean(),
 
-export const FlowRangeSchema = z
-  .object({ min: finite.min(0), max: finite.min(0) })
-  .refine((r) => r.min <= r.max, { message: "flowRange.min must be <= max" })
-  .nullable();
+  pressurePsi: num.positive().nullable(),
+  pressureKPa: num.positive().nullable(),
+  pressureStatus: PressureStatusSchema,
+  pressureNote: z.string().nullable(),
+  /** Cited nominal cabin pressure for tests whose source does not record one. Kept apart on purpose. */
+  pressureAssumedPsi: num.positive().nullable(),
+  pressureAssumedSource: z.string().nullable(),
 
-export const HabitatRelevanceEntrySchema = z.object({
-  score: z.number().int().min(0).max(5),
-  rationale: z.string().min(1),
+  flowMinCmS: num.nullable(),
+  flowMaxCmS: num.nullable(),
+  flowText: z.string().nullable(),
+  flowDirection: z.string().nullable(),
+
+  n2Percent: num.nullable(),
+  co2Percent: num.nullable(),
+  hePercent: num.nullable(),
+
+  outcome: OutcomeSchema,
+  outcomeBasis: OutcomeBasisSchema,
+  outcomeText: z.string().nullable(),
+
+  /** Measured values carried over as named numbers (units in the key). */
+  metrics: z.record(z.string(), num.nullable()),
+  /** Plain-language caveats for this run (conflicts between sources, suspect cells, conversions). */
+  flags: z.array(z.string()),
+});
+
+export const SummarySchema = z.object({
+  investigationId: z.string(),
+  kind: DataLevelSchema.exclude(["runs", "metadata-only"]),
+  title: z.string(),
+  note: z.string(),
+  sourceFile: z.string(),
+  data: z.unknown(),
 });
 
 export const InvestigationSchema = z.object({
-  id: z.string().regex(/^[a-z0-9-]+$/, "id must be a lowercase slug"),
-  name: z.string().min(1),
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  accession: z.string().nullable(),
   acronym: z.string().min(1),
-  project: z.string().min(1),
-  platform: z.string().min(1),
-  hardware: z.array(z.string().min(1)).min(1),
-  yearsActive: z
-    .object({ start: z.number().int(), end: z.number().int() })
-    .refine((y) => y.start <= y.end, { message: "yearsActive.start must be <= end" }),
-  fuelPhase: FuelPhaseSchema,
-  fuels: z.array(z.string().min(1)).min(1),
-  sampleGeometry: z.string().min(1),
-  oxygenRange: OxygenRangeSchema,
-  pressureRange: PressureRangeSchema,
-  flowRange: FlowRangeSchema,
-  diluents: z.array(z.string().min(1)),
-  gravityLevel: GravityLevelSchema,
-  objectives: z.array(z.string().min(1)).min(1),
-  variables: z.array(z.string().min(1)),
-  constants: z.array(z.string().min(1)),
-  measurements: z.array(z.string().min(1)).min(1),
-  keyFindings: z.array(z.string().min(1)),
-  safetyPillars: z.array(SafetyPillarSchema).min(1),
-  habitatRelevance: z.object({
-    iss: HabitatRelevanceEntrySchema,
-    lunarBase: HabitatRelevanceEntrySchema,
-    rover: HabitatRelevanceEntrySchema,
-    marsTransit: HabitatRelevanceEntrySchema,
+  name: z.string().min(1),
+  project: z.string(),
+  platform: z.string(),
+  projectType: z.string(),
+  subResearchArea: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  monitoringCenter: z.string(),
+  objectives: z.string(),
+  approach: z.string(),
+  hypothesis: z.string(),
+  earthBenefits: z.string(),
+  keywords: z.string(),
+  hardware: z.array(z.object({ name: z.string(), links: z.array(z.string()) })),
+  /** Short tags matched from PSI's hardware text (for similarity); the text itself is in `hardware`. */
+  hardwareTags: z.array(z.string()),
+  relatedAccessions: z.array(z.string()),
+  publicationTitlesRaw: z.string(),
+
+  category: CategorySchema,
+  categoryBasis: z.string(),
+  dataLevel: DataLevelSchema,
+  runCount: z.number().int().min(0),
+  fuels: z.array(z.string()),
+  ranges: z.object({
+    o2Percent: range.nullable(),
+    pressurePsi: range.nullable(),
+    pressureIncludesAssumed: z.boolean(),
+    flowCmS: range.nullable(),
   }),
-  earthApplications: z.array(z.string().min(1)),
-  sourceUrls: z.array(z.string().url()).min(1),
+  teamAssessment: z.object({ safetyPillars: z.array(SafetyPillarSchema), basis: z.string() }),
+  citation: z.object({
+    doi: z.string().nullable(),
+    text: z.string().nullable(),
+    licence: z.string().nullable(),
+    pageUrl: z.string().nullable(),
+  }),
+  knownIssues: z.array(z.string()),
   dataSource: DataSourceSchema,
 });
-
-export const TestRunSchema = z
-  .object({
-    testId: z.string().min(1),
-    investigationId: z.string().min(1),
-    o2Percent: finite.min(0).max(100),
-    pressurePsi: finite.positive(),
-    flowCmS: finite.min(0).nullable(),
-    diluent: z.string().min(1).nullable(),
-    diluentPercent: finite.min(0).max(100).nullable(),
-    gravityLevel: GravityLevelSchema,
-    fuel: z.string().min(1),
-    sampleSizeMm: finite.positive(),
-    ignited: z.boolean(),
-    outcome: OutcomeSchema,
-    flameSpreadRateMmS: finite.min(0).nullable(),
-    burnDurationS: finite.min(0),
-    peakTemperatureK: finite.positive().nullable(),
-    smokeObscurationPercent: finite.min(0).max(100).nullable(),
-    extinctionDiameterMm: finite.min(0).nullable(),
-    dataSource: DataSourceSchema,
-  })
-  .superRefine((t, ctx) => {
-    if (!t.ignited && t.outcome !== "no-ignition") {
-      ctx.addIssue({
-        code: "custom",
-        message: `${t.testId}: non-ignited run must have outcome no-ignition`,
-      });
-    }
-    if (t.ignited && t.outcome === "no-ignition") {
-      ctx.addIssue({
-        code: "custom",
-        message: `${t.testId}: ignited run cannot have outcome no-ignition`,
-      });
-    }
-    if (t.flameSpreadRateMmS !== null && t.outcome !== "sustained") {
-      ctx.addIssue({
-        code: "custom",
-        message: `${t.testId}: flameSpreadRateMmS must be null unless the flame was sustained`,
-      });
-    }
-    if ((t.diluent === null) !== (t.diluentPercent === null)) {
-      ctx.addIssue({
-        code: "custom",
-        message: `${t.testId}: diluent and diluentPercent must both be set or both be null`,
-      });
-    }
-  });
 
 export const ScenarioSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   label: z.string().min(1),
   description: z.string().min(1),
-  o2Percent: finite.min(0).max(100),
-  pressurePsi: finite.positive(),
+  o2Percent: num.min(0).max(100),
+  pressurePsi: num.positive(),
   typicalMaterials: z.array(MaterialClassSchema).min(1),
   typicalAirflow: z.enum(["ventilated", "quiescent"]),
   gravity: HabitatGravitySchema,
-  habitatKey: HabitatKeySchema.nullable(),
-  dataSource: DataSourceSchema,
+  /** Where the atmosphere values come from; null means "citation needed" and the UI says so. */
+  source: z.object({ label: z.string(), url: z.string().url(), detail: z.string() }).nullable(),
 });
 
 export const InvestigationsFileSchema = z.array(InvestigationSchema);
-export const TestsFileSchema = z.array(TestRunSchema);
+export const RunsFileSchema = z.array(RunSchema);
+export const SummariesFileSchema = z.array(SummarySchema);
 export const ScenariosFileSchema = z.array(ScenarioSchema);
 
 export type DataSource = z.infer<typeof DataSourceSchema>;
-export type FuelPhase = z.infer<typeof FuelPhaseSchema>;
-export type GravityLevel = z.infer<typeof GravityLevelSchema>;
-export type SafetyPillar = z.infer<typeof SafetyPillarSchema>;
+export type Category = z.infer<typeof CategorySchema>;
+export type DataLevel = z.infer<typeof DataLevelSchema>;
+export type PressureStatus = z.infer<typeof PressureStatusSchema>;
 export type Outcome = z.infer<typeof OutcomeSchema>;
+export type OutcomeBasis = z.infer<typeof OutcomeBasisSchema>;
+export type SafetyPillar = z.infer<typeof SafetyPillarSchema>;
 export type MaterialClass = z.infer<typeof MaterialClassSchema>;
-export type HabitatKey = z.infer<typeof HabitatKeySchema>;
 export type Airflow = z.infer<typeof AirflowSchema>;
 export type HabitatGravity = z.infer<typeof HabitatGravitySchema>;
+export type Run = z.infer<typeof RunSchema>;
+export type Summary = z.infer<typeof SummarySchema>;
 export type Investigation = z.infer<typeof InvestigationSchema>;
-export type TestRun = z.infer<typeof TestRunSchema>;
 export type Scenario = z.infer<typeof ScenarioSchema>;
 
-export const FUEL_PHASES = FuelPhaseSchema.options;
+export const CATEGORIES = CategorySchema.options;
 export const SAFETY_PILLARS = SafetyPillarSchema.options;
 export const OUTCOMES = OutcomeSchema.options;
 export const MATERIAL_CLASSES = MaterialClassSchema.options;
-export const HABITAT_KEYS = HabitatKeySchema.options;
+export const DATA_LEVELS = DataLevelSchema.options;
+
+/** A run can be placed on the O2-pressure map if it has O2 and some pressure (measured, paper or assumed). */
+export function effectivePressurePsi(r: Pick<Run, "pressurePsi" | "pressureAssumedPsi">): number | null {
+  return r.pressurePsi ?? r.pressureAssumedPsi;
+}
