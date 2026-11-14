@@ -5,7 +5,12 @@
     "description": "Reference atmosphere at 1 g.",
     "o2Percent": 21,
     "pressurePsi": 14.7,
-    "typicalMaterials": ["fabric", "plastic", "foam", "wire-insulation"],
+    "typicalMaterials": [
+      "fabric",
+      "plastic",
+      "foam",
+      "wire-insulation"
+    ],
     "typicalAirflow": "quiescent",
     "gravity": "earth",
     "source": {
@@ -20,7 +25,12 @@
     "description": "Sea-level-equivalent air with forced ventilation in microgravity.",
     "o2Percent": 21,
     "pressurePsi": 14.7,
-    "typicalMaterials": ["fabric", "plastic", "foam", "wire-insulation"],
+    "typicalMaterials": [
+      "fabric",
+      "plastic",
+      "foam",
+      "wire-insulation"
+    ],
     "typicalAirflow": "ventilated",
     "gravity": "micro",
     "source": {
@@ -35,7 +45,12 @@
     "description": "Reduced pressure and enriched oxygen, as proposed for exploration habitats.",
     "o2Percent": 34,
     "pressurePsi": 8.2,
-    "typicalMaterials": ["fabric", "plastic", "foam", "wire-insulation"],
+    "typicalMaterials": [
+      "fabric",
+      "plastic",
+      "foam",
+      "wire-insulation"
+    ],
     "typicalAirflow": "ventilated",
     "gravity": "lunar",
     "source": {
@@ -45,26 +60,24 @@
     }
   },
   {
-    "id": "pressurized-rover",
-    "label": "Pressurized rover",
-    "description": "Compact surface cabin at intermediate pressure and enriched oxygen.",
-    "o2Percent": 30,
-    "pressurePsi": 10.2,
-    "typicalMaterials": ["fabric", "plastic", "wire-insulation"],
-    "typicalAirflow": "ventilated",
-    "gravity": "lunar",
-    "source": null
-  },
-  {
     "id": "mars-transit",
-    "label": "Mars transit",
-    "description": "Long-duration cruise vehicle at reduced pressure in microgravity.",
+    "label": "Staged-decompression cabin (10.2 psi)",
+    "description": "Reduced pressure and enriched oxygen, as flown on Space Shuttle missions before spacewalks. A candidate for long transit vehicles.",
     "o2Percent": 26.5,
     "pressurePsi": 10.2,
-    "typicalMaterials": ["fabric", "plastic", "foam", "wire-insulation"],
+    "typicalMaterials": [
+      "fabric",
+      "plastic",
+      "foam",
+      "wire-insulation"
+    ],
     "typicalAirflow": "ventilated",
     "gravity": "micro",
-    "source": null
+    "source": {
+      "label": "Effects of the 8 psia / 32% O2 Atmosphere on the Human in the Spaceflight Environment, NTRS 20130013505",
+      "url": "https://ntrs.nasa.gov/citations/20130013505",
+      "detail": "Staged decompression atmosphere of 10.2 psia / 26.5% O2, used on 34 shuttle missions. Its use for a transit vehicle is the team's assumption."
+    }
   },
   {
     "id": "spacesuit",
@@ -72,9 +85,16 @@
     "description": "Pure oxygen at low pressure.",
     "o2Percent": 100,
     "pressurePsi": 4.3,
-    "typicalMaterials": ["fabric", "plastic"],
+    "typicalMaterials": [
+      "fabric",
+      "plastic"
+    ],
     "typicalAirflow": "ventilated",
     "gravity": "micro",
-    "source": null
+    "source": {
+      "label": "Designing an Exploration Atmosphere Prebreathe Protocol, NTRS 20140012830",
+      "url": "https://ntrs.nasa.gov/citations/20140012830",
+      "detail": "Extravehicular activities performed at 4.3 psia. The 100% O2 value is the team's entry for a pure-oxygen suit."
+    }
   }
 ]

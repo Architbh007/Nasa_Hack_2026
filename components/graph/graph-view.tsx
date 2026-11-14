@@ -207,7 +207,7 @@ export function GraphView({ investigations }: { investigations: Investigation[] 
           </ul>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div ref={ref} style={{ height: GRAPH_HEIGHT }} className="relative rounded-lg border border-border bg-[#0a101c]">
+          <div ref={ref} style={{ height: GRAPH_HEIGHT }} className="dark relative rounded-lg border border-border bg-[#0a101c]">
             <ForceGraphCanvas
               nodes={nodes}
               links={links}

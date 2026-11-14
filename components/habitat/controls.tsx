@@ -98,6 +98,7 @@ export function HabitatControls({
   onChange: (next: HabitatInputs) => void;
 }) {
   const set = <K extends keyof HabitatInputs>(k: K, v: HabitatInputs[K]) => onChange({ ...inputs, [k]: v });
+  const preset = scenarios.find((s) => s.id === presetId) ?? null;
   return (
     <Card className="h-fit xl:sticky xl:top-12">
       <CardHeader>
@@ -118,6 +119,20 @@ export function HabitatControls({
               <SelectItem value="custom">Custom</SelectItem>
             </SelectContent>
           </Select>
+          {preset && (
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              {preset.source ? (
+                <>
+                  Source:{" "}
+                  <a href={preset.source.url} target="_blank" rel="noreferrer" className="text-link hover:underline">
+                    {preset.source.label}
+                  </a>
+                </>
+              ) : (
+                <span className="text-warning">Citation needed. No NASA source is cited for this atmosphere.</span>
+              )}
+            </p>
+          )}
         </Field>
 
         <Field label="Oxygen" value={`${inputs.o2Percent.toFixed(1)}%`}>

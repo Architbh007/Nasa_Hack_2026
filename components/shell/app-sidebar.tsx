@@ -58,7 +58,7 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
               className={cn("size-4 shrink-0", active ? "text-primary" : "text-muted-foreground group-hover:text-foreground")}
             />
             <span className="truncate">{item.label}</span>
-            {active && <span aria-hidden className="ml-auto size-1.5 rounded-full bg-primary shadow-[0_0_8px_#ff7a3d]" />}
+            {active && <span aria-hidden className="absolute inset-y-1 left-0 w-0.5 bg-primary" />}
           </Link>
         );
       })}
@@ -79,15 +79,19 @@ export function AppSidebar({ status }: { status: SystemStatus }) {
   return (
     <aside className="sticky top-[30px] hidden h-[calc(100svh-30px)] w-60 shrink-0 flex-col gap-6 border-r border-sidebar-border bg-sidebar px-3 py-4 backdrop-blur-md md:flex">
       <BrandMark />
-      <NavLinks />
+      <div className="space-y-2">
+        <p className="eyebrow px-2.5">Displays</p>
+        <NavLinks />
+      </div>
       <div className="mt-auto space-y-3">
+        <p className="eyebrow px-1">Dataset</p>
         <dl className="space-y-1.5 rounded-lg border border-sidebar-border bg-background/40 p-3 text-[11px]">
           <StatusLine label="Data" value="NASA PSI + papers" />
           <StatusLine label="Investigations" value={String(status.investigations)} />
           <StatusLine label="Real test runs" value={String(status.runs)} />
         </dl>
         <p className="px-1 text-[11px] leading-relaxed text-muted-foreground">
-          NASA Space Apps 2026 prototype. Supports engineering judgment; does not replace NASA-STD-6001.
+          Built by team MicroVibe for NASA Space Apps 2026. Supports engineering judgment; does not replace NASA-STD-6001.
         </p>
       </div>
     </aside>

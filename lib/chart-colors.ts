@@ -44,16 +44,16 @@ export const OUTCOME_GROUP_STYLE: Record<OutcomeGroup, { label: string; color: s
   "cool-flame": { label: "Cool flame", color: "#199e70", shape: "diamond" },
   disruption: { label: "Droplet disruption", color: "#c98500", shape: "square" },
   "no-ignition": { label: "No ignition", color: NEUTRAL_MARK, shape: "cross" },
-  unknown: { label: "Outcome not stated", color: "#3b4658", shape: "wye" },
+  unknown: { label: "Outcome not stated", color: "#8a96a3", shape: "wye" },
 };
 
 export const OUTCOME_GROUP_ORDER: readonly OutcomeGroup[] = ["burned", "extinguished", "cool-flame", "disruption", "no-ignition", "unknown"];
 
 /** Chart chrome on the dark card surface. */
 export const CHART_INK = {
-  grid: "#25272c",
-  axis: "#3a3d44",
-  tick: "#9a9fa9",
-  label: "#b4b8c0",
-  surface: "#16171b",
+  grid: "#1c2533",
+  axis: "#3a4658",
+  tick: "#95a2b6",
+  label: "#c5cedb",
+  surface: "#0c111b",
 };

@@ -47,9 +47,9 @@ export type FuelCategory = (typeof FUEL_CATEGORIES)[number];
 export type Verdict = "tested" | "near" | "untested" | "no-runs";
 
 export const VERDICT_LABEL: Record<Verdict, string> = {
-  tested: "Tested",
-  near: "Near tested runs",
-  untested: "Not tested",
+  tested: "Has test data",
+  near: "Test data nearby",
+  untested: "No test data nearby",
   "no-runs": "No run data",
 };
 
@@ -92,7 +92,8 @@ export function categoryVerdict(
   const nearest = nearestRuns(point, runs, { category, count: nearestCount });
   const within = runsWithinTolerance(point, runs, category);
   const base = { category, withinTolerance: within.length, nearest, placeableRuns: placeable.length };
-  const onlyAssumedPressure = within.length > 0 && within.every((r) => r.assumedPressure);
+  const measured = within.filter((r) => !r.assumedPressure).length;
+  const onlyAssumedPressure = within.length > 0 && measured === 0;
   const label = CATEGORY_SHORT[category].toLowerCase();
   const tol = `±${TESTED_TOLERANCE.o2}% O2 and ±${TESTED_TOLERANCE.psi} psi`;
   if (placeable.length === 0) {
@@ -103,7 +104,7 @@ export function categoryVerdict(
       ...base,
       verdict: "tested",
       onlyAssumedPressure,
-      reason: `${within.length} ${label}-fuel run${within.length === 1 ? "" : "s"} within ${tol}${onlyAssumedPressure ? " (pressure not recorded; placed at the cited ISS nominal)" : ""}.`,
+      reason: `${within.length} ${label}-fuel run${within.length === 1 ? "" : "s"} within ${tol}: ${measured} with a recorded pressure, ${within.length - measured} with no recorded pressure, placed at the cited ISS nominal.`,
     };
   }
   const best = nearest[0]!;

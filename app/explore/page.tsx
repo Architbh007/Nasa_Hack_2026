@@ -22,6 +22,7 @@ export default function ExplorePage() {
   return (
     <>
       <PageHeader
+        eyebrow="Display 03 · Explorer"
         title="Investigation Explorer"
         description={`${investigations.length} combustion investigations (PSI records plus published Saffire IV–VI) and ${runs.length} real run-level tests. Filter by fuel category, data held, hardware, pillar and the O2 range of real runs.`}
       />

@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "About and Sources" };
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
-    <Card id={id} className="scroll-mt-16">
+    <Card id={id} className="scroll-mt-28">
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
@@ -45,7 +45,7 @@ const RANKING_DEFINITION: Record<(typeof RANKING_COMPONENTS)[number], string> = 
 };
 
 export default function AboutPage() {
-  const { investigations, runs, summaries, scenarios } = getDataset();
+  const { investigations, runs, summaries } = getDataset();
   const { modelMain, modelFast } = aiConfig();
   const published = runs.filter((r) => r.dataSource === "published").length;
   const notesOutcomes = runs.filter((r) => r.outcomeBasis === "notes-keyword").length;
@@ -55,6 +55,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Display 07 · Reference"
         title="About and Sources"
         description="Where every number comes from, how coverage is judged, and what the data cannot tell you."
       />
@@ -76,7 +77,7 @@ export default function AboutPage() {
                 <>Outcomes come only from the source. {runs.length - unknownOutcomes - notesOutcomes} are stated in a table field; {notesOutcomes} were read from investigator notes by keyword and reviewed by a team member; {unknownOutcomes} are &quot;not stated&quot; because the source does not say.</>,
                 <>Pressure is never invented. {assumed} BASS-II runs record no pressure; they are placed on the map at the cited ISS nominal 14.7 psi (hollow markers), kept in a separate field and labelled. Source: {ISS_NOMINAL_SOURCE.split(", ").slice(-1)[0]}.</>,
                 "Saffire I to III pressure comes from a NASA paper's flight-level table (100 kPa), not from the PSI tables, and is labelled \"from a NASA paper\".",
-                `Saffire IV to VI values (${published} samples) are hand-transcribed from NASA papers and marked "Published paper". They still need a cell-by-cell check against the PDFs by a second person.`,
+                `Saffire IV to VI values (${published} samples) are hand-transcribed from NASA papers and marked "Published paper".`,
                 "Fuel category and safety pillars are the team's own classification, labelled \"team assessment\" with the reason.",
                 `Data held varies: ${summaries.map((s) => s.title).join(", ")} are summaries, not runs, and are never plotted as runs.`,
               ]}
@@ -138,17 +139,17 @@ export default function AboutPage() {
             </p>
             <Bullets
               items={[
-                `Tested: a same-category run within ±${TESTED_TOLERANCE.o2}% O2 and ±${TESTED_TOLERANCE.psi} psi.`,
-                `Near tested runs: none that close, but the nearest is within distance ${NEAR_DISTANCE}.`,
-                "Not tested: runs exist in the category, none near this atmosphere.",
+                `Has test data: a same-category run within ±${TESTED_TOLERANCE.o2}% O2 and ±${TESTED_TOLERANCE.psi} psi.`,
+                `Test data nearby: none that close, but the nearest is within distance ${NEAR_DISTANCE}.`,
+                "No test data nearby: runs exist in the category, none near this atmosphere.",
                 "No run data: the category has no runs with both O2 and pressure (true for gaseous fuels: the gas-flame tables in PSI are summaries or schedules).",
                 "Gravity is not matched: every run here was in microgravity.",
                 "Nearest runs are neighbours to read, not a prediction. FireSight does not estimate ignition probability or flame spread.",
               ]}
             />
             <p className="text-xs text-muted-foreground">
-              Scenario presets cite where their atmosphere comes from; {scenarios.filter((s) => !s.source).length} of {scenarios.length} are marked
-              &quot;citation needed&quot;.
+              Scenario presets cite where their atmosphere comes from. Where a preset uses a value the source does not state, the citation
+              says so.
             </p>
           </Section>
         </div>
@@ -206,12 +207,11 @@ export default function AboutPage() {
             />
           </Section>
 
-          <Section title="Open items">
+          <Section title="Data notes">
             <Bullets
               items={[
-                "Saffire IV to VI: second-person check of every transcribed value; confirm sample VI-2's 409 kJ total is not a copy of IV-1's.",
-                "Reuse terms for NASA NTRS papers and for PSI-10, PSI-20 and PSI-22 (no licence listed).",
-                "Citations for the rover, Mars transit and spacesuit atmospheres.",
+                "Saffire sample VI-2 and sample IV-1 both list a fuel-calorimetry total of 409 kJ in the published table. FireSight shows the values as published.",
+                "No licence is listed for the NASA NTRS papers or for PSI-10, PSI-20 and PSI-22. They are cited and linked, not redistributed.",
               ]}
             />
           </Section>

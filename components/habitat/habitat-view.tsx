@@ -24,6 +24,7 @@ import {
   type Run,
   type Scenario,
 } from "@/lib/schema";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_PRESET = "iss-cabin";
 
@@ -57,15 +58,18 @@ function Section({
   description,
   children,
   action,
+  dark = false,
 }: {
   id?: string;
   title: string;
   description?: ReactNode;
   children: ReactNode;
   action?: ReactNode;
+  /** Keep this panel dark: its drawing was designed on a dark surface. */
+  dark?: boolean;
 }) {
   return (
-    <Card id={id} className="scroll-mt-20">
+    <Card id={id} className={cn("scroll-mt-28", dark && "dark")}>
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle className="text-base">{title}</CardTitle>
@@ -149,6 +153,7 @@ export function HabitatView({
         <HabitatReadouts a={assessment} />
 
         <Section
+          dark
           title="Is this air covered by real tests?"
           description={`Each square is one possible cabin air. Colour shows what the real ${MATERIAL_LABEL[inputs.materialClass].toLowerCase()} runs inside it recorded; stripes mean nobody has tested it there. No prediction is made.`}
         >
@@ -196,6 +201,7 @@ export function HabitatView({
         </Section>
 
         <Section
+          dark
           id="fire-twin"
           title="Fire Twin: what would a fire look like?"
           description="A top-down cabin module running this exact air. Whether an item burns comes from what the nearest real runs of that material recorded; spread speed, detection and crew response times are illustrative."

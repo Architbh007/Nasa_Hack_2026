@@ -1,8 +1,9 @@
-import { Gauge, Globe2, Info, MessageSquareText, Network, TableProperties, type LucideProps } from "lucide-react";
+import { Fan, Gauge, Globe2, Info, MessageSquareText, Network, TableProperties, type LucideProps } from "lucide-react";
 import type { NavItem } from "@/lib/nav";
 
 const ICONS: Record<NavItem["icon"], React.ComponentType<LucideProps>> = {
   habitat: Gauge,
+  response: Fan,
   explore: TableProperties,
   graph: Network,
   ask: MessageSquareText,

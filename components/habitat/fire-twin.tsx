@@ -13,6 +13,7 @@ import {
   formatClock,
   ILLUSTRATIVE,
   planFire,
+  sampleScaleNote,
   ROOM,
   ROOM_ITEMS,
   stateAt,
@@ -330,8 +331,8 @@ function confidenceFor(plan: FirePlan, data: { runs: readonly Run[] }): { level:
   const exact = runsWithinTolerance(plan.inputs, evidenceRuns(m, data.runs), null).length;
   const ev = start.evidence;
   return exact > 0
-    ? { level: "tested", text: `${exact} real ${MATERIAL_LABEL[m].toLowerCase()} runs lie within ±2% oxygen and ±1 psi of this air; ${ev.burned} of the ${ev.considered} nearest that state an outcome burned.` }
-    : { level: "near", text: `No ${MATERIAL_LABEL[m].toLowerCase()} run at this exact air, but ${ev.considered} nearby runs state an outcome (${ev.burned} burned). Read the fire as nearby evidence, not a measured result here.` };
+    ? { level: "tested", text: `${exact} real ${MATERIAL_LABEL[m].toLowerCase()} runs lie within ±2% oxygen and ±1 psi of this air; ${ev.burned} of the ${ev.considered} nearest that state an outcome burned. ${sampleScaleNote(ev)}` }
+    : { level: "near", text: `No ${MATERIAL_LABEL[m].toLowerCase()} run at this exact air, but ${ev.considered} nearby runs state an outcome (${ev.burned} burned). Read the fire as nearby evidence, not a measured result here. ${sampleScaleNote(ev)}` };
 }
 
 function testNext(plan: FirePlan): string[] {
@@ -568,7 +569,7 @@ export function FireTwin({
                     confidence.level === "untested" && "bg-destructive/15 text-destructive"
                   )}
                 >
-                  {confidence.level === "tested" ? "Tested" : confidence.level === "near" ? "Nearby runs only" : "Untested"}
+                  {confidence.level === "tested" ? "Has test data" : confidence.level === "near" ? "Nearby runs only" : "No test data"}
                 </span>
                 {confidence.text}
               </p>

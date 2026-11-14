@@ -156,5 +156,5 @@ export function Starfield() {
     };
   }, []);
 
-  return <canvas ref={ref} aria-hidden className="pointer-events-none fixed inset-0 -z-10 opacity-90" />;
+  return <canvas ref={ref} aria-hidden className="pointer-events-none absolute inset-0 opacity-80" />;
 }

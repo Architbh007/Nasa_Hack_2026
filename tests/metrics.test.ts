@@ -94,7 +94,7 @@ describe("coverage verdicts", () => {
     const v = categoryVerdict({ o2Percent: 21, pressurePsi: 14.7 }, only, "solid");
     expect(v.verdict).toBe("tested");
     expect(v.onlyAssumedPressure).toBe(true);
-    expect(v.reason).toMatch(/not recorded/);
+    expect(v.reason).toMatch(/no recorded pressure/);
   });
 
   it("lists what was never tested", () => {

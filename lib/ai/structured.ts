@@ -62,7 +62,7 @@ export async function structuredCall<S extends z.ZodType>(req: StructuredRequest
     if (parsed.success) return { data: parsed.data, cached: true, model: hit.model };
   }
   if (aiConfig().cacheOnly) {
-    throw new SiError("cache_miss", "Cache-only demo mode is on and this result has not been precomputed. Run npm run prewarm or set USE_CACHE_ONLY=false.", 503);
+    throw new SiError("cache_miss", "Cache-only mode is on and this result has not been precomputed. Run npm run prewarm or set USE_CACHE_ONLY=false.", 503);
   }
 
   const userText = `Data (JSON):\n${JSON.stringify(req.input, null, 1)}`;

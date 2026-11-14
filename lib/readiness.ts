@@ -8,7 +8,7 @@ import {
   type HabitatAssessment,
   type HabitatData,
 } from "@/lib/habitat";
-import { datasetScales, placeRuns, runDistance } from "@/lib/metrics";
+import { datasetScales, NEAR_DISTANCE, placeRuns, runDistance } from "@/lib/metrics";
 import { scoreInvestigation, type RankedInvestigation } from "@/lib/ranking";
 import { SAFETY_PILLARS, type Investigation, type SafetyPillar, type Scenario } from "@/lib/schema";
 
@@ -44,7 +44,7 @@ const EVIDENCE_WEIGHTS = { rangeOverlap: 0.45, categoryMatch: 0.3, flowMatch: 0.
 
 export const DISTANCE_BANDS: ReadonlyArray<{ band: string; maxDistance: number }> = [
   { band: "Very close (distance ≤ 0.25)", maxDistance: 0.25 },
-  { band: "Close (distance ≤ 0.6)", maxDistance: 0.6 },
+  { band: `Close (distance ≤ ${NEAR_DISTANCE})`, maxDistance: NEAR_DISTANCE },
   { band: "Farther (≤ 1.5)", maxDistance: 1.5 },
 ];
 

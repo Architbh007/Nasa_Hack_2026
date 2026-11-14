@@ -63,6 +63,8 @@ export type ItemEvidence = {
   /** Investigation ids behind these runs, nearest first. */
   investigationIds: string[];
   runIds: string[];
+  /** Sample lengths (cm) of the runs that record one. Runs of very different size can sit side by side. */
+  sampleLengthsCm: number[];
 };
 
 export type ItemRisk = {
@@ -138,15 +140,26 @@ function directionFactor(a: RoomItem, b: RoomItem, ventsOn: boolean): number {
 }
 
 const WENT_OUT = new Set(["extinguished", "blowoff", "no-ignition"]);
+/** Plain sentence on how big the burned samples behind an item were, so small strips and large sheets are not read as alike. */
+export function sampleScaleNote(ev: Pick<ItemEvidence, "considered" | "sampleLengthsCm">): string {
+  const n = ev.sampleLengthsCm.length;
+  if (n === 0) return `None of these ${ev.considered} runs records a sample length.`;
+  const min = Math.min(...ev.sampleLengthsCm);
+  const max = Math.max(...ev.sampleLengthsCm);
+  const span = min === max ? `${min} cm` : `${min} to ${max} cm`;
+  const rest = ev.considered - n;
+  return `Sample length is recorded for ${n} of these ${ev.considered} runs (${span})${rest > 0 ? `; the other ${rest} do not record one, so sample sizes may differ` : ""}.`;
+}
+
 /** How many nearest runs of a material are read to decide an item. */
 const EVIDENCE_RUNS = 6;
 
 export function itemRisks(inputs: HabitatInputs, data: { runs: readonly Run[] }): Record<string, ItemRisk> {
   const out: Record<string, ItemRisk> = {};
   for (const item of ROOM_ITEMS) {
-    const near = nearestRuns(inputs, evidenceRuns(item.material, data.runs), { count: EVIDENCE_RUNS }).filter(
-      (n) => n.distance <= NEAR_DISTANCE && n.run.outcome !== "unknown"
-    );
+    // Drop runs with no stated outcome before taking the nearest few, so unknown runs cannot crowd out known ones.
+    const stated = evidenceRuns(item.material, data.runs).filter((r) => r.outcome !== "unknown");
+    const near = nearestRuns(inputs, stated, { count: EVIDENCE_RUNS }).filter((n) => n.distance <= NEAR_DISTANCE);
     if (near.length === 0) {
       out[item.id] = { item, tested: false, evidence: null, ignites: null };
       continue;
@@ -158,6 +171,7 @@ export function itemRisks(inputs: HabitatInputs, data: { runs: readonly Run[] })
       wentOut: near.filter((n) => WENT_OUT.has(n.run.outcome)).length,
       investigationIds: [...new Set(near.map((n) => n.run.investigationId))],
       runIds: near.map((n) => n.run.id),
+      sampleLengthsCm: near.map((n) => n.run.metrics.lengthCm ?? null).filter((v): v is number => v !== null),
     };
     out[item.id] = { item, tested: true, evidence, ignites: burned > 0 };
   }

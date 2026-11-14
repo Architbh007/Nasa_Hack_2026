@@ -100,7 +100,7 @@ flowchart LR
   LOAD --> CORE --> PAGES --> UI["Browser<br/>Recharts · TanStack Table · force graph · chat"]
   UI -- "POST JSON" --> API --> CORE
   API --> AI <--> CACHE
-  AI -- "only on cache miss" --> CLAUDE["OpenAI API"]
+  AI -- "only on cache miss" --> OPENAI["OpenAI API"]
 ```
 
 - **No database.** Data lives in versioned JSON, is imported statically and validated once with zod.

@@ -7,6 +7,10 @@ import { getDataset } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Habitat Flammability Explorer" };
 
+/** Fire Twin reports the sample length behind each item; no other measured value is needed on this page. */
+const lengthOnly = (m: Record<string, number | null>): Record<string, number | null> =>
+  m.lengthCm === null || m.lengthCm === undefined ? {} : { lengthCm: m.lengthCm };
+
 function HabitatSkeleton() {
   return (
     <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
@@ -26,10 +30,11 @@ function HabitatSkeleton() {
 export default function HabitatPage() {
   const { investigations, runs: allRuns, scenarios } = getDataset();
   // The map and nearest-runs table need values and outcomes, not the long investigator notes (those are in the Explorer).
-  const runs = allRuns.map((r) => ({ ...r, outcomeText: null, metrics: {}, flags: [], pressureNote: null }));
+  const runs = allRuns.map((r) => ({ ...r, outcomeText: null, metrics: lengthOnly(r.metrics), flags: [], pressureNote: null }));
   return (
     <>
       <PageHeader
+        eyebrow="Display 01 · Habitat"
         title="Habitat Flammability Explorer"
         description="Pick a cabin air. See which real NASA tests cover it and which do not, read the SI's explanation with its sources, then watch a fire play out in a cabin module."
       />

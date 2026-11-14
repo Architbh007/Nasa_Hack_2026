@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     const cached = await cachedAnswer(plan);
     if (cached !== null) return new Response(replay(cached), { headers: { ...headers, [CACHED_HEADER]: "1" } });
     if (aiConfig().cacheOnly) {
-      throw new SiError("cache_miss", "Cache-only demo mode is on and this question has no precomputed answer. Try a starter question.", 503);
+      throw new SiError("cache_miss", "Cache-only mode is on and this question has no precomputed answer. Try a starter question.", 503);
     }
 
     const stream = startAskStream(plan);

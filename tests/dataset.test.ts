@@ -5,6 +5,7 @@ import { buildAll } from "@/lib/real/build";
 import { effectivePressurePsi, type Investigation, type Run } from "@/lib/schema";
 import { validateDataset, validateSourceConversions } from "@/lib/validate";
 import { readBuiltFiles, readRealFiles } from "./fixtures";
+import { BASS_OUTCOME_REVIEW } from "@/lib/real/bass-outcome-review";
 
 const real = readRealFiles();
 const built = readBuiltFiles();
@@ -66,14 +67,23 @@ describe("no invented values", () => {
     }
   });
 
-  it("BASS outcomes match the keyword flags in the extracted file, run by run", () => {
+  it("BASS outcomes match the keyword flags in the extracted file, or a reviewed correction that quotes the note", () => {
     const byRow = new Map(real["bass-tests"].map((b) => [b.sourceRow, b]));
-    for (const r of runs.filter((x) => x.investigationId === "bass")) {
+    const bass = runs.filter((x) => x.investigationId === "bass");
+    for (const r of bass) {
       const row = Number(/row (\d+)/.exec(r.source.ref)?.[1]);
       const b = byRow.get(row)!;
-      const expected = b.flags.noIgnition ? "no-ignition" : b.flags.blowoff ? "blowoff" : b.flags.extinguished ? "extinguished" : "unknown";
-      expect(r.outcome, r.id).toBe(expected);
+      const keyword = b.flags.noIgnition ? "no-ignition" : b.flags.blowoff ? "blowoff" : b.flags.extinguished ? "extinguished" : "unknown";
+      const review = BASS_OUTCOME_REVIEW[r.id];
+      expect(r.outcome, r.id).toBe(review?.outcome ?? keyword);
+      if (review) {
+        expect(review.outcome, r.id).not.toBe(keyword);
+        expect(r.outcomeText?.includes(review.quote), `${r.id}: "${review.quote}"`).toBe(true);
+        expect(r.flags.some((f) => f.startsWith("Outcome corrected by the team")), r.id).toBe(true);
+      }
     }
+    const ids = new Set(bass.map((r) => r.id));
+    for (const id of Object.keys(BASS_OUTCOME_REVIEW)) expect(ids.has(id), id).toBe(true);
   });
 
   it("FLEX outcomes come only from the test-end column", () => {

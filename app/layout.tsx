@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Mono, Public_Sans } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AppSidebar } from "@/components/shell/app-sidebar";
-import { MobileNav } from "@/components/shell/mobile-nav";
 import { DataBanner } from "@/components/shell/data-banner";
-import { Starfield } from "@/components/shell/starfield";
+import { SpaceBackdrop } from "@/components/shell/space-backdrop";
+import { SiteFooter } from "@/components/shell/site-footer";
+import { SiteHeader } from "@/components/shell/site-header";
 import { InvestigationIdsProvider } from "@/components/si/investigation-ids";
 import { getDataset } from "@/lib/data";
 import "./globals.css";
 
-const geistSans = Geist({
+// Public Sans for reading text; DM Mono for telemetry labels, run ids and the clock.
+const bodySans = Public_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dataMono = DM_Mono({
+  variable: "--font-dm-mono",
+  weight: ["400", "500"],
   subsets: ["latin"],
 });
 
@@ -33,25 +35,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   const ids = investigations.map((i) => ({ id: i.id, acronym: i.acronym }));
   const status = { investigations: investigations.length, runs: runs.length };
   return (
-    <html
-      lang="en"
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      style={{ colorScheme: "dark" }}
-    >
-      <body className="min-h-full">
-        <Starfield />
+    <html lang="en" className={`${bodySans.variable} ${dataMono.variable} dark h-full antialiased`} style={{ colorScheme: "dark" }}>
+      <body className="flex min-h-full flex-col">
+        <SpaceBackdrop />
         <InvestigationIdsProvider entries={ids}>
           <TooltipProvider delayDuration={150}>
-            <DataBanner />
-            <div className="flex min-h-[calc(100svh-30px)]">
-              <AppSidebar status={status} />
-              <div className="flex min-w-0 flex-1 flex-col">
-                <MobileNav />
-                <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
-                  {children}
-                </main>
-              </div>
-            </div>
+            <DataBanner status={status} />
+            <SiteHeader />
+            <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-10 sm:px-6 lg:px-8">{children}</main>
+            <SiteFooter status={status} />
           </TooltipProvider>
         </InvestigationIdsProvider>
       </body>

@@ -53,7 +53,6 @@ type LabelPlace = "above-right" | "above-left" | "below-right" | "below-left";
 /** Hand-placed preset labels so neighbours (Mars transit and the rover share 10.2 psi) don't collide. */
 const LABEL_PLACE: Record<string, LabelPlace> = {
   "mars-transit": "above-left",
-  "pressurized-rover": "below-right",
   "lunar-base": "below-right",
 };
 
@@ -117,9 +116,9 @@ function CellDetails({
           ) : null}
           <p className={cn("rounded-md px-2.5 py-1.5 text-xs", cell.status === "tested" ? "bg-secondary" : "bg-warning/10 text-warning")}>
             {cell.status === "tested"
-              ? `Tested: ${counts.map(([o, k]) => `${k} ${OUTCOME_LABEL[o].toLowerCase()}`).join(", ")}.`
+              ? `Recorded outcomes: ${counts.map(([o, k]) => `${k} ${OUTCOME_LABEL[o].toLowerCase()}`).join(", ")}.`
               : cell.status === "near"
-                ? `Not tested in this square, but a real ${scopeLabel} run lies close by (see the nearest runs below).`
+                ? `No run in this square, but a real ${scopeLabel} run lies close by (see the nearest runs below).`
                 : `Untested: no real ${scopeLabel} run in or near this square.`}
           </p>
           <div className="space-y-1.5">

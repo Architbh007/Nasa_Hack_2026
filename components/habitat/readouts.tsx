@@ -8,10 +8,10 @@ import { FUEL_CATEGORIES, VERDICT_LABEL, type CategoryVerdict, type HabitatAsses
 import { cn } from "@/lib/utils";
 
 export const VERDICT_COLOR: Record<Verdict, string> = {
-  tested: "#0ca30c",
+  tested: "#3fcf8e",
   near: "#fab219",
-  untested: "#ec835a",
-  "no-runs": "#8d9ab0",
+  untested: "#ff8a5c",
+  "no-runs": "#95a2b6",
 };
 
 const VERDICT_ICON: Record<Verdict, typeof CheckCircle2> = {
@@ -25,7 +25,7 @@ function Tile({ label, children, hint, className }: { label: ReactNode; children
   return (
     <Card className={cn("gap-1 py-4", className)}>
       <CardContent className="space-y-1 px-4">
-        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="eyebrow !tracking-[0.1em]">{label}</p>
         {children}
         {hint && <div className="text-[11px] leading-snug text-muted-foreground">{hint}</div>}
       </CardContent>
@@ -47,14 +47,14 @@ export function HabitatReadouts({ a }: { a: HabitatAssessment }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
       <Tile label="O2 partial pressure" hint="Sea level is 3.09 psi (21.3 kPa)">
-        <p className="tabular text-2xl font-semibold">
+        <p className="tabular text-[1.75rem] font-semibold leading-tight">
           {a.pO2.psi.toFixed(2)} <span className="text-base font-normal text-muted-foreground">psi</span>
         </p>
         <p className="tabular text-xs text-muted-foreground">{a.pO2.kPa.toFixed(1)} kPa</p>
       </Tile>
 
       <Tile label="O2 concentration vs Earth (21%)" hint="Relative change in oxygen fraction">
-        <p className="tabular text-2xl font-semibold">
+        <p className="tabular text-[1.75rem] font-semibold leading-tight">
           {increase >= 0 ? "+" : "−"}
           {Math.abs(increase).toFixed(0)}%
         </p>
@@ -73,7 +73,7 @@ export function HabitatReadouts({ a }: { a: HabitatAssessment }) {
               </span>
             }
             hint={v.reason}
-            className={cn(c === a.category && "ring-1 ring-primary/50")}
+            className={cn(c === a.category && "ring-1 ring-primary/60 shadow-[0_0_28px_-10px_rgb(255_122_61/0.7)]")}
           >
             <VerdictLine v={v} />
           </Tile>

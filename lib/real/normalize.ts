@@ -1,4 +1,5 @@
 import { ATM_TO_PSI, ISS_NOMINAL_PRESSURE_PSI, ISS_NOMINAL_SOURCE, KPA_TO_PSI, PSI_TO_KPA } from "@/lib/constants";
+import { BASS_OUTCOME_REVIEW } from "@/lib/real/bass-outcome-review";
 import { materialClassForFuel } from "@/lib/materials";
 import {
   effectivePressurePsi,
@@ -78,12 +79,16 @@ export function bassRuns(rows: BassRow[], file: string): Run[] {
   for (const b of rows) seen.set(b.testId, (seen.get(b.testId) ?? 0) + 1);
   return rows.map((b) => {
     const repeated = (seen.get(b.testId) ?? 0) > 1;
-    const outcome: Outcome = b.flags.noIgnition ? "no-ignition" : b.flags.blowoff ? "blowoff" : b.flags.extinguished ? "extinguished" : "unknown";
+    const id = repeated ? `${b.testId}-row${b.sourceRow}` : b.testId;
+    const keywordOutcome: Outcome = b.flags.noIgnition ? "no-ignition" : b.flags.blowoff ? "blowoff" : b.flags.extinguished ? "extinguished" : "unknown";
+    const review = BASS_OUTCOME_REVIEW[id];
+    const outcome = review?.outcome ?? keywordOutcome;
     const flags = ["O2 converted from the source's fraction column (0.221 → 22.1%)"];
     if (b.dateSuspect) flags.push(`Date reads ${b.date} in the source; almost certainly a typo, kept as written`);
     if (repeated) flags.push(`As-run test number ${b.asRunTestNumber} appears on more than one row of the source sheet`);
+    if (review) flags.push(`Outcome corrected by the team after reading the note ("${review.quote}"); the keyword match gave "${keywordOutcome}"`);
     return run({
-      id: repeated ? `${b.testId}-row${b.sourceRow}` : b.testId,
+      id,
       investigationId: "bass",
       dataSource: "psi",
       sourceKind: "psi-table",

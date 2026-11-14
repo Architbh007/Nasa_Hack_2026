@@ -22,6 +22,7 @@ export default function EarthPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Display 06 · Earth"
         title="Spinoffs and Earth Applications"
         description={`What each investigation's PSI record says it means on Earth, quoted from the "Research Impacts/Earth Benefits" field of ${total} records. We grouped them by keyword; the words are NASA's.`}
       />
@@ -43,7 +44,7 @@ export default function EarthPage() {
         {groups.map((g) => {
           const Icon = ICON[g.key];
           return (
-            <Card key={g.key} id={g.key} className="scroll-mt-16">
+            <Card key={g.key} id={g.key} className="scroll-mt-28">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Icon className="size-4 text-primary" aria-hidden /> {g.title}

@@ -2,7 +2,7 @@ export type NavItem = {
   href: string;
   label: string;
   description: string;
-  icon: "habitat" | "explore" | "graph" | "ask" | "earth" | "about";
+  icon: "habitat" | "response" | "explore" | "graph" | "ask" | "earth" | "about";
 };
 
 /** Mission Readiness (/scenarios) is left out of the nav on this branch; its logic still feeds the habitat verdicts. */
@@ -12,6 +12,12 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Habitat Flammability",
     description: "See which cabin atmospheres real tests cover, watch a fire play out, and check the evidence",
     icon: "habitat",
+  },
+  {
+    href: "/response",
+    label: "Crew Response",
+    description: "What real flames did when crews cut the airflow or used nitrogen, with the notes behind every count",
+    icon: "response",
   },
   {
     href: "/explore",

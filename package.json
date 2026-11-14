@@ -16,7 +16,6 @@
     "prewarm": "tsx scripts/prewarm-cache.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.8.0",
     "@tanstack/react-table": "^9.3.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
