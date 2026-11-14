@@ -78,3 +78,17 @@ export function lessonSchema(allowedIds: ReadonlySet<string>) {
   return z.object({ lesson: citedText(allowedIds, 900) });
 }
 export type Lesson = z.infer<ReturnType<typeof lessonSchema>>;
+
+export function experimentProposalSchema(allowedIds: ReadonlySet<string>, testCount: number) {
+  return z.object({
+    title: z.string().trim().min(1).max(160),
+    objective: citedText(allowedIds, 900),
+    tests: z
+      .array(z.object({ testNumber: z.number().int().min(1).max(testCount), purpose: citedText(allowedIds, 600), measure: line }))
+      .min(1)
+      .max(testCount),
+    openQuestions: z.array(line).max(5),
+    limitations: z.array(line).min(1).max(5),
+  });
+}
+export type ExperimentProposal = z.infer<ReturnType<typeof experimentProposalSchema>>;

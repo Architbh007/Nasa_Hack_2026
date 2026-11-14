@@ -1,8 +1,8 @@
 /**
  * npm run prewarm  [-- --core]
  * Generates and caches SI outputs so the demo works offline with USE_CACHE_ONLY=true:
- *  - core: every investigation summary, every scenario readiness note, and a
- *    habitat interpretation for each preset
+ *  - core: every investigation summary, every scenario readiness note, a
+ *    habitat interpretation for each preset, and the planner demo proposal
  *  - extras (skipped with --core): Ask starter questions
  *    and the demo comparison
  * Already-cached results are reused, so re-running is cheap.
@@ -16,7 +16,7 @@ process.env.USE_CACHE_ONLY = "false";
 type Task = { label: string; run: () => Promise<{ cached: boolean }> };
 
 async function main() {
-  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }, { FIRE_EVENTS }] =
+  const [{ getDataset }, ops, { answerOnce }, { inputsFromScenario, normalizeHabitatInputs }, { STARTER_QUESTIONS }, { toSiError }, { aiConfig }, { FIRE_EVENTS }, { resolveTargets }] =
     await Promise.all([
       import("@/lib/data"),
       import("@/lib/ai/operations"),
@@ -26,6 +26,7 @@ async function main() {
       import("@/lib/ai/errors"),
       import("@/lib/ai/client"),
       import("@/lib/fire-history"),
+      import("@/lib/planner"),
     ]);
 
   const core = process.argv.includes("--core");
@@ -38,6 +39,11 @@ async function main() {
   for (const s of scenarios) {
     tasks.push({ label: `scenario  ${s.id}`, run: () => ops.summarizeScenario(s.id) });
     tasks.push({ label: `habitat   ${s.id}`, run: () => ops.interpretHabitat(normalizeHabitatInputs(inputsFromScenario(s))) });
+  }
+  // The planner's demo plan: lunar and Mars-transit targets, all solids, five stepping-stone tests.
+  {
+    const targets = resolveTargets(scenarios, ["lunar-base", "mars-transit"]);
+    tasks.push({ label: "plan      lunar+mars/all-solids/5/stepping", run: () => ops.proposeExperimentPlan({ targets, scope: "all-solids", budget: 5, mode: "stepping" }) });
   }
   for (const e of FIRE_EVENTS) {
     tasks.push({ label: `lesson    ${e.id}`, run: () => ops.explainFireEvent(e.id) });

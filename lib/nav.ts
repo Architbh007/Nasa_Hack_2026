@@ -17,6 +17,11 @@ export const NAV_ITEMS: readonly NavItem[] = [
     description: "What real flames did when crews cut the airflow or used nitrogen, with the notes behind every count",
   },
   {
+    href: "/planner",
+    label: "Experiment Planner",
+    description: "Which fire tests NASA should fly next to cover Moon and Mars cabin air, built out from the real runs",
+  },
+  {
     href: "/explore",
     label: "Investigation Explorer",
     description: "PSI records, real runs and their sources, plus spaceflight fire history",

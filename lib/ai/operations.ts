@@ -8,6 +8,7 @@ import {
 import { SiError } from "@/lib/ai/errors";
 import {
   COMPARE_SYSTEM,
+  EXPERIMENT_PLAN_SYSTEM,
   FIRE_TWIN_SYSTEM,
   HABITAT_SYSTEM,
   LESSON_SYSTEM,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/ai/prompts";
 import {
   ComparisonSchema,
+  experimentProposalSchema,
   fireTwinNarrationSchema,
   habitatInterpretationSchema,
   lessonSchema,
@@ -28,6 +30,7 @@ import { FIRE_EVENTS } from "@/lib/fire-history";
 import { EVENT_LABEL, ILLUSTRATIVE, itemLabel, planFire, ROOM_ITEMS } from "@/lib/fire-twin";
 import { assessHabitat, type HabitatInputs } from "@/lib/habitat";
 import type { RankingWeights } from "@/lib/ranking";
+import { PLAN_VERDICT_LABEL, planExperiments, type PlanOptions } from "@/lib/planner";
 import { scenarioReadiness } from "@/lib/readiness";
 import type { Investigation } from "@/lib/schema";
 
@@ -189,5 +192,68 @@ export function explainFireEvent(eventId: string) {
     schema: lessonSchema(new Set(ids)),
     effort: "low",
     maxTokens: 1500,
+  });
+}
+
+/** Write a cited proposal for a test plan. The plan is recomputed here, so the SI sees only dataset-derived numbers. */
+export function proposeExperimentPlan(options: PlanOptions) {
+  const { runs } = getDataset();
+  const plan = planExperiments(runs, options);
+  if (plan.tests.length === 0) throw new SiError("bad_request", "This plan has no tests to write up.", 400);
+  const invIds = new Set<string>();
+  const runIds = new Set<string>();
+  for (const t of plan.tests) {
+    for (const r of t.buildsOn) {
+      invIds.add(r.investigationId);
+      runIds.add(r.runId);
+    }
+    for (const h of t.hardware) {
+      invIds.add(h.investigationId);
+      runIds.add(h.runId);
+    }
+    if (t.stepsFrom?.kind === "run") {
+      invIds.add(t.stepsFrom.investigationId);
+      runIds.add(t.stepsFrom.runId);
+    }
+  }
+  const allowed = new Set([...invIds, ...runIds]);
+  const o = plan.options;
+  return structuredCall({
+    kind: "experiment-plan",
+    label: `plan:${o.targets.map((t) => `${t.id}@${t.o2Percent}/${t.pressurePsi}`).join("+")}/${o.scope}/${o.budget}/${o.mode}`,
+    model: aiConfig().modelMain,
+    system: EXPERIMENT_PLAN_SYSTEM,
+    input: {
+      material: o.scope === "all-solids" ? "all solid fuels" : o.scope,
+      campaignStyle: o.mode === "stepping" ? "stepping stones: each test within near distance of existing or planned evidence" : "direct",
+      distanceRule: "10 percentage points of O2 count the same as 3 psi; tested = within ±2% O2 and ±1 psi; near = distance ≤ 0.6",
+      targets: plan.targets.map((t) => ({
+        id: t.target.id,
+        label: t.target.label,
+        o2Percent: t.target.o2Percent,
+        pressurePsi: t.target.pressurePsi,
+        gravity: t.target.gravity,
+        verdictBefore: PLAN_VERDICT_LABEL[t.before],
+        verdictAfter: PLAN_VERDICT_LABEL[t.after],
+        testedAfterTest: t.testedAfterTest,
+      })),
+      gridCoverage: { before: plan.coverageBefore, after: plan.coverageAfter },
+      tests: plan.tests.map((t) => ({
+        testNumber: t.index,
+        o2Percent: t.o2Percent,
+        pressurePsi: t.pressurePsi,
+        o2PartialPressurePsi: t.pO2Psi,
+        reason: t.reason,
+        stepsFrom: t.stepsFrom,
+        buildsOnRuns: t.buildsOn,
+        nearbyRunsBothBurnedAndWentOut: t.boundary,
+        hardwarePrecedent: t.hardware,
+        needsPartialGravityPlatform: t.needsPartialGravity,
+      })),
+      records: [...invIds].sort().map((id) => briefContext(requireInvestigation(id), runsOf(id))),
+    },
+    schema: experimentProposalSchema(allowed, plan.tests.length),
+    effort: "low",
+    maxTokens: 6000,
   });
 }

@@ -37,6 +37,12 @@ const TOUR = [
     where: "Crew Response",
   },
   {
+    href: "/planner",
+    title: "What should NASA test next?",
+    body: "Pick a Moon or Mars cabin air and a test budget. See exactly where new fire tests would close the gap.",
+    where: "Experiment Planner",
+  },
+  {
     href: "/earth",
     title: "Back on Earth",
     body: "The same research shapes smoke detectors, suppression systems and firefighter gear.",
@@ -211,9 +217,9 @@ export default function Home() {
       {/* The tour is a real sequence, so it is numbered. */}
       <section aria-labelledby="tour" className="pb-28 lg:pb-36">
         <h2 id="tour" className="mb-12 text-[2.25rem] leading-[1.08] sm:text-[3rem]">
-          Take the three-minute tour.
+          Take the tour.
         </h2>
-        <ol className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-5">
+        <ol className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {TOUR.map((step, i) => (
             <li key={step.href} className="border-t border-white/10 pt-6">
               <Link href={step.href} className="group flex h-full flex-col">

@@ -100,7 +100,7 @@ export function HabitatControls({
   const set = <K extends keyof HabitatInputs>(k: K, v: HabitatInputs[K]) => onChange({ ...inputs, [k]: v });
   const preset = scenarios.find((s) => s.id === presetId) ?? null;
   return (
-    <Card className="h-fit xl:sticky xl:top-12">
+    <Card id="cabin" className="h-fit xl:sticky xl:top-16">
       <CardHeader>
         <CardTitle className="text-base">Cabin condition</CardTitle>
       </CardHeader>

@@ -8,6 +8,8 @@ import { FlammabilityGrid } from "@/components/habitat/flammability-grid";
 import { FireTwin } from "@/components/habitat/fire-twin";
 import { CabinAsk } from "@/components/habitat/cabin-ask";
 import { HabitatReadouts } from "@/components/habitat/readouts";
+import { HabitatHero } from "@/components/habitat/habitat-hero";
+import { PageGuide, type GuideItem } from "@/components/shell/page-guide";
 import { NearestRuns } from "@/components/habitat/nearest-runs";
 import { RankingPanel } from "@/components/habitat/ranking-panel";
 import { PartialGravityCallout } from "@/components/habitat/partial-gravity-callout";
@@ -27,6 +29,44 @@ import {
 import { cn } from "@/lib/utils";
 
 const DEFAULT_PRESET = "iss-cabin";
+
+const GUIDE: readonly GuideItem[] = [
+  {
+    title: "Cabin condition",
+    anchor: "cabin",
+    does: "Set oxygen, pressure, material, airflow and gravity, or pick a preset. Every section below updates to match.",
+  },
+  {
+    title: "Readouts and verdicts",
+    anchor: "verdicts",
+    does: "O2 partial pressure, the change from Earth air, and whether solid, liquid and gas fuels have real test data at this air.",
+  },
+  {
+    title: "Coverage map",
+    anchor: "coverage",
+    does: "Every cabin air from 15–51% O2 and 3–15 psi, coloured by what real runs recorded. Stripes mean untested. Click a square to move your cabin there.",
+  },
+  {
+    title: "Nearest experiments and gaps",
+    anchor: "nearest",
+    does: "The five real runs closest to your air, with their results and sources, and what no run in the data has reached.",
+  },
+  {
+    title: "SI explanation",
+    anchor: "explanation",
+    does: "A plain-words reading of this cabin with NASA sources and recommended tests. You can also ask your own question about it.",
+  },
+  {
+    title: "Fire Twin",
+    anchor: "fire-twin",
+    does: "A simulated fire in a cabin module. Whether each item catches comes from real runs; spread and response times are illustrative.",
+  },
+  {
+    title: "Most relevant investigations",
+    anchor: "ranking",
+    does: "Which NASA experiments matter most for this air, with every score shown and weights you can change.",
+  },
+];
 
 function clampNum(raw: string | null, min: number, max: number): number | null {
   if (raw === null) return null;
@@ -69,7 +109,7 @@ function Section({
   dark?: boolean;
 }) {
   return (
-    <Card id={id} className={cn("scroll-mt-28", dark && "dark")}>
+    <Card id={id} className={cn(dark && "dark")}>
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="space-y-1">
           <CardTitle className="text-base">{title}</CardTitle>
@@ -144,75 +184,82 @@ export function HabitatView({
   const onMaterial = (materialClass: MaterialClass) => onChange({ ...inputs, materialClass });
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
-      <HabitatControls inputs={inputs} scenarios={scenarios} presetId={presetId} onPreset={onPreset} onChange={onChange} />
+    <>
+      <HabitatHero assessment={assessment} scenarios={scenarios} presetId={presetId} onPreset={onPreset} />
+      <PageGuide question="Is this cabin air covered by real NASA fire tests?" items={GUIDE} />
+      <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
+        <HabitatControls inputs={inputs} scenarios={scenarios} presetId={presetId} onPreset={onPreset} onChange={onChange} />
 
-      <div className="min-w-0 space-y-6">
-        <PartialGravityCallout gravity={inputs.gravity} />
+        <div className="min-w-0 space-y-6">
+          <PartialGravityCallout gravity={inputs.gravity} />
 
-        <HabitatReadouts a={assessment} />
+          <div id="verdicts">
+            <HabitatReadouts a={assessment} />
+          </div>
 
-        <Section
-          dark
-          title="Is this air covered by real tests?"
-          description={`Each square is one possible cabin air. Colour shows what the real ${MATERIAL_LABEL[inputs.materialClass].toLowerCase()} runs inside it recorded; stripes mean nobody has tested it there. No prediction is made.`}
-        >
-          <FlammabilityGrid
-            inputs={inputs}
-            investigations={investigations}
-            runs={runs}
-            scenarios={scenarios}
-            onMove={onMove}
-            onMaterial={onMaterial}
-          />
-        </Section>
-
-        <div className="grid gap-6 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <Section
-            title="Nearest real experiments"
-            description={`The ${verdict.nearest.length} closest ${categoryLabel} runs by O2 and pressure (10% O2 counts the same as 3 psi). These are neighbours to read, not a prediction.`}
+            dark
+            id="coverage"
+            title="Is this air covered by real tests?"
+            description={`Each square is one possible cabin air. Colour shows what the real ${MATERIAL_LABEL[inputs.materialClass].toLowerCase()} runs inside it recorded; stripes mean nobody has tested it there. No prediction is made.`}
           >
-            <NearestRuns runs={verdict.nearest} acronym={acronym} />
+            <FlammabilityGrid
+              inputs={inputs}
+              investigations={investigations}
+              runs={runs}
+              scenarios={scenarios}
+              onMove={onMove}
+              onMaterial={onMaterial}
+            />
           </Section>
-          <Section title="Never tested in this data" description="Checked against every run we hold.">
-            {assessment.neverTested.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nothing flagged: real runs reach this atmosphere in every fuel category.</p>
-            ) : (
-              <ul className="space-y-2 text-sm">
-                {assessment.neverTested.map((t) => (
-                  <li key={t} className="flex gap-2">
-                    <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            )}
+
+          <div id="nearest" className="grid gap-6 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <Section
+              title="Nearest real experiments"
+              description={`The ${verdict.nearest.length} closest ${categoryLabel} runs by O2 and pressure (10% O2 counts the same as 3 psi). These are neighbours to read, not a prediction.`}
+            >
+              <NearestRuns runs={verdict.nearest} acronym={acronym} />
+            </Section>
+            <Section title="Never tested in this data" description="Checked against every run we hold.">
+              {assessment.neverTested.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Nothing flagged: real runs reach this atmosphere in every fuel category.</p>
+              ) : (
+                <ul className="space-y-2 text-sm">
+                  {assessment.neverTested.map((t) => (
+                    <li key={t} className="flex gap-2">
+                      <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground" />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Section>
+          </div>
+
+          <Section id="explanation" title="SI explanation and sources" description="Plain-words reading of this cabin, with links to the original NASA pages behind it.">
+            <div className="space-y-6">
+              <InterpretationPanel assessment={assessment} weights={weights} investigations={investigations} />
+              <div className="space-y-2 border-t border-border pt-5">
+                <h3 className="text-sm font-medium">Ask about this cabin</h3>
+                <CabinAsk inputs={inputs} />
+              </div>
+            </div>
+          </Section>
+
+          <Section
+            dark
+            id="fire-twin"
+            title="Fire Twin: what would a fire look like?"
+            description="A top-down cabin module running this exact air. Whether an item burns comes from what the nearest real runs of that material recorded; spread speed, detection and crew response times are illustrative."
+          >
+            <FireTwin inputs={inputs} scenarios={scenarios} presetId={presetId} onPreset={onPreset} runs={runs} />
+          </Section>
+
+          <Section id="ranking" title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">
+            <RankingPanel ranked={assessment.ranked} weights={weights} onWeights={setWeights} limit={6} />
           </Section>
         </div>
-
-        <Section title="SI explanation and sources" description="Plain-words reading of this cabin, with links to the original NASA pages behind it.">
-          <div className="space-y-6">
-            <InterpretationPanel assessment={assessment} weights={weights} investigations={investigations} />
-            <div className="space-y-2 border-t border-border pt-5">
-              <h3 className="text-sm font-medium">Ask about this cabin</h3>
-              <CabinAsk inputs={inputs} />
-            </div>
-          </div>
-        </Section>
-
-        <Section
-          dark
-          id="fire-twin"
-          title="Fire Twin: what would a fire look like?"
-          description="A top-down cabin module running this exact air. Whether an item burns comes from what the nearest real runs of that material recorded; spread speed, detection and crew response times are illustrative."
-        >
-          <FireTwin inputs={inputs} scenarios={scenarios} presetId={presetId} onPreset={onPreset} runs={runs} />
-        </Section>
-
-        <Section title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">
-          <RankingPanel ranked={assessment.ranked} weights={weights} onWeights={setWeights} limit={6} />
-        </Section>
       </div>
-    </div>
+    </>
   );
 }

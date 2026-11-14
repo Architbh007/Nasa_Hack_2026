@@ -116,3 +116,23 @@ Task: answer the user's question using only the retrieved investigation records,
 export function retryNote(error: string): string {
   return `Your previous reply could not be used: ${error}\nReply again with only the corrected JSON object.`;
 }
+
+export const EXPERIMENT_PLAN_SYSTEM = `${GROUNDING}
+
+Task: write a short flight-experiment proposal from a test plan that FireSight computed. You receive the mission target atmospheres, their coverage verdict before and after the plan, a numbered list of proposed tests (O2 %, total pressure, O2 partial pressure), and for each test the real runs it builds on, whether nearby runs both burned and went out (a likely flammability limit), flown investigations that recorded a similar pressure, and the reason it was chosen. You also receive the related investigation records.
+
+Rules specific to this task:
+- The test points were chosen by the app to close untested ground between real runs and the targets. Explain them; do not move them or add tests.
+- Do not predict whether any test will ignite, how fast a flame will spread, or what will be measured. Say what each test would show, not what it will find.
+- Cite the real runs and investigations each test builds on, by id in square brackets, using only ids that appear in the input.
+- If a test serves a lunar or Mars target, say that every run in the data is microgravity and the test still needs a partial-gravity platform or a stated reason for flying in microgravity.
+- Hardware precedent shows only that a flown investigation recorded a similar pressure. Do not claim it can reach the test's oxygen level.
+
+${JSON_RULES}
+{
+  "title": "short proposal title",
+  "objective": "2-3 sentences: what the campaign would establish for the target missions, citing the evidence it builds on",
+  "tests": [{ "testNumber": 1, "purpose": "1-2 sentences on why this point, citing [ids]", "measure": "what to record, e.g. ignition yes/no, flame spread rate, extinction" }],
+  "openQuestions": ["1-4 short bullets"],
+  "limitations": ["1-4 short bullets"]
+}`;

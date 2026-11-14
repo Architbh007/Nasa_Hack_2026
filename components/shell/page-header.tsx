@@ -12,16 +12,23 @@ export function PageHeader({
   description,
   actions,
   image,
+  children,
+  aside,
 }: {
   title: string;
   description?: ReactNode;
   actions?: ReactNode;
   image?: HeaderImage;
+  /** Extra content under the description, such as preset chips. */
+  children?: ReactNode;
+  /** A panel on the right of the photographic band, such as a live readout. */
+  aside?: ReactNode;
 }) {
   const text = (
     <div className="max-w-[46rem] space-y-4">
       <h1 className="text-[2.5rem] leading-[1.06] sm:text-[3.25rem]">{title}</h1>
       {description && <p className="text-[1.125rem] leading-relaxed text-foreground/75 sm:text-[1.25rem]">{description}</p>}
+      {children && <div className="pt-3">{children}</div>}
     </div>
   );
 
@@ -49,8 +56,9 @@ export function PageHeader({
         />
         <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/10" />
         <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
-        <div className="relative mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-5 pb-12 sm:flex-row sm:items-end sm:justify-between sm:px-8 lg:px-10">
+        <div className="relative mx-auto flex w-full max-w-[1280px] flex-col gap-8 px-5 pb-12 pt-24 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:px-10">
           {text}
+          {aside && <div className="w-full shrink-0 lg:w-[22rem]">{aside}</div>}
           {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
         </div>
         <p className="absolute right-4 top-3 text-[0.6875rem] text-white/55">{image.credit}</p>

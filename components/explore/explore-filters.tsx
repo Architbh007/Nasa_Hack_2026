@@ -123,7 +123,7 @@ export function ExploreFiltersBar({
           </span>
         </div>
         <span className="text-xs text-muted-foreground">
-          Showing <span className="tabular text-foreground">{resultCount}</span> of {totalCount} investigations
+          Showing <span key={resultCount} className="fs-swap inline-block tabular text-foreground">{resultCount}</span> of {totalCount} investigations
         </span>
         {dirty && (
           <Button variant="ghost" size="sm" onClick={() => onChange(DEFAULT_FILTERS)}>

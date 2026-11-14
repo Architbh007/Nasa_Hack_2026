@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/shell/page-header";
+import { HABITAT_DESCRIPTION, HABITAT_IMAGE, HABITAT_TITLE } from "@/components/habitat/habitat-hero";
 import { HabitatView } from "@/components/habitat/habitat-view";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDataset } from "@/lib/data";
@@ -13,17 +14,20 @@ const lengthOnly = (m: Record<string, number | null>): Record<string, number | n
 
 function HabitatSkeleton() {
   return (
-    <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
-      <Skeleton className="h-[560px] rounded-xl" />
-      <div className="space-y-6">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }, (_, i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
-          ))}
+    <>
+      <PageHeader title={HABITAT_TITLE} description={HABITAT_DESCRIPTION} image={HABITAT_IMAGE} />
+      <div className="grid gap-6 xl:grid-cols-[19rem_minmax(0,1fr)]">
+        <Skeleton className="h-[560px] rounded-xl" />
+        <div className="space-y-6">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <Skeleton key={i} className="h-28 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-[520px] rounded-xl" />
         </div>
-        <Skeleton className="h-[520px] rounded-xl" />
       </div>
-    </div>
+    </>
   );
 }
 
@@ -32,14 +36,8 @@ export default function HabitatPage() {
   // The map and nearest-runs table need values and outcomes, not the long investigator notes (those are in the Explorer).
   const runs = allRuns.map((r) => ({ ...r, outcomeText: null, metrics: lengthOnly(r.metrics), flags: [], pressureNote: null }));
   return (
-    <>
-      <PageHeader
-        title="Habitat Flammability Explorer"
-        description="Pick a cabin air. See which real NASA tests cover it and which do not, read the SI's explanation with its sources, then watch a fire play out in a cabin module."
-      />
-      <Suspense fallback={<HabitatSkeleton />}>
-        <HabitatView investigations={investigations} runs={runs} scenarios={scenarios} />
-      </Suspense>
-    </>
+    <Suspense fallback={<HabitatSkeleton />}>
+      <HabitatView investigations={investigations} runs={runs} scenarios={scenarios} />
+    </Suspense>
   );
 }

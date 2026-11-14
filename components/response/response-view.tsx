@@ -180,7 +180,7 @@ export function ResponseView({
         </Alert>
       )}
 
-      <Card>
+      <Card id="airflow">
         <CardHeader>
           <CardTitle>Airflow is what the solid-fuel tests changed</CardTitle>
           <CardDescription>
@@ -193,7 +193,7 @@ export function ResponseView({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="actions">
         <CardHeader>
           <CardTitle>Every coded action</CardTitle>
           <CardDescription>
@@ -259,7 +259,7 @@ export function ResponseView({
       </Card>
 
       {extinguished.total > 0 && (
-        <Card>
+        <Card id="extinguished">
           <CardHeader>
             <CardTitle>&quot;Extinguished&quot; means several different things</CardTitle>
             <CardDescription>
@@ -298,7 +298,7 @@ export function ResponseView({
       )}
 
       {consequences.length > 0 && (
-        <Card>
+        <Card id="consequences">
           <CardHeader>
             <CardTitle>What a fire produces when it is left to burn</CardTitle>
             <CardDescription>
@@ -349,7 +349,7 @@ export function ResponseView({
         </Card>
       )}
 
-      <Card>
+      <Card id="reading">
         <CardHeader>
           <CardTitle>How to read this page</CardTitle>
         </CardHeader>

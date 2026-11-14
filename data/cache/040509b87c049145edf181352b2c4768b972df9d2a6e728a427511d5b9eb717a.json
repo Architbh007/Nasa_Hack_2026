@@ -1,0 +1,50 @@
+{
+  "key": "040509b87c049145edf181352b2c4768b972df9d2a6e728a427511d5b9eb717a",
+  "kind": "experiment-plan",
+  "model": "gpt-6.1-sol",
+  "label": "plan:lunar-base@34/8.2+mars-transit@26.5/10.2/all-solids/5/stepping",
+  "createdAt": "2026-11-14T22:21:21.806Z",
+  "output": {
+    "title": "Solid-Fuel Atmosphere Coverage Flight Campaign",
+    "objective": "Establish test evidence at the lunar exploration atmosphere and extend atmosphere coverage through fixed stepping-stone tests, building on published Saffire runs [saffire-iv-vi]. Under the dashboard’s atmosphere-distance rule, completing the plan would change the lunar target from Near tested to Tested; the staged-decompression Mars-transit target remains Tested, supported by nearby evidence including [saffire-v-2]. These labels describe atmosphere coverage, not demonstrated mission safety or gravity equivalence.",
+    "tests": [
+      {
+        "testNumber": 1,
+        "purpose": "Test 34% O2 at 8.2 psi total pressure, with 2.79 psi O2 partial pressure, directly at the lunar target, extending [saffire-vi-2], [saffire-vi-3] and [saffire-vi-4] from [saffire-iv-vi]. The point would establish behavior at the target atmosphere; [saffire-vi-4] supplies similar-pressure precedent at 8.01 psi, but every run in the data is microgravity, so this test needs a partial-gravity platform or a stated reason for flying in microgravity.",
+        "measure": "Record ignition yes/no, flame spread rate where applicable, and extinction or sustained burning, together with actual oxygen concentration, pressure, airflow and specimen configuration."
+      },
+      {
+        "testNumber": 2,
+        "purpose": "Test 24% O2 at 7 psi total pressure, with 1.68 psi O2 partial pressure, stepping from [saffire-vi-4] with supporting comparisons to [saffire-vi-3] and [saffire-vi-2] in [saffire-iv-vi], to bring 8 untested grid squares within reach of evidence. This would extend lower-pressure atmosphere coverage; [cfi-1236] in [cfi] provides only similar-pressure precedent at 7.35 psi, not solid-fuel or oxygen-capability validation.",
+        "measure": "Record ignition yes/no, flame spread rate where applicable, and extinction or sustained burning, with actual atmosphere, airflow and specimen configuration."
+      },
+      {
+        "testNumber": 3,
+        "purpose": "Test 29% O2 at 12 psi total pressure, with 3.48 psi O2 partial pressure, stepping from [saffire-v-4] and comparing with [saffire-v-2] and [saffire-v-3] in [saffire-iv-vi]. This would extend evidence toward higher pressure and bring 8 untested grid squares within reach; the supplied plan lists no similar-pressure hardware precedent for this point.",
+        "measure": "Record ignition yes/no, flame spread rate where applicable, and extinction or sustained burning, with actual atmosphere, airflow and specimen configuration."
+      },
+      {
+        "testNumber": 4,
+        "purpose": "Test 35% O2 at 12 psi total pressure, with 4.2 psi O2 partial pressure, using planned test 3 as the nearby stepping stone and [saffire-v-4], [saffire-v-2] and [saffire-v-3] in [saffire-iv-vi] as the existing comparison evidence. This would extend oxygen coverage at fixed planned pressure and bring 8 untested grid squares within reach; no similar-pressure hardware precedent is supplied for this point.",
+        "measure": "Record ignition yes/no, flame spread rate where applicable, and extinction or sustained burning, retaining comparable specimen and airflow conditions for comparison with test 3."
+      },
+      {
+        "testNumber": 5,
+        "purpose": "Test 38% O2 at 7 psi total pressure, with 2.66 psi O2 partial pressure, stepping from planned test 1 and extending comparisons with [saffire-vi-2], [saffire-vi-3] and [saffire-vi-4] in [saffire-iv-vi] to bring 8 untested grid squares within reach. This would establish evidence at the higher-oxygen, lower-pressure point; [cfi-1236] in [cfi] provides only similar-pressure precedent at 7.35 psi.",
+        "measure": "Record ignition yes/no, flame spread rate where applicable, and extinction or sustained burning, with actual atmosphere, airflow and specimen configuration."
+      }
+    ],
+    "openQuestions": [
+      "Which solid fuels, specimen geometries and airflow conditions will be held comparable? The plan does not specify them, and CFI airflow is missing.",
+      "Which platform will provide partial gravity for the lunar test, or what is the stated justification for microgravity?",
+      "Can the selected hardware support each specified atmosphere? Similar recorded pressure does not establish oxygen capability; Saffire hardware details are absent.",
+      "Can the unknown outcomes for [saffire-v-4] and [saffire-v-3] be resolved? No nearby burned-and-went-out bracket is supplied for any test."
+    ],
+    "limitations": [
+      "Coverage gains are conditional on completing the tests. The projected grid changes from 6 to 11 Tested cells and from 109 to 73 Untested cells; these are atmosphere-distance classifications, not predictions of ignition or flame spread.",
+      "The cited Saffire burned outcomes have a source-field basis in hand-transcribed published results [saffire-iv-vi]. Unknown outcomes do not establish extinction.",
+      "Every run in the supplied data is microgravity. Atmosphere proximity alone does not establish lunar applicability, and the available specimens do not represent all solid fuels.",
+      "The campaign supports engineering judgment; it does not replace NASA-STD-6001 or certified material testing."
+    ]
+  }
+}

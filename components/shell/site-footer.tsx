@@ -44,7 +44,9 @@ export function SiteFooter({ status }: { status: { investigations: number; runs:
             <h2 className="mb-3 text-[0.8125rem] font-semibold text-foreground">Images</h2>
             <p className="max-w-[60ch]">
               Photographs courtesy of NASA (images.nasa.gov): orbital sunrise from the ISS (iss071e439624), a candle flame in
-              microgravity (9902615) and Earth at night with an aurora (iss058e005282).
+              microgravity (9902615), an ISS module at night (iss042e021318), the Combustion Integrated Rack
+              (iss032e014574), flame spreading over a solid fuel (9902618), Earth at night with an aurora (iss058e005282) and Earth setting over the
+              Moon from Orion on Artemis II (art002e021278).
             </p>
           </div>
         </div>

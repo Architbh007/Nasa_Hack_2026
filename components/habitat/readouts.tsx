@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { CheckCircle2, CircleDashed, CircleHelp, TriangleAlert } from "lucide-react";
+import { AnimatedNumber } from "@/components/common/animated-number";
 import { Card, CardContent } from "@/components/ui/card";
 import { CATEGORY_LABEL } from "@/lib/constants";
 import { FUEL_CATEGORIES, VERDICT_LABEL, type CategoryVerdict, type HabitatAssessment, type Verdict } from "@/lib/habitat";
@@ -23,7 +24,7 @@ const VERDICT_ICON: Record<Verdict, typeof CheckCircle2> = {
 
 function Tile({ label, children, hint, className }: { label: ReactNode; children: ReactNode; hint?: ReactNode; className?: string }) {
   return (
-    <Card className={cn("gap-1 py-4", className)}>
+    <Card className={cn("fs-hover-surface gap-1 py-4 hover:bg-[#161618]", className)}>
       <CardContent className="space-y-1 px-4">
         <p className="eyebrow">{label}</p>
         {children}
@@ -48,15 +49,14 @@ export function HabitatReadouts({ a }: { a: HabitatAssessment }) {
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
       <Tile label="O2 partial pressure" hint="Sea level is 3.09 psi (21.3 kPa)">
         <p className="tabular text-[1.75rem] font-semibold leading-tight">
-          {a.pO2.psi.toFixed(2)} <span className="text-base font-normal text-muted-foreground">psi</span>
+          <AnimatedNumber value={a.pO2.psi} decimals={2} /> <span className="text-base font-normal text-muted-foreground">psi</span>
         </p>
-        <p className="tabular text-xs text-muted-foreground">{a.pO2.kPa.toFixed(1)} kPa</p>
+        <p className="text-xs text-muted-foreground"><AnimatedNumber value={a.pO2.kPa} decimals={1} /> kPa</p>
       </Tile>
 
       <Tile label="O2 concentration vs Earth (21%)" hint="Relative change in oxygen fraction">
         <p className="tabular text-[1.75rem] font-semibold leading-tight">
-          {increase >= 0 ? "+" : "−"}
-          {Math.abs(increase).toFixed(0)}%
+          <AnimatedNumber value={increase} format={(v) => `${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(0)}%`} />
         </p>
         <p className="tabular text-xs text-muted-foreground">{a.inputs.o2Percent.toFixed(1)}% O2</p>
       </Tile>
@@ -75,7 +75,9 @@ export function HabitatReadouts({ a }: { a: HabitatAssessment }) {
             hint={v.reason}
             className={cn(c === a.category && "ring-1 ring-primary/60")}
           >
-            <VerdictLine v={v} />
+            <div key={v.verdict} className="fs-swap">
+              <VerdictLine v={v} />
+            </div>
           </Tile>
         );
       })}

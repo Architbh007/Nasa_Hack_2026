@@ -338,7 +338,7 @@ export function FlammabilityGrid({
                   key={`${c.col}-${c.row}`}
                   onMouseEnter={() => setFocus({ col: c.col, row: c.row })}
                   onClick={() => onMove((c.o2Min + c.o2Max) / 2, (c.pMin + c.pMax) / 2)}
-                  className="cursor-pointer"
+                  className="fs-cell cursor-pointer"
                 >
                   <rect x={cx + 1} y={cy + 1} width={CELL - 2} height={CELL - 2} rx={4} fill={fill} fillOpacity={opacity} />
                   {striped && <rect x={cx + 1} y={cy + 1} width={CELL - 2} height={CELL - 2} rx={4} fill={`url(#${patternId})`} />}
@@ -348,7 +348,7 @@ export function FlammabilityGrid({
             })}
 
             {cabinCell && (
-              <rect x={x(cabinCell.o2Min) + 0.5} y={y(cabinCell.pMax) + 0.5} width={CELL - 1} height={CELL - 1} rx={5} fill="none" stroke={CABIN} strokeWidth={2.5} pointerEvents="none" />
+              <rect x={x(cabinCell.o2Min) + 0.5} y={y(cabinCell.pMax) + 0.5} width={CELL - 1} height={CELL - 1} rx={5} fill="none" stroke={CABIN} strokeWidth={2.5} pointerEvents="none" className="fs-glide" />
             )}
 
             {presetMarks.map((m) => (
