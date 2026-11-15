@@ -21,6 +21,8 @@ FireSight is an open-source web dashboard built on the combustion data NASA arch
 FireSight supports engineering judgment. It does **not** replace NASA flammability standards such as NASA-STD-6001, and must not be used for flight certification.
 
 ---
+## Deployed website: [FireSight](https://firesight-gamma.vercel.app/)
+---
 
 ## Contents
 
