@@ -93,7 +93,7 @@ export function interpretHabitat(inputs: HabitatInputs, weights?: RankingWeights
     label: `habitat:${inputs.o2Percent}%/${inputs.pressurePsi}psi/${inputs.materialClass}/${inputs.airflow}/${inputs.gravity}`,
     model: aiConfig().modelMain,
     system: HABITAT_SYSTEM,
-    input: habitatContext(a, top),
+    input: habitatContext(a, top, runs),
     schema: habitatInterpretationSchema(allowed),
     effort: "medium",
     maxTokens: 12000,

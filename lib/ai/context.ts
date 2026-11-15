@@ -1,6 +1,6 @@
 import { AIRFLOW_LABEL, CATEGORY_SHORT, GRAVITY_LABEL, MATERIAL_LABEL } from "@/lib/constants";
 import { FUEL_CATEGORIES, type HabitatAssessment } from "@/lib/habitat";
-import type { NearRun } from "@/lib/metrics";
+import { nearestRuns, type NearRun } from "@/lib/metrics";
 import type { ScenarioReadiness } from "@/lib/readiness";
 import type { Investigation, Run, Summary } from "@/lib/schema";
 
@@ -125,12 +125,30 @@ export function runContext(n: Pick<NearRun, "run" | "assumedPressure"> & { dista
   };
 }
 
-export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Investigation; runs: readonly Run[]; score: number }>) {
+/**
+ * What the habitat SI is allowed to see. It gets the chosen material's fuel category in full
+ * and only a one-word verdict for the other categories, so the interpretation is about the fuel
+ * the user picked and does not keep repeating "no data" for fuels nobody asked about.
+ */
+export function habitatContext(
+  a: HabitatAssessment,
+  ranked: Array<{ inv: Investigation; runs: readonly Run[]; score: number }>,
+  runs: readonly Run[] = []
+) {
+  const chosen = a.verdicts[a.category];
+  const label = `${CATEGORY_SHORT[a.category].toLowerCase()}-fuel`;
+  const material = a.inputs.materialClass;
+  const categoryRuns = runs.filter((r) => r.category === a.category);
+  const ofThisMaterial = a.category === "solid" ? categoryRuns.filter((r) => r.materialClass === material) : categoryRuns;
+  // The closest runs often do not state an outcome (BASS-II has none for many), so also give the closest ones that do.
+  const stating = nearestRuns(a.inputs, categoryRuns.filter((r) => r.outcome !== "unknown"), { count: 5 });
+  const outcomes: Record<string, number> = {};
+  for (const n of chosen.nearest) outcomes[n.run.outcome] = (outcomes[n.run.outcome] ?? 0) + 1;
   return {
     condition: {
       o2Percent: r2(a.inputs.o2Percent),
       pressurePsi: r2(a.inputs.pressurePsi),
-      material: MATERIAL_LABEL[a.inputs.materialClass],
+      material: MATERIAL_LABEL[material],
       category: a.category,
       airflow: AIRFLOW_LABEL[a.inputs.airflow],
       gravity: GRAVITY_LABEL[a.inputs.gravity],
@@ -141,21 +159,30 @@ export function habitatContext(a: HabitatAssessment, ranked: Array<{ inv: Invest
       o2ConcentrationChangeVsEarthPercent: Math.round(a.o2IncreasePct),
       seaLevelReference: "21% O2 at 14.7 psi, pO2 3.09 psi",
     },
-    coverageByCategory: Object.fromEntries(
-      FUEL_CATEGORIES.map((c) => {
-        const v = a.verdicts[c];
-        return [
-          c,
-          {
-            verdict: v.verdict,
-            reason: v.reason,
-            runsWithinTolerance: v.withinTolerance,
-            nearestRuns: v.nearest.slice(0, 4).map(runContext),
-          },
-        ];
-      })
-    ),
-    neverTested: a.neverTested,
+    chosenFuelCategory: {
+      category: a.category,
+      verdict: chosen.verdict,
+      reason: chosen.reason,
+      runsWithinTolerance: chosen.withinTolerance,
+      nearestRuns: chosen.nearest.slice(0, 5).map(runContext),
+      outcomesOfNearestRuns: outcomes,
+      nearestRunsThatStateAnOutcome: stating.map((n) => runContext({ ...n, distance: n.distance })),
+    },
+    thisMaterial: {
+      material: MATERIAL_LABEL[material],
+      realRunsClassifiedAsThisMaterial: ofThisMaterial.length,
+      realRunsOfTheWholeCategory: categoryRuns.length,
+      note:
+        ofThisMaterial.length > 0
+          ? `The ${label} runs above include this material.`
+          : `No real run is classified as ${MATERIAL_LABEL[material].toLowerCase()}. The nearest ${label} runs above are the closest evidence and were made with other materials; say so, and do not claim they show how ${MATERIAL_LABEL[material].toLowerCase()} behaves.`,
+    },
+    otherFuelCategories: FUEL_CATEGORIES.filter((c) => c !== a.category).map((c) => ({
+      category: c,
+      verdict: a.verdicts[c].verdict,
+    })),
+    // Statements about the other fuel categories are left out on purpose: the user chose this one.
+    neverTested: a.neverTested.filter((t) => t.includes(label) || t.startsWith("Every run in this dataset")),
     method:
       "Coverage compares the condition with real run-level tests only. 'Tested' means a same-category run within ±2% O2 and ±1 psi. Nothing here is a prediction.",
     topRanked: ranked.map((r) => ({ relevanceScore: Math.round(r.score * 100), ...briefContext(r.inv, r.runs) })),

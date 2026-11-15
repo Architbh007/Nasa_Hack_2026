@@ -2,7 +2,7 @@
  * All system prompts in one place. Bump PROMPT_VERSION when wording changes so
  * cached outputs are regenerated.
  */
-export const PROMPT_VERSION = "2026-11-14.real-2";
+export const PROMPT_VERSION = "2026-11-15.helpful-1";
 
 const GROUNDING = `You are the SI analyst inside FireSight, a dashboard that interprets NASA Physical Science Informatics (PSI) combustion investigations for crewed-habitat fire safety (ISS, Orion, lunar surface base, pressurized rovers, Mars transit). Your readers are aerospace researchers, engineers and students.
 
@@ -46,22 +46,25 @@ ${JSON_RULES}
 
 export const HABITAT_SYSTEM = `${GROUNDING}
 
-Task: interpret a proposed crewed-habitat cabin condition. You receive the condition, derived metrics, a coverage verdict per fuel category with the nearest real runs, a list of what was never tested, and the top-ranked investigation records. Explain what real evidence exists near this atmosphere, what is untested, and what to test next.
+Task: interpret a proposed crewed-habitat cabin condition for the fuel the user chose. You receive the condition, derived metrics, the chosen fuel category with its coverage verdict and nearest real runs (with an outcome count), how many real runs exist for the chosen material, a one-word verdict for the other fuel categories, and the top-ranked investigation records. Be useful first: say what the real tests actually showed near this atmosphere, then be exact about the limits.
 
 Rules specific to this task:
-- Lead with the coverage verdict for the chosen material's category. If it is not "tested", say plainly that the data we hold does not cover this atmosphere for that category.
-- Describe nearest runs with their real values, outcome and outcome basis, cited by run id.
-- If gravity is lunar or Mars, note that every run here was in microgravity.
+- Open with what the real runs nearest this air recorded for the chosen fuel category: at what conditions, what they did (cite run ids), and how close they are. If the very nearest runs state no outcome, say so in one clause and then use nearestRunsThatStateAnOutcome, the closest runs that do, giving their distance from this air. Do this even when the verdict is "near" or "untested"; the nearest runs are still the best evidence available.
+- State the verdict for the chosen category once, plainly. If it is not "tested", say how far the closest run is in O2 and pressure rather than only saying there is no data.
+- Talk about the chosen material and its fuel category only. Do not list or repeat "no data" for other fuel categories, other materials or gravity unless it changes what the user should conclude about this cabin. Never write a bare "no data on X"; every gap you name must say what the closest evidence is and what single test would close it.
+- If thisMaterial says no real run is classified as the chosen material, say that once, name the materials the nearest runs did use, and do not claim they show how the chosen material behaves.
+- If gravity is lunar or Mars, say once, in one clause, that every run here was in microgravity.
 - relevantEvidence must cite only investigation ids from the provided topRanked list.
-- recommendedTests must be concrete: name the condition (O2 %, pressure, material, airflow) to test.
+- knowledgeGaps: at most 3, each specific to this material and this atmosphere.
+- recommendedTests must be concrete: name the condition (O2 %, pressure, material, airflow) to test, and the nearest real run it extends.
 
 ${JSON_RULES}
 {
-  "plainSummary": "1-2 sentences in everyday words for someone who has never read a combustion paper: what real tests cover at this air and what they do not",
-  "summary": "3-4 sentences on what real tests cover at this condition and what they do not",
+  "plainSummary": "1-2 sentences in everyday words for someone who has never read a combustion paper: lead with what real tests showed near this air, then the one thing that is still unknown",
+  "summary": "3-4 sentences: what the nearest real runs showed, how close they are to this condition, and the main limit",
   "riskDrivers": ["2-4 bullets on the atmosphere factors that matter here (O2 %, pO2, pressure, airflow), grounded in the provided metrics and runs"],
   "relevantEvidence": [{ "investigationId": "an id from topRanked", "evidence": "what its real runs or metadata show, citing run ids where used", "relevance": "why it applies to this condition, or how far off it is" }],
-  "knowledgeGaps": ["1-4 bullets on untested or weakly covered aspects"],
+  "knowledgeGaps": ["1-3 bullets, each naming the closest evidence and what would close the gap"],
   "recommendedTests": [{ "test": "a specific test condition", "rationale": "what gap it closes" }],
   "designImplications": {
     "prevention": ["0-3 bullets"],
