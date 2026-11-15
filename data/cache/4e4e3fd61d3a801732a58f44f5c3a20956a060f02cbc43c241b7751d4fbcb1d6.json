@@ -1,0 +1,14 @@
+{
+  "key": "4e4e3fd61d3a801732a58f44f5c3a20956a060f02cbc43c241b7751d4fbcb1d6",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->20%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:46.165Z",
+  "output": {
+    "answer": "At the before air, the nearest solid-fuel runs recorded flames near the same pressure; at the after air, runs at the stated air include flames as well as some recorded extinguishments, so lowering oxygen alone is not supported as a reliable fire response. The nearest after-air result runs are different fuels and investigations, and do not show that this cabin fire will go out.",
+    "whatChanges": "No run sits exactly at the before air: the closest result runs were 8.3–8.4 oxygen points away and 0.1 psi away, and recorded flames for SIBAL and PMMA [bass-asrun-55] [bass-asrun-60]; two nearby PMMA runs recorded extinguishment, with the outcome read from notes [bass-asrun-61] [bass-asrun-62]. At the after air, 133 runs are at that air; among the examples, a flame was recorded as extinguished when airflow was reduced or stopped [bass-asrun-92] [bass-asrun-29], while the closest stated-result runs at the exact oxygen and pressure recorded extinguishment for other fuels, with the outcome based on notes [bass-ii-p22b]. The app’s estimate changes from “Likely to burn” (93%, 90% range 79–100%, high confidence) before to “Likely to burn” (96%, 90% range 93–99%, high confidence) after; both are estimates, not test results.",
+    "whatYouWouldSee": "At the lower air, notes describe flames becoming blue and dim before extinguishing when airflow was turned off [bass-asrun-30] [bass-asrun-28]; another run notes soot during flow and a blue flame at very low flow [bass-asrun-92]. Less oxygen can weaken a flame, but these observations do not establish that lowering cabin oxygen alone will extinguish this fire.",
+    "crew": "The provided figures change from an oxygen partial pressure of 4.56 psi, equivalent altitude 0 m, “Fine to breathe,” to 2.94 psi, equivalent altitude 400 m, also “Fine to breathe.”",
+    "instead": "The evidence points more directly to controlling ventilation: several notes-based BASS runs report extinguishment when airflow was turned down or off, including [bass-asrun-29] and [bass-asrun-30]; this is not a guarantee for this fire. Since runs are available at the after air, no single missing-condition test can settle the question; a same-fuel, same-pressure test at the after air with controlled oxygen and airflow changes would be the useful comparison."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "key": "ae7c8da13276cf8318b4b96e9aeb36243cd34613797f1e9f1c656e3e5cd844a8",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->0.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:40:00.644Z",
+  "output": {
+    "answer": "The closest real runs recorded mixed outcomes, not a demonstrated response at 0.5% oxygen: a no-ignition result at 13.6% and extinguished flames at 14.8–15.3%, all at 14.7 psi [bass-ii-o12] [bass-ii-o4] [bass-ii-b14] [bass-ii-o19]. Lowering cabin oxygen to 0.5% is not a good crew response; those tests are far from that oxygen level and cannot establish what would happen to this fire.",
+    "flame": "No run sits at the lowered air. The nearest no-ignition run used a clear rod at 13.6% oxygen and 14.7 psi—13.1 oxygen percentage points and 0 psi from the target—and its outcome was identified from investigator notes [bass-ii-o12]. At 14.8% oxygen and 14.7 psi, 14.3 points away, a clear rod flame was recorded as extinguished in the notes; a PMMA flame at 15% and 14.7 psi, 14.5 points away, was also recorded as extinguished [bass-ii-o4] [bass-ii-b14]. These fuels and conditions do not establish whether the cabin fabric fire would go out at 0.5%.",
+    "crew": "At the lowered air, the provided oxygen partial pressure is 0.07 psi, equivalent to an altitude of 22,500 m in the app’s standard-atmosphere calculation, in the “Dangerous for crew” band. Less oxygen makes breathing harder; at 0% oxygen nobody can breathe.",
+    "instead": "The evidence includes flames going out when airflow was reduced or turned off: for example, a PMMA run’s notes say it went out when the fan was off [bass-asrun-90-row100]. Follow the approved fire-response procedures and control airflow as directed; a test of the relevant cabin fabric at 0.5% oxygen and 14.7 psi would be needed to establish its behavior at that air."
+  }
+}

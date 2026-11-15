@@ -1,0 +1,14 @@
+{
+  "key": "31632070bfaf4e6ad243a9e2a057307e9bf9346a72bfc082875e85d83fa41a73",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->17%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:36.954Z",
+  "output": {
+    "answer": "At the before air, the closest results still include flames: BASS runs recorded flames at about 8.3–8.4 O2 percentage points lower, with pressure only 0.1 psi away [bass-asrun-55] [bass-asrun-60]. At the after air, runs close to the target include flame and airflow-related extinction, so lowering oxygen alone is not supported as a dependable fire response; the evidence points to reducing ventilation airflow as a more direct suppression measure.",
+    "whatChanges": "No run sits exactly at the before air; the closest result runs are 8.3–8.4 O2 points lower and 0.1 psi away, and recorded flames, while two other nearby runs describe extinction during GN2 application, not a stated no-ignition result [bass-asrun-55] [bass-asrun-60] [bass-asrun-61] [bass-asrun-62]. At the after air, same-category runs include 39 with flame and 2 with no ignition among 102 runs; 61 do not state a result, so these totals do not establish what will happen to a particular fire [bass]. Near that air, a run notes the flame went out when the fan was turned off [bass-asrun-90-row100]. The app estimates “Likely to burn” at both airs: 93% (90% range 79–100%) before and 95% (91–98%) after, both high confidence; these are estimates, not test results.",
+    "whatYouWouldSee": "The before-air notes show flames persisted, including one that became smaller at maximum flow [bass-asrun-55]. At the after air, notes describe sooty tails at higher flow and dim blue flames at low flow [bass-asrun-111]; less oxygen can generally weaken a flame, but the nearby tests show flames can still burn, and appearance depends on airflow and fuel.",
+    "crew": "The provided equivalent changes from 0 m altitude and “Fine to breathe” before to 1,700 m and “Like a mountain town” after. The provided oxygen partial pressure falls from 4.56 psi to 2.5 psi, so breathing conditions become less favorable.",
+    "instead": "The closest evidence for extinction links it to reducing airflow: a BASS run says the flame went out when the fan was turned off [bass-asrun-90-row100], and another reports extinction after airflow was turned down [bass-asrun-110]. Because runs at the after air already exist, no single missing test settles this; the records do not establish that lowering cabin oxygen alone will extinguish this fire."
+  }
+}

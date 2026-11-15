@@ -74,6 +74,17 @@ export function fireTwinNarrationSchema(allowedIds: ReadonlySet<string>) {
 }
 export type FireTwinNarration = z.infer<ReturnType<typeof fireTwinNarrationSchema>>;
 
+export function lowerOxygenSchema(allowedIds: ReadonlySet<string>) {
+  return z.object({
+    answer: citedText(allowedIds, 500),
+    whatChanges: citedText(allowedIds, 900),
+    whatYouWouldSee: citedText(allowedIds, 700),
+    crew: citedText(allowedIds, 500),
+    instead: citedText(allowedIds, 500),
+  });
+}
+export type LowerOxygenExplanation = z.infer<ReturnType<typeof lowerOxygenSchema>>;
+
 export function lessonSchema(allowedIds: ReadonlySet<string>) {
   return z.object({ lesson: citedText(allowedIds, 900) });
 }

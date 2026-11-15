@@ -28,6 +28,7 @@ async function main() {
       import("@/lib/fire-history"),
       import("@/lib/planner"),
     ]);
+  const { defaultComparePair } = await import("@/lib/lower-oxygen");
 
   const core = process.argv.includes("--core");
   const { investigations, scenarios } = getDataset();
@@ -53,6 +54,15 @@ async function main() {
     tasks.push({
       label: `fire-twin ${s.id}`,
       run: () => ops.narrateFireTwin(inputs, { startItemId: "stowage-bag", ventsOn: inputs.airflow !== "quiescent", crewResponse: true }),
+    });
+  }
+  // "Lower the oxygen?" panel at its starting position for each preset.
+  for (const s of scenarios) {
+    const inputs = normalizeHabitatInputs(inputsFromScenario(s));
+    tasks.push({ label: `lower-o2  ${s.id}`, run: () => {
+        const { fromO2, toO2 } = defaultComparePair(inputs.o2Percent);
+        return ops.explainLowerOxygen(inputs, fromO2, toO2);
+      },
     });
   }
   if (!core) {

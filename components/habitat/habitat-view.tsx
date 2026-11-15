@@ -266,7 +266,7 @@ export function HabitatView({
             title="Fire in progress: can we just lower the oxygen?"
             description="Drag to a lower O2 at the same pressure. Flame results come from the real runs at that air; the crew line converts O2 partial pressure to an equivalent altitude on Earth."
           >
-            <LowerOxygen inputs={inputs} category={assessment.category} runs={runs} />
+            <LowerOxygen key={inputs.o2Percent} inputs={inputs} category={assessment.category} runs={runs} />
           </Section>
 
           <Section id="ranking" title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">

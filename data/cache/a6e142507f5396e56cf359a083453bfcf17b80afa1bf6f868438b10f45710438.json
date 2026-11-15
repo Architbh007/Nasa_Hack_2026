@@ -1,0 +1,14 @@
+{
+  "key": "a6e142507f5396e56cf359a083453bfcf17b80afa1bf6f868438b10f45710438",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:17->12.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:48.101Z",
+  "output": {
+    "answer": "Near the before air, real runs recorded flames, including one that went out when airflow was reduced; near the after air, results include both no ignition and flames. Lowering oxygen is therefore not a demonstrated fire response: the after-air estimate still says “Likely to burn,” and cannot predict whether this fire will go out.",
+    "whatChanges": "At the before air, 102 real runs fall within the stated air band; 39 recorded flame and 2 no ignition. The closest result runs include a flame at the same stated oxygen and pressure [bass-ii-p10] and a flame that went out when the fan was turned off [bass-asrun-90-row100] (outcome from investigator notes). At the after air, 3 runs fall within the band but none has a stated example; the nearest results are no ignition 1.1 oxygen points away [bass-ii-o12], and extinguished flames 2.3 and 2.5 points away [bass-ii-o4] [bass-ii-b14] (outcomes from investigator notes). The app estimate changes from “Likely to burn,” 95% chance, 90% range 91–98%, high confidence, to “Likely to burn,” 90%, range 79–98%, low confidence; the after-air estimate extrapolates below the lowest real test, 13.6% oxygen.",
+    "whatYouWouldSee": "Near the before air, notes describe a sooty tail [bass-asrun-81] and a dim blue flame at very low airflow [bass-asrun-111]. Generally, less oxygen tends to make flames smaller, dimmer, bluer and less sooty, with slower spread, but the supplied runs do not show exactly how this fire would look at the after air.",
+    "crew": "The provided oxygen partial pressure falls from 2.5 psi (equivalent altitude 1,700 m, “Like a mountain town”) to 1.84 psi (4,100 m, “Hypoxia likely”). That means less oxygen available for breathing; the after-air band warns that hypoxia is likely.",
+    "instead": "The notes show flames going out when airflow was reduced or turned off, including “Out when fan off” [bass-asrun-90-row100]; airflow control is better supported by these runs than relying on oxygen reduction. To resolve the after-air gap, run a fabric-category microgravity test at that oxygen level and pressure, recording airflow and flame outcome."
+  }
+}

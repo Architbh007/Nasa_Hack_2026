@@ -1,0 +1,14 @@
+{
+  "key": "bb89f8efa1f062c359e62edc41f92a63aba0cef2eab9173d61758cc2f13379af",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->17%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:46:23.298Z",
+  "output": {
+    "answer": "At the before air, the closest fabric/solid-category runs were about 8.3–8.4 oxygen percentage points lower and recorded flames; at the after air, runs near the stated air recorded both flames and extinguishments. Lowering oxygen can weaken a flame, but these tests do not show that lowering cabin oxygen is a dependable response to a fire.",
+    "whatChanges": "No run sits exactly at the before air; the nearest result runs were at 22.58–22.67% oxygen and 14.75–14.82 psi, 8.3–8.4 points below it, and recorded flames, though two outcomes were unknown and two extinguishments were noted during GN2 use [bass-asrun-55] [bass-asrun-60] [bass-asrun-61] [bass-asrun-62]. At the after air, runs within the specified range recorded 39 flames, 2 no-ignitions and 61 results not stated; examples include a flame that went out when the fan was turned off and flames that extinguished as flow was reduced [bass-asrun-81] [bass-asrun-90-row100] [bass-asrun-110].",
+    "whatYouWouldSee": "Near the after air, notes describe sooty flames and, at low flow, dim blue flames; some flames shrank before going out [bass-asrun-81] [bass-asrun-111]. Less oxygen generally weakens a flame, but the before-air evidence does not provide a same-fuel comparison at that oxygen level, so these records cannot establish how this cabin fire would look after lowering oxygen.",
+    "crew": "The app’s air comparison gives an oxygen partial pressure of 4.56 psi at the before air, equivalent to 0 m altitude and in its “Fine to breathe” band; at the after air it gives 2.5 psi, equivalent to 1,700 m and “Like a mountain town.” Breathing conditions would therefore be less favorable at the after air according to those bands.",
+    "instead": "Use the established fire-response procedures rather than relying on cabin oxygen reduction; in the microgravity tests, flames went out when airflow was reduced or stopped, including a PMMA run near the after air [bass-asrun-90-row100] [bass-asrun-110]. That is evidence about those test conditions, not a guarantee for this fire; the decisive missing evidence would be a run on the same fabric at the after air and pressure with controlled airflow and a recorded outcome."
+  }
+}

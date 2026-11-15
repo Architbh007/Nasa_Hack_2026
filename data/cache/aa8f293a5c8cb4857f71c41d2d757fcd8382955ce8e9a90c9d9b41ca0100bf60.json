@@ -1,0 +1,14 @@
+{
+  "key": "aa8f293a5c8cb4857f71c41d2d757fcd8382955ce8e9a90c9d9b41ca0100bf60",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->12%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:46:31.620Z",
+  "output": {
+    "answer": "The closest before-air runs still recorded flames, while at the after air the one run at that air recorded no ignition; this is evidence that lower oxygen can hinder burning, not proof it will put out this cabin fire [bass-asrun-55] [bass-ii-o12]. Lowering oxygen is not a reliable immediate fire response: the closest tests used different fuels, and the after-air test did not test an already-burning fabric fire.",
+    "whatChanges": "No run sits at the before air; the closest result runs were 8.3–8.4 oxygen percentage points away and recorded flames, including a SIBAL run whose notes say the flame got smaller at maximum flow but did not blow out [bass-asrun-55] [bass-asrun-60]. At the after air, one run sits at that air and recorded no ignition; its outcome is based on investigator notes, and the closest identified run was 1.6 oxygen points away at the same pressure and also recorded no ignition [bass-ii-o12]. Nearby runs at 2.8–3.3 oxygen points above the after air recorded extinguishing or blowoff, but these were different fuels and do not establish what would happen to this fabric fire [bass-ii-o4] [bass-ii-b14] [bass-ii-o9] [bass-ii-o19].",
+    "whatYouWouldSee": "With less oxygen, a flame is generally weaker and may look smaller, dimmer, bluer, less sooty, and spread more slowly; the provided runs do not directly compare the same fabric fire at both airs. Notes from other fuels describe sooty and blue flames [bass-asrun-89-row102] [bass-asrun-102], so they do not establish the appearance of this fire.",
+    "crew": "The provided crew estimate changes from 4.56 psi oxygen partial pressure, equivalent to 0 m altitude and “Fine to breathe,” before, to 1.76 psi, equivalent to 4500 m and “Hypoxia likely,” after. The lower-oxygen air therefore presents a serious breathing concern for the crew.",
+    "instead": "Use the cabin’s fire-response procedures rather than relying on lowering oxygen; microgravity ventilation feeds flames, and BASS runs record flames going out when airflow was reduced or turned off [bass-asrun-89-row102] [bass-asrun-90-row100]. Those airflow results are from other fuels, so the test that would settle this comparison is a burning fabric test at the after air with airflow controlled and recorded."
+  }
+}

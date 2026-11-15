@@ -1,0 +1,13 @@
+{
+  "key": "56da4b104470ef5c6489ecd81fcd7198cfec018eedfd38e69c2211223da44806",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->11.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:32:59.096Z",
+  "output": {
+    "answer": "The data cannot show whether lowering the cabin to this oxygen level would stop the fire: there are no nearby runs for this fuel category and air condition. Less oxygen can weaken a flame, but that is not evidence that this fire would go out.",
+    "flame": "No real runs near the lowered air are recorded: none had a flame, none did not ignite, and none have an unstated result because there are no runs. The outcome at this condition is untested, so nobody can say from these data whether a flame would go out.",
+    "crew": "The crew's oxygen partial pressure would be 1.69 psi, equivalent to an altitude of 4,800 m, in the \"Hypoxia likely\" band. Less oxygen makes breathing harder.",
+    "instead": "Use fire-response procedures rather than relying on cabin oxygen reduction. Answering whether a flame goes out at this condition would require a relevant test."
+  }
+}

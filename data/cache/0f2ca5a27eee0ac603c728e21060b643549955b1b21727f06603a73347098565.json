@@ -1,0 +1,13 @@
+{
+  "key": "0f2ca5a27eee0ac603c728e21060b643549955b1b21727f06603a73347098565",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->17%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:32:34.627Z",
+  "output": {
+    "answer": "No: the data do not show that lowering cabin oxygen to 17% would stop this fire. Real runs near that air include flames, and some flames went out only when airflow was reduced; these tests do not predict what this cabin fire will do.",
+    "flame": "Across 102 nearby runs, 39 recorded a flame, 2 did not ignite, and 61 did not state a result [bass]. The recorded outcomes also include 25 extinguished, 7 blowoff, and 68 not stated [bass]; the extinguished outcomes were read from investigator notes, not stated in the table. Notes link flames going out to reduced or stopped airflow—for example, one went out when the fan was turned off [bass-asrun-90-row100].",
+    "crew": "At the lowered air, the crew's oxygen partial pressure is 2.5 psi, with an app-calculated equivalent altitude of 1700 m and the band “Like a mountain town.” Less oxygen makes breathing harder.",
+    "instead": "Use the available fire response and suppression procedures rather than relying on lowering cabin oxygen to put the fire out. The run notes point to airflow reduction as a factor in flames going out, but they do not establish a response for this cabin fire."
+  }
+}

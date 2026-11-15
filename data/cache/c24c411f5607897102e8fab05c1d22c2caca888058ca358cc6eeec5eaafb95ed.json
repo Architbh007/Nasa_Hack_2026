@@ -1,0 +1,14 @@
+{
+  "key": "c24c411f5607897102e8fab05c1d22c2caca888058ca358cc6eeec5eaafb95ed",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->19.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:51.944Z",
+  "output": {
+    "answer": "Nearest before-air runs still had flames; after-air tests also recorded flames, so lowering oxygen alone is not shown to be a reliable fire response [bass-asrun-55] [bass-asrun-60] [bass-ii-p5] [bass-ii-p22b]. The after-air estimate remains “Likely to burn”; do not rely on oxygen reduction instead of fire response and ventilation control.",
+    "whatChanges": "No run sits exactly at the before air; nearest stated-result runs were 8.3–8.4 oxygen points and 0.1 psi away, and both with explicit flame status had flames [bass-asrun-55] [bass-asrun-60]. At the after air, runs recorded 48 flames, 1 no ignition, and 53 unstated results; nearest result runs at the same pressure recorded extinguished outcomes by notes-keyword [bass-ii-p5] [bass-ii-p22b]. The app estimate says “Likely to burn” at both airs: 93% (90% range 79–100%, high confidence) before and 96% (93–99%, high confidence) after; these are estimates, not test results.",
+    "whatYouWouldSee": "Before-air-nearest runs describe flames that persisted, including one that did not blow out [bass-asrun-55] [bass-asrun-60]. Near the after air, notes describe sooty flames turning blue as airflow is reduced, then going out when it is stopped [bass-asrun-29] [bass-asrun-30]. Less oxygen generally weakens flames, but does not establish what this fire will do.",
+    "crew": "The supplied values change from 4.56 psi oxygen partial pressure, equivalent altitude 0 m, “Fine to breathe,” to 2.87 psi, 600 m, also “Fine to breathe.” The lower partial pressure means less oxygen available to breathe.",
+    "instead": "Prioritize fire response and airflow control rather than relying on cabin oxygen reduction. Notes report flames going out when airflow was reduced or stopped [bass-asrun-29] [bass-asrun-30] [bass-asrun-92]; these are real observations, not a guarantee for this fire."
+  }
+}

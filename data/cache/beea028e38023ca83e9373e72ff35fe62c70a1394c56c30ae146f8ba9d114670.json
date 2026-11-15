@@ -1,0 +1,14 @@
+{
+  "key": "beea028e38023ca83e9373e72ff35fe62c70a1394c56c30ae146f8ba9d114670",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->17%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:02.486Z",
+  "output": {
+    "answer": "Runs near both airs recorded flames: a run near the before air recorded a flame [bass-ii-p25], and a run exactly at the after air recorded a flame [bass-ii-p10]. Lowering oxygen is therefore not supported as a reliable way to put out this fire; these runs used different fuels and do not predict this cabin fire.",
+    "whatChanges": "Near the before air, a run at 20.9% oxygen and the same pressure recorded a flame that was extinguished; its notes do not say oxygen reduction caused extinction [bass-ii-p25]. At the after air, a run at 17% and 14.7 psi recorded a flame that was extinguished, based on investigator notes [bass-ii-p10]; nearby runs also recorded blowoff or extinction [bass-ii-b19] [bass-ii-o6]. The app estimates “Likely to burn” at both airs: 97% (90% range 93–99%) before and 95% (90% range 91–98%) after. These are estimates, not test results.",
+    "whatYouWouldSee": "At 17.1%, notes describe a sooty tail [bass-asrun-81]; another low-flow flame was dim blue [bass-asrun-111]. Less oxygen generally weakens flames, which may look smaller, dimmer, bluer and less sooty, but these runs do not establish how this cabin fire would look.",
+    "crew": "The provided oxygen partial pressure falls from 3.09 psi, equivalent to 0 m altitude (“Fine to breathe”), to 2.5 psi, equivalent to 1,700 m (“Like a mountain town”). The lower air means less oxygen available for breathing.",
+    "instead": "Consider airflow as a fire-response factor: at 17.1%, a run’s notes say the flame went out when the fan was off [bass-asrun-90-row100]; near the before air, notes also report extinction after flow was turned off [bass-asrun-30]. Runs already exist at the after air, and they show flames can occur there; none predicts whether this fire will go out."
+  }
+}

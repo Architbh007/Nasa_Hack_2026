@@ -1,0 +1,47 @@
+{
+  "key": "7db23cfd71ae91c9306fbefb13edf61cb8e4f60482d1dfa79b52680bbb6dd19c",
+  "kind": "habitat",
+  "model": "gpt-6.1-sol",
+  "label": "habitat:21%/14.7psi/fabric/ventilated/micro",
+  "createdAt": "2026-11-15T06:41:20.843Z",
+  "output": {
+    "plainSummary": "The closest solid-fuel tests at 21% oxygen do not state outcomes; the closest test that does, at 20.9% oxygen, was described as extinguished in investigator notes, but its pressure and airflow were not recorded [bass-ii-b10] [bass-ii-p25]. More directly relevant fabric tests recorded SIBAL fabric burning at 20 cm/s airflow, with reported conditions of 21.6% oxygen and 14.5 psi; whether your particular fabric behaves the same way at 21% oxygen and 14.7 psi remains unknown [saffire-i].",
+    "summary": "The nearest solid-fuel runs at 21% oxygen have unknown outcomes; the closest outcome-bearing run used a clear rod at 20.9% oxygen and recorded extinction on a notes-keyword basis, at a dashboard distance of 0.01 [bass-ii-b10] [bass-ii-b11] [bass-ii-b13] [bass-ii-b15] [bass-ii-b6] [bass-ii-p25]. Their pressure was not measured or recorded: the dashboard placed them at the cited nominal 14.7 psi, and airflow is missing for the outcome-bearing run [bass-ii-p25]. The solid-category verdict is tested, with 158 runs within the dashboard tolerance, including 51 whose pressure was placed at nominal rather than recorded; 58 real runs are classified as Fabric overall. The strongest supplied fabric-specific evidence is SIBAL burning in source-field outcomes at 20 cm/s, with reported conditions of 21.6% oxygen and 14.5 psi, but that does not establish the behavior of your unspecified fabric at the proposed atmosphere [saffire-i].",
+    "riskDrivers": [
+      "The proposed 21% oxygen and oxygen partial pressure of 3.09 psi match the supplied sea-level reference. That reference match is not evidence that fabric cannot burn: SIBAL burning was recorded near this atmosphere [saffire-i].",
+      "The proposed airflow of approximately 20 cm/s matches the Saffire-I fabric-test airflow. The closest outcome-bearing BASS-II run has no recorded airflow, so its extinction cannot be transferred to this ventilation condition [saffire-i] [bass-ii-p25].",
+      "Saffire-I reports 14.5 psi, compared with the proposed 14.7 psi. By contrast, the nearest BASS-II runs have no recorded pressure, so their apparent pressure match depends on nominal placement [saffire-i] [bass-ii]."
+    ],
+    "relevantEvidence": [
+      {
+        "investigationId": "bass-ii",
+        "evidence": "The nearest runs used PMMA or film specimens at 21% oxygen and state no outcome [bass-ii-b10] [bass-ii-b11] [bass-ii-b13] [bass-ii-b15] [bass-ii-b6]. The closest run stating an outcome used a clear rod at 20.9% oxygen and was classified as extinguished from investigator-note keywords; pressure and airflow are missing [bass-ii-p25].",
+        "relevance": "These are the closest supplied solid-category runs, but they are not fabric-specific evidence. The outcome-bearing run has dashboard distance 0.01, and its placement at 14.7 psi is assumed rather than measured."
+      },
+      {
+        "investigationId": "saffire-i",
+        "evidence": "SIBAL Fabric was used in the real tests. Both recorded outcomes were burned, on a source-field basis. Reported conditions include 21.6% oxygen, 14.5 psi and 20 cm/s airflow; oxygen is missing for one run [saffire-i].",
+        "relevance": "This is directly relevant fabric evidence at the proposed airflow and near the proposed oxygen and pressure. The supplied records do not identify the user's fabric composition or provide individual run ids."
+      }
+    ],
+    "knowledgeGaps": [
+      "The supplied nearest-run list does not establish the selected fabric's outcome at 21% oxygen, 14.7 psi and approximately 20 cm/s. The closest fabric-specific evidence is SIBAL burning at reported conditions of 21.6% oxygen and 14.5 psi with 20 cm/s airflow [saffire-i]; a test of the actual cabin fabric at the proposed condition, with measured pressure and an explicitly recorded outcome, would close this material-and-condition gap."
+    ],
+    "recommendedTests": [
+      {
+        "test": "Test the actual cabin fabric in microgravity at 21% oxygen, measured 14.7 psi and approximately 20 cm/s airflow. Document its composition and configuration, ignition procedure, flame spread and final outcome.",
+        "rationale": "This extends the nearest outcome-bearing solid run [bass-ii-p25] to the selected material with controlled pressure and airflow, and extends the nearby SIBAL fabric evidence [saffire-i] to the exact proposed cabin condition."
+      }
+    ],
+    "designImplications": {
+      "prevention": [
+        "Do not interpret solid-category coverage or nearby extinction notes as clearance for the selected fabric. Nearby fabric tests recorded burning [saffire-i].",
+        "Use this evidence to support engineering judgment alongside NASA-STD-6001 and certified material testing, not as a replacement for them."
+      ],
+      "detection": [],
+      "suppression": [
+        "Do not credit ventilation at approximately 20 cm/s with extinguishing a fabric fire: SIBAL burning was recorded at that airflow, while the nearest extinction run lacks an airflow value [saffire-i] [bass-ii-p25]."
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "key": "e91ab50b2f6123bda318eb1b16e277386bc8002c6aba20eae20c1d0967b5954b",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->21%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:53.917Z",
+  "output": {
+    "answer": "Closest runs to the before air still had flames [bass-asrun-55] [bass-asrun-60]; at the after air, matching tests recorded many flames. Lowering oxygen this way is not shown to be an effective fire response, and these tests cannot predict whether this fire will go out.",
+    "whatChanges": "No run sits exactly at the before air; nearest outcome-stated runs were 8.3–8.4 oxygen points and 0.1 psi away, and recorded flames [bass-asrun-55] [bass-asrun-60]. At the after air, 158 matching runs include 106 with flame, 3 with no ignition, and 49 without a stated result; nearest outcome-stated runs recorded extinguished outcomes based on notes [bass-ii-p25] [bass-ii-b21] [bass-ii-p22a]. The app estimates “Likely to burn” at both airs: 93% (90% range 79–100, high confidence) before and 97% (93–99, high confidence) after. These are estimates, not test results.",
+    "whatYouWouldSee": "Nearby notes describe flames turning dim blue before extinction when airflow was shut off [bass-asrun-28] [bass-asrun-30], while other notes describe sooty flames under flow [bass-asrun-30]. Less oxygen usually makes a flame smaller, dimmer, bluer, less sooty, and slower-spreading, but the runs do not show that this oxygen change will extinguish this fire.",
+    "crew": "Oxygen partial pressure falls from 4.56 psi to 3.09 psi; the provided equivalent altitude is 0 m and breathing band is “Fine to breathe” for both airs.",
+    "instead": "Evidence supports reducing or shutting off airflow as a possible means of extinguishing flames in these tests: a flame pulsed blue before extinction when the fan was turned off [bass-asrun-30]. This does not guarantee the cabin-fire outcome; a controlled fabric test at the after-air conditions, changing oxygen alone, would address the evidence gap."
+  }
+}

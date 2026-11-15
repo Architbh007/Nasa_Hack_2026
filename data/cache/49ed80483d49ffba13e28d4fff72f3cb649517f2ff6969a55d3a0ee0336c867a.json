@@ -1,0 +1,13 @@
+{
+  "key": "49ed80483d49ffba13e28d4fff72f3cb649517f2ff6969a55d3a0ee0336c867a",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->9.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:39:42.971Z",
+  "output": {
+    "answer": "No run sits exactly at 9.5% oxygen; the closest result recorded no ignition at 13.6% oxygen and 14.7 psi, 4.1 oxygen points above the proposed level [bass-ii-o12]. That is not evidence that lowering cabin oxygen is a safe or reliable response to a fire.",
+    "flame": "The nearest runs with stated results were all at 14.7 psi, the same pressure as the lowered air; BASS-II’s cited pressure was assumed, not measured. At 13.6% oxygen—4.1 points higher—the notes say “no ign” [bass-ii-o12]; at 14.8%—5.3 points higher—a flame was recorded as extinguished [bass-ii-o4], and at 15%—5.5 points higher—another flame was recorded as extinguished [bass-ii-b14]. These outcomes are based on investigator notes, and the fuels differ from the cabin fabric.",
+    "crew": "The app gives the crew an oxygen partial pressure of 1.4 psi, equivalent to 6,200 m altitude, in the “Dangerous for crew” band. Less oxygen makes breathing harder; at 0% oxygen nothing can burn, but nobody can breathe it either.",
+    "instead": "The closest relevant airflow evidence shows flames going out when airflow was reduced or turned off, including PMMA at 17.1% oxygen and 14.55 psi [bass-asrun-90-row100]; those conditions and fuels differ from this cabin, but reducing airflow is a better-supported suppression direction than making the whole cabin air unsafe to breathe. The single test that would resolve the gap is a microgravity fabric-flame test at 9.5% oxygen and 14.7 psi."
+  }
+}

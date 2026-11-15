@@ -1,0 +1,13 @@
+{
+  "key": "0e0adeb78442e25239aa7cbfbd0b66507a89b1f17ab7c86ddd529f538553e702",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->10.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:40:13.958Z",
+  "output": {
+    "answer": "The nearest tests do not show that lowering cabin oxygen to this level is a reliable fire response: at 14.7 psi, one test at 13.6% oxygen recorded no ignition, while tests at 14.8% and 15% recorded flames that later extinguished [bass-ii-o12] [bass-ii-o4] [bass-ii-b14]. The lowered-air level is 10.5% oxygen, but those results are from different fuels and oxygen levels, so they cannot establish what would happen to this fire.",
+    "flame": "No run sits at the proposed 10.5% oxygen and 14.7 psi. The closest result was a 3/8-inch clear rod test at 13.6% oxygen and 14.7 psi—3.1 oxygen percentage points above the proposal—which recorded no ignition in investigator notes [bass-ii-o12]. At 14.8% oxygen and 14.7 psi, 4.3 points above, a clear-rod test recorded a flame and extinction in investigator notes; a different solid fuel also recorded a flame and extinction at 15% oxygen, 4.5 points above [bass-ii-o4] [bass-ii-b14].",
+    "crew": "At the proposed air, the crew oxygen partial pressure is 1.54 psi, equivalent to 5,500 m altitude in the app’s standard-atmosphere arithmetic; the app labels this band “Dangerous for crew.” Less oxygen makes breathing harder.",
+    "instead": "The tests provide direct evidence that reducing airflow can put flames out: investigator notes say flames went out when airflow was reduced or switched off in tests at 15.9% oxygen and 14.26 psi, among others [bass-asrun-89-row102] [bass-asrun-90-row100]. Prioritize an appropriate fire-suppression response rather than lowering the whole cabin’s oxygen; a controlled solid-fuel test at 10.5% oxygen and 14.7 psi would directly test the proposed air, but would not predict this specific fire."
+  }
+}

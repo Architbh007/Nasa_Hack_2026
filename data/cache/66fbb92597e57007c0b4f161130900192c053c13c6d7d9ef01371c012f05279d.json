@@ -1,0 +1,13 @@
+{
+  "key": "66fbb92597e57007c0b4f161130900192c053c13c6d7d9ef01371c012f05279d",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->21%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:41:31.266Z",
+  "output": {
+    "answer": "At the proposed air, 21% oxygen at 14.7 psi, the closest same-category runs recorded flames in 106 of 158 runs; lowering to this level is not a useful change because it is the cabin’s current oxygen level [bass]. The evidence supports managing airflow rather than relying on this oxygen setting to put out the fire.",
+    "flame": "The same-air runs included 106 with flame, 3 that did not ignite, and 49 with no stated result; the cited closest examples were solid fuels [bass]. Nearby BASS-II runs at 20.8–20.9% oxygen and 14.7 psi recorded flames that were later extinguished, based on investigator notes [bass-ii-p25] [bass-ii-b21] [bass-ii-p22a]. In BASS runs at 20.89% oxygen and 14.52 psi—0.1 oxygen point and 0.2 psi below the proposed air—notes say flames went out when airflow was shut off [bass-asrun-29] [bass-asrun-30].",
+    "crew": "The app gives oxygen partial pressure as 3.09 psi, equivalent altitude 0 m, in the “Fine to breathe” band. Less oxygen would make breathing harder, but this proposed air is not a reduction from current cabin air.",
+    "instead": "Follow the applicable fire-response procedures and manage ventilation rather than expecting oxygen at this level to extinguish the fire; BASS notes tie flame extinction to airflow being turned down or off [bass-asrun-29] [bass-asrun-30]."
+  }
+}

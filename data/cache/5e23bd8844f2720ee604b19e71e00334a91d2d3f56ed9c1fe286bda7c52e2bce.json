@@ -1,0 +1,13 @@
+{
+  "key": "5e23bd8844f2720ee604b19e71e00334a91d2d3f56ed9c1fe286bda7c52e2bce",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->17%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:39:38.422Z",
+  "output": {
+    "answer": "The closest real runs show that flames can still be present at 17% oxygen and 14.7 psi, so lowering the cabin to this level is not a dependable fire response. In the nearest matched-air set, 39 runs had a flame; several flames went out only when airflow was reduced.",
+    "flame": "There are 102 runs in the same solid-fuel category within the stated air range: 39 had a flame, 2 recorded no ignition, and 61 did not state a result. The closest result-stating runs include a flame that was extinguished at 17% O2 and 14.7 psi (0 points and 0 psi away) [bass-ii-p10], and a flame that blew off at 17.3% and 14.7 psi (0.3 O2 points and 0 psi away) [bass-ii-b19]; both outcomes are based on investigator notes. In BASS runs, notes also tie flames going out to reduced or stopped airflow, including a 1 cm PMMA flame at 17.1% and 14.55 psi (0.1 O2 points and 0.1 psi from the target) [bass-asrun-90-row100].",
+    "crew": "At the lowered air, the provided oxygen partial pressure is 2.5 psi, with an app-calculated equivalent altitude of 1700 m, in the “Like a mountain town” band. Less oxygen makes breathing harder; this is not a crew-safe substitute for fire response.",
+    "instead": "Use the established fire-response procedures rather than relying on cabin oxygen reduction; the cited tests show flames going out when airflow was reduced, but they do not establish a cabin fire tactic. The lowered-air runs are real evidence at this condition, but their mixed outcomes and differing fuels do not predict what this cabin fire will do."
+  }
+}

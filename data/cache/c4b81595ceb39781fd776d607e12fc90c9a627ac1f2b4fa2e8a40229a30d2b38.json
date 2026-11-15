@@ -1,0 +1,14 @@
+{
+  "key": "c4b81595ceb39781fd776d607e12fc90c9a627ac1f2b4fa2e8a40229a30d2b38",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->20.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:46.936Z",
+  "output": {
+    "answer": "At the before air, nearby tests recorded flames; at the after air, the closest exact-air runs also often recorded flames, so lowering oxygen is not shown to be a reliable fire response. The evidence instead includes flames going out when airflow was reduced or stopped, but it does not establish what this specific fire will do.",
+    "whatChanges": "No run sits exactly at the before air; the nearest results are about 8.3–8.4 oxygen points away and 0.1 psi away, and the cited BASS runs recorded flames, including partial flame reduction but not blowout [bass-asrun-55] [bass-asrun-60]. At the after air, 157 runs sit within the specified air tolerance: 97 recorded flames, 2 did not ignite, and 58 had no stated result; one exact-air example recorded a flame that went out at extremely low flow [bass-asrun-92]. The app estimate changes from 93% chance of flame (90% range 79–100%, high confidence) before to 96% (90% range 93–99%, high confidence) after; both are estimates, not test results.",
+    "whatYouWouldSee": "Notes near the after air describe sooty flames that became blue as airflow was shut off, then pulsed or flickered before extinction [bass-asrun-29] [bass-asrun-30]. Less oxygen generally weakens a flame and can make it smaller, dimmer, bluer, less sooty, and slower-spreading, but the supplied runs do not establish a visible change for this specific fabric fire.",
+    "crew": "The supplied crew values change from 4.56 psi oxygen partial pressure, equivalent altitude 0 m, “Fine to breathe” before, to 3.01 psi, equivalent altitude 200 m, also “Fine to breathe” after. These are the provided app bands and equivalents; the lower oxygen partial pressure means less oxygen for breathing.",
+    "instead": "The notes provide direct evidence for reducing or stopping airflow: flames went out after airflow was turned down or off in BASS runs [bass-asrun-29] [bass-asrun-30] [bass-asrun-25]. Because runs exist at the after air, no single missing-air test is needed to compare these conditions; a controlled test of the same fabric and airflow at the exact before and after airs would better isolate the oxygen change."
+  }
+}

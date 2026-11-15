@@ -1,0 +1,14 @@
+{
+  "key": "da518d480c4e2132675873bdb8cee38d3734468c7156c80a842d40e69d9b9ff3",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:17->16.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:31.575Z",
+  "output": {
+    "answer": "The closest real runs at both airs still recorded flames: at the before air, one flame was noted as extinguished and another as blown off [bass-ii-p10] [bass-ii-b19]; at the after air, nearby runs likewise recorded extinguished flames and a blowoff [bass-ii-o14] [bass-ii-o7]. Lowering oxygen slightly is therefore not supported as a reliable response to this fire; it does not establish that this specific fire will go out.",
+    "whatChanges": "There are runs at both airs: the before-air examples include an extinguished flame and a blowoff, while the after-air examples include those same outcome types; these outcomes come from investigator notes, not a stated table field [bass-ii-p10] [bass-ii-b19] [bass-ii-o14] [bass-ii-o7]. At the after air, a nearby BASS run also recorded a blue flame that self-extinguished as the fan was turned down [bass-asrun-94]. The app estimate reads “Likely to burn” at both airs: 95% chance at each, with a 90% range of 91–98% before and 90–98% after, both high confidence; these are estimates, not test results.",
+    "whatYouWouldSee": "The notes describe sooty tails in some runs near the before air [bass-asrun-81], and blue flames in runs near the after air [bass-asrun-94] [bass-asrun-102]; they do not establish a consistent visible difference between these two air settings. In general, less oxygen usually makes a flame smaller, dimmer, bluer and less sooty, and slows its spread, but that is not a prediction for this particular fire.",
+    "crew": "The supplied crew values change from an oxygen partial pressure of 2.5 psi, equivalent to 1,700 m (“Like a mountain town”), to 2.43 psi, equivalent to 2,000 m in the same band. The after air has lower oxygen partial pressure, so it offers less oxygen for breathing.",
+    "instead": "The airflow evidence points to reducing ventilation feeding the flame as a more directly supported measure: notes report flames going out when airflow was reduced or the fan was turned off [bass-asrun-90-row100] [bass-asrun-94]. Runs exist near the after air, but none establishes what would happen to this specific cabin fire; a controlled test of the same fabric fuel at the after-air conditions, with airflow held to the cabin condition, would help settle that question."
+  }
+}

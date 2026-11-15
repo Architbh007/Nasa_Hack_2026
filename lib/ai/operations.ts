@@ -12,6 +12,7 @@ import {
   FIRE_TWIN_SYSTEM,
   HABITAT_SYSTEM,
   LESSON_SYSTEM,
+  LOWER_O2_SYSTEM,
   SCENARIO_SYSTEM,
   SUMMARY_SYSTEM,
 } from "@/lib/ai/prompts";
@@ -21,6 +22,7 @@ import {
   fireTwinNarrationSchema,
   habitatInterpretationSchema,
   lessonSchema,
+  lowerOxygenSchema,
   InvestigationSummarySchema,
   ScenarioSummarySchema,
 } from "@/lib/ai/schemas";
@@ -29,6 +31,10 @@ import { getDataset } from "@/lib/data";
 import { FIRE_EVENTS } from "@/lib/fire-history";
 import { EVENT_LABEL, ILLUSTRATIVE, itemLabel, planFire, ROOM_ITEMS } from "@/lib/fire-twin";
 import { assessHabitat, type HabitatInputs } from "@/lib/habitat";
+import { CREW_BAND, hadFlame, lowerOxygenCheck, MAX_COMPARE_O2, outWhenFlowDropped, SEA_LEVEL_PO2_PSI } from "@/lib/lower-oxygen";
+import type { NearRun, PlacedRun } from "@/lib/metrics";
+import { ESTIMATE_LABEL, estimateFlame, type FlameEstimate } from "@/lib/flame-estimate";
+import { MATERIAL_CATEGORY } from "@/lib/constants";
 import type { RankingWeights } from "@/lib/ranking";
 import { PLAN_VERDICT_LABEL, planExperiments, type PlanOptions } from "@/lib/planner";
 import { scenarioReadiness } from "@/lib/readiness";
@@ -163,6 +169,99 @@ export function narrateFireTwin(inputs: HabitatInputs, opts: FireTwinOptions) {
     schema: fireTwinNarrationSchema(new Set(ids)),
     effort: "low",
     maxTokens: 3000,
+  });
+}
+
+/** Runs (with notes) sent to the lower-oxygen SI. */
+export const LOWER_O2_EXAMPLE_COUNT = 6;
+
+export function explainLowerOxygen(inputs: HabitatInputs, fromO2: number, toO2: number) {
+  const { runs } = getDataset();
+  if (!(toO2 >= 0 && toO2 < fromO2 && fromO2 <= MAX_COMPARE_O2)) {
+    throw new SiError("bad_request", `Choose a lowered oxygen below the starting oxygen, both between 0% and ${MAX_COMPARE_O2}%.`, 400);
+  }
+  const category = MATERIAL_CATEGORY[inputs.materialClass];
+  const pressurePsi = inputs.pressurePsi;
+  // Recompute server-side so the SI only sees numbers derived from the dataset.
+  const before = lowerOxygenCheck({ fromO2, toO2: fromO2, pressurePsi, category }, runs, LOWER_O2_EXAMPLE_COUNT);
+  const after = lowerOxygenCheck({ fromO2, toO2, pressurePsi, category }, runs, LOWER_O2_EXAMPLE_COUNT);
+  const estimateRuns = [fromO2, toO2].flatMap((o2) => {
+    const e = estimateFlame({ o2Percent: o2, pressurePsi }, runs, category);
+    return e.kind === "estimate" ? e.topRuns.map((t) => t.run) : [];
+  });
+  const evidence = [...[before, after].flatMap((c) => [...c.examples, ...c.nearestWithResult, ...c.airflowEvidence]), ...estimateRuns];
+  const invIds = [...new Set([...before.runs, ...after.runs, ...evidence].map((p) => p.run.investigationId))].sort();
+  const allowed = new Set([...invIds, ...evidence.map((p) => p.run.id)]);
+  const clipText = (t: string | null) => (t && t.length > 320 ? `${t.slice(0, 317)}...` : t);
+  const r1 = (v: number) => Math.round(v * 10) / 10;
+  const runView = (p: PlacedRun) => ({
+    runId: p.run.id,
+    investigationId: p.run.investigationId,
+    material: p.run.material,
+    o2Percent: p.o2Percent,
+    pressurePsi: p.pressurePsi,
+    flowCmS: p.run.flowMinCmS === null ? null : [p.run.flowMinCmS, p.run.flowMaxCmS],
+    outcome: p.run.outcome,
+    outcomeBasis: p.run.outcomeBasis,
+    hadFlame: hadFlame(p.run),
+    wentOutWhenAirflowDropped: outWhenFlowDropped(p.run),
+    investigatorNotes: clipText(p.run.outcomeText),
+    source: `${p.run.source.file}, ${p.run.source.ref}`,
+  });
+  const pct = (v: number) => Math.round(v * 100);
+  const estimateView = (e: FlameEstimate) =>
+    e.kind !== "estimate"
+      ? { kind: e.kind }
+      : {
+          kind: e.kind,
+          reading: ESTIMATE_LABEL(e.probability, e.low, e.high),
+          chanceOfFlamePercent: pct(e.probability),
+          range90Percent: [pct(e.low), pct(e.high)],
+          confidence: e.confidence,
+          effectiveNearbyTests: Math.round(e.evidence * 10) / 10,
+          extrapolatingBelowLowestTestedO2: e.extrapolating ? e.lowestTestedO2 : null,
+          heaviestRuns: e.topRuns.map((t) => t.run.run.id),
+        };
+  const awayFrom = (n: NearRun) => ({ ...runView(n), o2PointsAway: r1(n.dO2), psiAway: r1(n.dPsi) });
+  const airView = (o2: number, c: typeof after) => ({
+    o2Percent: o2,
+    pressurePsi,
+    crew: {
+      o2PartialPressurePsi: Math.round(c.pO2Psi * 100) / 100,
+      equivalentAltitudeM: o2 === 0 ? null : Math.round(c.altitudeM / 100) * 100,
+      band: CREW_BAND[c.band].label,
+    },
+    // Only present when real runs sit within ±2% O2 and ±1 psi of this air.
+    runsAtThisAir:
+      c.runs.length === 0
+        ? null
+        : {
+            total: c.runs.length,
+            hadFlame: c.withFlame,
+            didNotIgnite: c.noIgnition,
+            resultNotStated: c.notStated,
+            flameWentOutWhenAirflowDropped: c.flowLinkedOut,
+            examples: c.examples.map(runView),
+          },
+    nearestRunsThatStateAResult: c.nearestWithResult.map(awayFrom),
+    flameEstimate: estimateView(estimateFlame({ o2Percent: o2, pressurePsi }, runs, category)),
+  });
+  return structuredCall({
+    kind: "lower-o2",
+    label: `lower-o2:${fromO2}->${toO2}%/${pressurePsi}psi/${inputs.materialClass}/${inputs.gravity}`,
+    model: aiConfig().modelFast,
+    system: LOWER_O2_SYSTEM,
+    input: {
+      cabin: { gravity: inputs.gravity, airflow: inputs.airflow, material: inputs.materialClass, fuelCategory: category },
+      seaLevelO2PartialPressurePsi: Math.round(SEA_LEVEL_PO2_PSI * 100) / 100,
+      before: airView(fromO2, before),
+      after: airView(toO2, after),
+      nearestRunsWhereFlameWentOutWhenAirflowDropped: after.airflowEvidence.map(awayFrom),
+      records: invIds.map((id) => briefContext(requireInvestigation(id), runsOf(id))),
+    },
+    schema: lowerOxygenSchema(allowed),
+    effort: "low",
+    maxTokens: 3500,
   });
 }
 

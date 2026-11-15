@@ -1,0 +1,14 @@
+{
+  "key": "6ff61d3310e4fec780c47c0cb68f34c8a7dc8b16196bb1108ba291345af48922",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:28.5->23.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:57:01.903Z",
+  "output": {
+    "answer": "The closest fabric-category run recorded a flame near the before air [bass-asrun-55]; nearest runs also recorded flames near the after air [bass-asrun-55] [bass-asrun-60] [bass-asrun-61]. Lowering oxygen is not shown to reliably put this fire out.",
+    "whatChanges": "No run sits exactly at the before air; the closest is 5.8 oxygen points and 0.1 psi away, with flame present [bass-asrun-55]. At the after air, 88 runs include 64 with flame, 2 with no ignition and 22 with no result stated; nearest result runs are 0.8–0.9 oxygen points and 0.1 psi away, all with flame present [bass-asrun-55] [bass-asrun-60] [bass-asrun-61] [bass-asrun-62] [bass-asrun-63] [bass-asrun-64]. The app estimate says likely to burn at both airs: before 95% (90% range 86–100%, high confidence), after 97% (93–99%, high confidence). These are estimates, not test results.",
+    "whatYouWouldSee": "The nearest before run noted the flame got smaller at higher flow but did not blow out [bass-asrun-55]. After-air notes also show flames persisting, with partial extinction under nitrogen in one run [bass-asrun-60] [bass-asrun-61]. Less oxygen generally weakens flames, which may look smaller, dimmer, bluer and less sooty, but these tests do not show oxygen reduction alone extinguishing this fire.",
+    "crew": "Oxygen partial pressure falls from 4.19 psi before to 3.45 psi after. Both airs are labelled “Fine to breathe,” with equivalent altitude 0 m.",
+    "instead": "Some nearby runs recorded flames going out when airflow was turned down or off [bass-asrun-10] [bass-asrun-18] (outcomes read from notes). Ventilation feeds flames in microgravity; a controlled fabric test at the after-air oxygen level, same pressure and relevant airflow would settle this comparison."
+  }
+}

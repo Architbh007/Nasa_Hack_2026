@@ -91,6 +91,31 @@ ${JSON_RULES}
   "testNext": "1 sentence: the most useful test NASA could run to close the biggest gap shown, with concrete conditions"
 }`;
 
+export const LOWER_O2_SYSTEM = `${GROUNDING}
+
+Task: a fire has started in this cabin and someone asks "what happens if we lower the oxygen from the before air to the after air?". Compare the two airs side by side for non-experts such as hackathon judges or crew members. Be useful first: say what real tests actually showed, then be exact about the limits.
+
+You receive, for both "before" and "after" (same pressure): the crew's oxygen partial pressure with its equivalent Earth altitude and a band (standard-atmosphere arithmetic done by the app); runsAtThisAir (real runs of the same fuel category within ±2% O2 and ±1 psi, or null when there are none); and nearestRunsThatStateAResult (the closest runs anywhere that recorded a flame or no ignition, with how far they are in O2 points and psi). You also receive the closest runs whose notes say the flame went out when the airflow dropped, and the investigation records behind everything.
+
+Rules specific to this task:
+- Always lead with real evidence and compare: what the runs at or nearest the before air recorded versus the after air. Cite run ids.
+- If runsAtThisAir is null for an air, say in one short clause that no run sits exactly there, then use its nearest runs that state a result, with their distance. Never list zero counts and never write a bare "no data" or "untested" sentence; every limit must name the closest real evidence.
+- whatYouWouldSee: describe visible differences of the flame between the two airs. Use investigator notes where they describe appearance (for example blue or sooty flames, flame size, how long it burned) and cite them. You may add general principles in plain words: with less oxygen a flame is usually smaller, dimmer, bluer and less sooty and spreads more slowly. Never add numbers.
+- If any run's notes tie a flame going out to the airflow being turned down or off, say so and cite it; that is real evidence about what puts flames out.
+- At 0% oxygen nothing can burn; say that, and that nobody can breathe it either.
+- For the crew, use only the provided partial pressures, equivalent altitudes and bands, and compare them.
+- You may state other general principles in plain words (less oxygen weakens a flame; in microgravity there is no buoyant flow, so ventilation feeds the flame; diluting a whole cabin's air is slow compared with a growing fire) but never add numbers, times or results not in the data.
+- Each air also has flameEstimate, the app's statistical estimate (a kernel-weighted Beta-Binomial over the nearest real runs that state a flame or no ignition). You may quote its reading, chance of a flame, 90% range and confidence, and you must call it an estimate, not a test result. If extrapolatingBelowLowestTestedO2 is set, say it is an extrapolation below the lowest real test. If the reading is "Can't tell from the data", say the estimate cannot decide there. Do not give any other probability, and never predict whether this specific fire will go out.
+
+${JSON_RULES}
+{
+  "answer": "1-2 sentences: a direct, useful answer to whether lowering from the before air to the after air is a good fire response, led by what the closest real runs showed",
+  "whatChanges": "2-4 sentences: what the real runs at or nearest each air recorded and how the two compare, with run citations, then how the flame estimate changes between the two airs",
+  "whatYouWouldSee": "1-3 sentences: how the flame would look different at the lower air, from investigator notes where available plus general principles",
+  "crew": "1-2 sentences: how breathing changes between the two airs for the crew",
+  "instead": "1-2 sentences: what the evidence suggests is the better response (cite the airflow runs when present), plus the one test that would settle it if no run sits at the after air"
+}`;
+
 export const LESSON_SYSTEM = `You are the SI explainer inside FireSight, a NASA Space Apps hackathon dashboard about spacecraft fire safety. You receive one real historical spacecraft fire event or experiment, with facts written by the app authors from public NASA sources, and the NASA PSI investigation records in the app that relate to it.
 
 Rules:

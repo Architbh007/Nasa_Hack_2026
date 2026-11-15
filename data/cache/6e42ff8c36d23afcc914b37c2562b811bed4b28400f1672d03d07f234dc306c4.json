@@ -1,0 +1,13 @@
+{
+  "key": "6e42ff8c36d23afcc914b37c2562b811bed4b28400f1672d03d07f234dc306c4",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->7.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:41:05.584Z",
+  "output": {
+    "answer": "The closest result runs did not test 7.5% oxygen: at the same stated pressure, one recorded no ignition at 13.6% oxygen, while runs at 14.8–15.4% recorded flames that were extinguished or blew off [bass-ii-o12] [bass-ii-o4] [bass-ii-o9] [bass-ii-o11]. That evidence does not establish that lowering cabin oxygen is a good response; this lowered air would also be dangerous for the crew.",
+    "flame": "No run sits exactly at this air. The nearest result run was at 13.6% oxygen and 14.7 psi—6.1 oxygen points above the target and the same stated pressure—and its notes say no ignition [bass-ii-o12]. Other nearby runs were at 14.8–15.4% oxygen and 14.7 psi, 7.3–7.9 points above target; their notes record extinguished flames or blowoff [bass-ii-o4] [bass-ii-b14] [bass-ii-o9] [bass-ii-o19] [bass-ii-o11]. These outcomes come from investigator notes, and the BASS-II pressure is listed as an assumed cited nominal, not a measured value.",
+    "crew": "At the lowered air, the provided oxygen partial pressure is 1.1 psi, equivalent by the app's standard-atmosphere arithmetic to 7,900 m, in the “Dangerous for crew” band. Less oxygen makes breathing harder; at 0% oxygen nothing can burn, and nobody can breathe it either.",
+    "instead": "The evidence includes flames going out when airflow was reduced or turned off, including a PMMA run whose notes say it went out when the fan was off [bass-asrun-90-row100]; in microgravity, ventilation can feed a flame, so reducing airflow is a more directly supported response than relying on cabin oxygen dilution. To resolve the oxygen question, the needed test is a solid-fuel run at 7.5% oxygen and 14.7 psi."
+  }
+}

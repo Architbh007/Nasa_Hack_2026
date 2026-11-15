@@ -1,0 +1,14 @@
+{
+  "key": "1e05583402cfbd210c9c2105b152126853bf5df509f8e7f0fad830d16a7c306a",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:21->17%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:46:14.383Z",
+  "output": {
+    "answer": "At both airs, real microgravity solid-fuel runs recorded flames, including runs near the before air and at the after air; the after-air evidence also includes flames extinguished when airflow was reduced [bass-ii-p25] [bass-ii-p10] [bass-asrun-110]. Lowering oxygen may weaken a flame, but these tests do not show that changing cabin oxygen alone is a reliable response to a fire.",
+    "whatChanges": "At the before air, nearby runs recorded flames that were later extinguished, including one at 20.9% O₂ and 14.7 psi [bass-ii-p25]; BASS runs near this air also recorded flames and notes describe sooty burning [bass-asrun-30]. At the after air, a run at 17% O₂ and 14.7 psi recorded a flame that was extinguished [bass-ii-p10], and nearby BASS runs describe flames shrinking and going out as airflow was reduced [bass-asrun-110] [bass-asrun-111]. These outcomes are based on investigator notes; the tests used different fuels, so the comparison does not isolate oxygen’s effect.",
+    "whatYouWouldSee": "At the higher air, notes describe a bullet-shaped, sooty flame that turned blue and pulsed before going out when the fan was switched off [bass-asrun-30]. At lower oxygen, notes describe dim blue flames at low flow, while a flame at higher flow had a long sooty tail [bass-asrun-111]; less oxygen generally weakens flames, but appearance depends on fuel and airflow.",
+    "crew": "The provided estimate changes from an oxygen partial pressure of 3.09 psi, equivalent to 0 m altitude and “Fine to breathe,” to 2.5 psi, equivalent to 1,700 m and “Like a mountain town.” That is less oxygen available for breathing; the altitude and bands are app arithmetic, not direct crew-health measurements.",
+    "instead": "The airflow runs show flames going out when airflow was reduced or stopped, including at 17.1% O₂ [bass-asrun-90-row100]; in microgravity, ventilation feeds the flame, so follow the crew’s established fire-response procedures rather than relying on cabin oxygen reduction. Even with runs at the after air, the fuels and conditions differ from this cabin fire, so no run here establishes that lowering oxygen will put it out."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "key": "3f9cd57dd1909d17ed1e26bdd52a997d6d3052b6e9069043372969f3420977ca",
+  "kind": "lower-o2",
+  "model": "gpt-6-luna",
+  "label": "lower-o2:31->12.5%/14.7psi/fabric/micro",
+  "createdAt": "2026-11-15T06:55:49.973Z",
+  "output": {
+    "answer": "At the before air, nearest runs still recorded flames [bass-asrun-55] [bass-asrun-60]; near the after air, one recorded no ignition [bass-ii-o12], while another recorded an extinguished flame [bass-ii-o4]. Lower oxygen reduced combustion in some tests, but does not establish a dependable response for this cabin fire.",
+    "whatChanges": "No run sits exactly at the before air: closest result runs were at 22.6–22.7% oxygen, 8.3–8.4 points away, and recorded flames [bass-asrun-55] [bass-asrun-60]. At the after air, three runs sit there: one recorded no ignition and two have no stated result; the nearest stated-result run, 1.1 points higher at the same pressure, recorded no ignition [bass-ii-o12]. Runs 2.3–2.5 points higher recorded extinguished flames [bass-ii-o4] [bass-ii-b14] (outcomes read from notes). The app estimate changes from “Likely to burn,” 93% (90% range 79–100; high confidence), to “Likely to burn,” 90% (79–98; low confidence). The latter extrapolates below the lowest real test; both are estimates, not test results.",
+    "whatYouWouldSee": "Before-air notes describe flames that persisted despite flow changes, though one got smaller at maximum flow [bass-asrun-55] [bass-asrun-60]. Less oxygen generally weakens flames, which may look smaller, dimmer, bluer and less sooty, but these after-air runs do not establish how this fabric fire would look.",
+    "crew": "The provided crew values change from 4.56 psi oxygen partial pressure, equivalent altitude 0 m (“Fine to breathe”), to 1.84 psi, equivalent altitude 4100 m (“Hypoxia likely”). The lower-oxygen air is a serious breathing concern.",
+    "instead": "Runs recorded flames going out when airflow was reduced or turned off [bass-asrun-90-row100] [bass-asrun-110]. In microgravity, ventilation feeds the flame, so airflow control has more direct support here than relying on cabin oxygen reduction. A controlled test of this fabric at the after air and pressure, recording ignition and airflow changes, would address the evidence gap."
+  }
+}

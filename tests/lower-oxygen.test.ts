@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { crewBand, equivalentAltitudeM, hadFlame, lowerOxygenCheck, outWhenFlowDropped, SEA_LEVEL_PO2_PSI } from "@/lib/lower-oxygen";
+import { crewBand, defaultComparePair, equivalentAltitudeM, hadFlame, MAX_COMPARE_O2, lowerOxygenCheck, outWhenFlowDropped, SEA_LEVEL_PO2_PSI } from "@/lib/lower-oxygen";
 import { validateDataset } from "@/lib/validate";
 import { makeRun, readBuiltFiles } from "./fixtures";
 
@@ -64,5 +64,27 @@ describe("lowering an ISS cabin to 17% O2", () => {
   it("keeps the counts consistent", () => {
     expect(check.withFlame + check.noIgnition + check.notStated).toBe(check.runs.length);
     expect(check.outcomeCounts.reduce((s, c) => s + c.count, 0)).toBe(check.runs.length);
+  });
+});
+
+describe("lowering a lunar cabin to 17% O2, where no run sits", () => {
+  const check = lowerOxygenCheck({ fromO2: 34, toO2: 17, pressurePsi: 8.2, category: "solid" }, runs);
+
+  it("still offers the closest real results and airflow evidence", () => {
+    expect(check.runs).toHaveLength(0);
+    expect(check.nearestWithResult.length).toBeGreaterThan(0);
+    expect(check.airflowEvidence.length).toBeGreaterThan(0);
+    expect(check.airflowEvidence.every((n) => outWhenFlowDropped(n.run))).toBe(true);
+    const d = check.nearestWithResult.map((n) => n.distance);
+    expect(d).toEqual([...d].sort((a, b) => a - b));
+  });
+});
+
+describe("before/after pair", () => {
+  it("caps the before air at 31% and starts the after air at 21% from rich air", () => {
+    expect(defaultComparePair(34)).toEqual({ fromO2: MAX_COMPARE_O2, toO2: 21 });
+    expect(defaultComparePair(31)).toEqual({ fromO2: 31, toO2: 21 });
+    expect(defaultComparePair(21)).toEqual({ fromO2: 21, toO2: 17 });
+    expect(MAX_COMPARE_O2).toBe(31);
   });
 });

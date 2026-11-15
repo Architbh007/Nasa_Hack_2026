@@ -1,5 +1,5 @@
 import { OUTCOME_LABEL } from "@/lib/constants";
-import { oxygenPartialPressure, runsWithinTolerance, type PlacedRun } from "@/lib/metrics";
+import { nearestRuns, oxygenPartialPressure, runsWithinTolerance, type NearRun, type PlacedRun } from "@/lib/metrics";
 import type { Category, Run } from "@/lib/schema";
 
 /**
@@ -19,6 +19,21 @@ export function equivalentAltitudeM(pO2Psi: number): number {
   if (pO2Psi >= SEA_LEVEL_PO2_PSI) return 0;
   const ratio = pO2Psi / SEA_LEVEL_PO2_PSI;
   return (1 - Math.pow(ratio, 1 / 5.25588)) / 2.25577e-5;
+}
+
+/** Highest oxygen the before/after comparison offers. */
+export const MAX_COMPARE_O2 = 31;
+
+/** Where the lowering slider starts: 21% from rich air, 17% from Earth-like air, otherwise 3 points lower. */
+export function defaultLoweredO2(fromO2: number): number {
+  if (fromO2 >= 25) return 21;
+  return fromO2 > 18 ? 17 : Math.max(0, Math.round(fromO2 - 3));
+}
+
+/** Starting before/after pair for a cabin: before is the cabin's own O2, capped at MAX_COMPARE_O2. */
+export function defaultComparePair(cabinO2: number): { fromO2: number; toO2: number } {
+  const fromO2 = Math.min(MAX_COMPARE_O2, Math.round(cabinO2 * 2) / 2);
+  return { fromO2, toO2: defaultLoweredO2(fromO2) };
 }
 
 export type CrewBand = "fine" | "mild" | "hypoxic" | "danger";
@@ -71,7 +86,19 @@ export type LowerOxygenCheck = {
   outcomeCounts: { label: string; count: number }[];
   /** Up to `exampleCount` runs whose notes show a flame, flow-linked extinctions first. */
   examples: PlacedRun[];
+  /**
+   * The closest same-category runs that state a result (flame or no ignition), at any distance.
+   * The best evidence available when nothing sits within tolerance of the lowered air.
+   */
+  nearestWithResult: NearRun[];
+  /** The closest same-category runs whose notes say the flame went out when airflow dropped. */
+  airflowEvidence: NearRun[];
 };
+
+/** A run states a result when it recorded a flame or recorded that nothing ignited. */
+export function statesResult(run: Run): boolean {
+  return run.outcome === "no-ignition" || hadFlame(run);
+}
 
 export function lowerOxygenCheck(
   input: { fromO2: number; toO2: number; pressurePsi: number; category: Category },
@@ -95,6 +122,10 @@ export function lowerOxygenCheck(
   const byCloseness = (a: PlacedRun, b: PlacedRun) =>
     Math.abs(a.o2Percent - toO2) - Math.abs(b.o2Percent - toO2) || a.run.id.localeCompare(b.run.id);
 
+  const ranked = nearestRuns({ o2Percent: toO2, pressurePsi }, runs, { category: input.category, count: Number.MAX_SAFE_INTEGER });
+  const nearestWithResult = ranked.filter((n) => statesResult(n.run)).slice(0, exampleCount);
+  const airflowEvidence = ranked.filter((n) => outWhenFlowDropped(n.run)).slice(0, exampleCount);
+
   return {
     fromO2: input.fromO2,
     toO2,
@@ -109,5 +140,7 @@ export function lowerOxygenCheck(
     flowLinkedOut: flowLinked.length,
     outcomeCounts: [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count),
     examples: [...flowLinked.sort(byCloseness), ...others.sort(byCloseness)].slice(0, exampleCount),
+    nearestWithResult,
+    airflowEvidence,
   };
 }
