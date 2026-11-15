@@ -1,0 +1,12 @@
+{
+  "key": "c5097d231db445e1b070cc62b907c3c0da1c5361fc1e95f05284a47c252a2369",
+  "kind": "fire-twin",
+  "model": "gpt-6-luna",
+  "label": "fire-twin:34%/8.2psi/ventilated/micro/stowage-bag/vents/crew",
+  "createdAt": "2026-11-14T23:51:15.095Z",
+  "output": {
+    "narration": "At 34% oxygen and 8.2 psi, in microgravity with ventilation on, the stowage bag ignites. The nearest recorded fabric run burned (1 of 1), and the nearest sleeping-bag run also burned (1 of 1) [saffire-iv-vi]. The nearby plastic-panel runs burned in both cases (2 of 2) [saffire-iv-vi]. Whether the wire bundle or foam seat burns is unknown because no nearby run states an outcome. Smoke detection, the alarm, vent shutdown, and the flame going out are illustrative timings; the tables record no flame-spread rate.",
+    "takeaway": "In this simulated atmosphere, nearby fabric and plastic runs all recorded burning, but they do not establish what happens to the wire bundle or foam seat. Treat those gaps as unresolved; these test records do not predict cabin fire behavior.",
+    "testNext": "Run microgravity ignition and burning tests on representative wire insulation and seat foam at 34% oxygen, 8.2 psi, and ventilated airflow, recording outcomes for both materials."
+  }
+}

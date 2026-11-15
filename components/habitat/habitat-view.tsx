@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { HabitatControls } from "@/components/habitat/controls";
 import { FlammabilityGrid } from "@/components/habitat/flammability-grid";
 import { FireTwin } from "@/components/habitat/fire-twin";
+import { LowerOxygen } from "@/components/habitat/lower-oxygen";
 import { CabinAsk } from "@/components/habitat/cabin-ask";
 import { HabitatReadouts } from "@/components/habitat/readouts";
 import { HabitatHero } from "@/components/habitat/habitat-hero";
@@ -60,6 +61,11 @@ const GUIDE: readonly GuideItem[] = [
     title: "Fire Twin",
     anchor: "fire-twin",
     does: "A simulated fire in a cabin module. Whether each item catches comes from real runs; spread and response times are illustrative.",
+  },
+  {
+    title: "Lower the oxygen?",
+    anchor: "lower-o2",
+    does: "If a fire starts, would cutting the oxygen to 17–18% put it out? Shows what real runs at that lower air recorded and what it means for the crew.",
   },
   {
     title: "Most relevant investigations",
@@ -253,6 +259,14 @@ export function HabitatView({
             description="A top-down cabin module running this exact air. Whether an item burns comes from what the nearest real runs of that material recorded; spread speed, detection and crew response times are illustrative."
           >
             <FireTwin inputs={inputs} scenarios={scenarios} presetId={presetId} onPreset={onPreset} runs={runs} />
+          </Section>
+
+          <Section
+            id="lower-o2"
+            title="Fire in progress: can we just lower the oxygen?"
+            description="Drag to a lower O2 at the same pressure. Flame results come from the real runs at that air; the crew line converts O2 partial pressure to an equivalent altitude on Earth."
+          >
+            <LowerOxygen inputs={inputs} category={assessment.category} runs={runs} />
           </Section>
 
           <Section id="ranking" title="Most relevant investigations" description="Transparent score: adjust the weights to see the ranking change.">

@@ -1,0 +1,113 @@
+% FireSight demo script (7.5 minutes)
+% Compile: pdflatex firesight-pitch-script.tex
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\definecolor{accent}{HTML}{E8590C}
+\definecolor{showc}{HTML}{1C7ED6}
+\definecolor{sayc}{HTML}{2B8A3E}
+\definecolor{muted}{HTML}{666666}
+
+\titleformat{\section}{\Large\bfseries\color{accent}}{}{0em}{}
+\titleformat{\subsection}{\large\bfseries}{}{0em}{}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist{topsep=2pt,itemsep=1pt}
+\pagestyle{empty}
+
+% SHOW = what to click / point at.  SAY = what to speak.
+\newcommand{\showit}[1]{\par\textbf{\color{showc}SHOW:}\ #1\par}
+\newcommand{\sayit}[1]{\par\textbf{\color{sayc}SAY:}\ \textit{``#1''}\par\medskip}
+\newcommand{\step}[2]{\subsection{#1 \hfill\normalsize\color{muted}#2}}
+
+\begin{document}
+
+{\centering
+{\LARGE\bfseries\color{accent} FireSight: 7.5-Minute Demo Script\par}
+\smallskip
+{\color{muted} Habitat 3:00 \quad$\bullet$\quad Experiment Planner 2:30 \quad$\bullet$\quad Investigation Explorer 2:00\par}
+}
+\medskip
+
+\textbf{Before you start:}
+\begin{itemize}
+  \item Open these tabs in order:\newline \texttt{/habitat?preset=iss-cabin} \quad \texttt{/planner} \quad \texttt{/explore?id=saffire-iv-vi}\newline \texttt{/explore?tab=history}
+  \item Run \texttt{npm run prewarm} beforehand so the AI panels load instantly.
+\end{itemize}
+
+% =====================================================================
+\section{1. Habitat Flammability Explorer \hfill \normalsize 3:00}
+
+\step{Opening: describe a cabin}{0:00 -- 0:30}
+\showit{\textbf{ISS cabin} preset. Point at the left panel (oxygen, pressure, material, airflow, gravity), then the verdict cards.}
+\sayit{So how do we see that gap? This is our first tool, the Habitat Flammability Explorer. You describe a cabin on the left: its oxygen, pressure, the material inside, the airflow and the gravity. Here's the International Space Station: 21\% oxygen at 14.7 psi, the same as Earth. These cards give the instant answer: solid materials have real NASA test data at this air.}
+
+\step{Reading the coverage map}{0:30 -- 1:20}
+\showit{Scroll to the coverage map. Point in order: the axes, a coloured square, a faint square, a striped square (pale, then dark), the material tabs, the summary line above the map. Click one coloured square to show the runs inside it.}
+\sayit{This map is the heart of the page. Oxygen goes left to right, pressure goes bottom to top, so every square is a small range of cabin air, about 3\% oxygen by 1 psi.
+Each square shows what NASA's real tests recorded in that air, for the material we picked. A coloured square means real tests were run there, and the colour tells you what happened: it burned, the flame went out, or the results were mixed. A faint square has no test inside, but one close by. A striped square means nobody has ever tested that air. The darker the stripes, the further we are from any evidence. Dark doesn't mean more dangerous, it means we know less.
+Click any square and you see the actual tests behind it. Nothing here is predicted. It's a map of what we know, and of what we don't.}
+
+\step{Switch to the Moon}{1:20 -- 2:05}
+\showit{Click the \textbf{Lunar exploration atmosphere} preset. Point at the gravity warning, the +62\% oxygen card, the marker moving toward the striped area, then scroll to \textbf{Never tested in this data}.}
+\sayit{Now the air NASA plans for a Moon base: 34\% oxygen at 8.2 psi. NASA wants this air because it makes spacewalks much faster to prepare for, but it carries 62\% more oxygen share than Earth air. Our cabin moves toward the untested area, and the page warns that every test was done in orbit, never in Moon gravity. This list shows exactly what has never been tested. That's where we're designing in the dark.}
+
+\step{Fire Twin}{2:05 -- 2:40}
+\showit{Scroll to \textbf{Fire Twin}. Start the fire at the \textbf{Stowage bag}, vents on, crew on, press Play. Point at the items catching fire and the foam seat marked \textbf{untested}.}
+\sayit{The Fire Twin is a virtual cabin with this exact air. We light the stowage bag and see what else catches, when the alarm goes off and when the crew responds. Whether each item burns comes from real NASA tests. Where there is no test, like this foam seat, we say untested instead of guessing.}
+
+\step{AI explanation}{2:40 -- 3:00}
+\showit{Scroll up to \textbf{SI explanation}, click \textbf{Run SI interpretation}, point at \textit{In plain words} and the source links.}
+\sayit{For decision makers, the AI explains it in plain English, with knowledge gaps and recommended tests. It can only cite the NASA experiments we give it, so it can't make things up.}
+
+% =====================================================================
+\section{2. Experiment Planner \hfill \normalsize 2:30}
+
+\step{The question}{0:00 -- 0:25}
+\showit{Planner page. Point at the mission targets (Lunar base and Staged-decompression cabin), the budget of \textbf{5 tests} and \textbf{Stepping stones}.}
+\sayit{We've found the gaps. Now, how do we close them? Space tests are expensive, so NASA can only fly a few. I pick the cabin air we care about and a budget of five tests. Stepping stones means every new test stays one safe step from existing evidence.}
+
+\step{Read the map}{0:25 -- 1:15}
+\showit{Scroll to the map. Point at the dots at the top, then the dashed rings, then follow the orange numbers and arrows. Toggle \textbf{Before} and \textbf{After}.}
+\sayit{Each dot is a real NASA test, and they all cluster up here in normal station air. The dashed rings are where we need to go, out in untested territory. The orange numbers are the tests the planner recommends. Each arrow shows the evidence it builds on, like stepping stones across a river. Before the plan, this is untested. After, the gaps fill in.}
+
+\step{How it decides}{1:15 -- 1:45}
+\showit{Drag the budget slider down to \textbf{2} and show the path falling short; set it back to \textbf{5}. Optionally switch to \textbf{Direct} and back.}
+\sayit{How does it choose? It looks at about 900 possible test conditions, skips anything already tested, and picks the one that brings our target closest to real evidence. Then it repeats. With only two tests, we can't reach the Moon air safely. That's a clear, evidence-based argument for the budget we actually need.}
+
+\step{Results and test cards}{1:45 -- 2:30}
+\showit{Point at \textbf{Before and after} (e.g.\ \textit{Not tested $\rightarrow$ Tested after test 3}). Open one test card. Point at \textbf{Experiment proposal} and \textbf{Copy as Markdown}.}
+\sayit{With five tests, the Moon base goes from not tested to tested. Each test says why it was chosen, which real runs it builds on, and whether NASA hardware has already worked at that pressure, so it's practical. With one click, the AI writes a cited proposal we can hand to a review board.}
+
+% =====================================================================
+\section{3. Investigation Explorer \hfill \normalsize 2:00}
+
+\step{The data behind everything}{0:00 -- 0:25}
+\showit{Explorer table. Apply one filter (e.g.\ fuel category \textbf{Solid}).}
+\sayit{Everything you've seen rests on real data. Here are all 20 NASA combustion investigations and 772 real fire tests, from the space station and from the Saffire experiments. You can search, filter and sort them.}
+
+\step{One investigation in detail}{0:25 -- 1:00}
+\showit{Open \textbf{Saffire IV--VI}. Point at the run table and the exact source on each run, then the citation.}
+\sayit{This is Saffire: big fires lit on purpose inside a cargo spaceship after it left the station, including at Moon-like oxygen levels. Every single test shows its exact source, the file and row, or the paper and page. Missing values stay missing. We never fill anything in.}
+
+\step{Compare experiments}{1:00 -- 1:25}
+\showit{Back on the \textbf{Investigations} tab, tick 2--3 investigations (e.g.\ BASS, BASS-II, Saffire IV--VI), then click \textbf{Compare}. Point at the shared chart.}
+\sayit{You can also compare experiments side by side. Their tests are plotted on one chart, so you can see where each one tested and how they overlap, and the AI sums up what they share and where they differ.}
+
+\step{Then vs Now}{1:25 -- 2:00}
+\showit{At the top of the Explorer page, click the \textbf{Then vs Now} tab (next to \textbf{Investigations}), or open \texttt{/explore?tab=history}. Scroll the timeline: Apollo 1 (1967), Mir (1997), FLEX (2009), BASS (2012), Saffire (2016), Moon and Mars air (2024).}
+\sayit{Finally, Then vs Now. It connects real spacecraft fires to what NASA learned from them: the Apollo 1 fire in 1967, the fire on Mir in 1997, then the experiments that followed, FLEX, BASS and Saffire, up to 2024, when NASA chose a new oxygen-richer air for the Moon and Mars. Each step links to NASA's own sources. It shows how far we've come, and why the next tests matter.}
+
+\medskip
+\hrule
+\medskip
+\textbf{Closing line (optional, 10 seconds):}
+\sayit{FireSight shows, from NASA's own data, where fire safety is proven and where it isn't, and the fewest tests needed to close the gap. We don't predict fires. We show the evidence, the gaps, and the plan.}
+
+\end{document}

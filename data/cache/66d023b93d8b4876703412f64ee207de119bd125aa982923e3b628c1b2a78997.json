@@ -1,0 +1,10 @@
+{
+  "key": "66d023b93d8b4876703412f64ee207de119bd125aa982923e3b628c1b2a78997",
+  "kind": "ask",
+  "model": "gpt-6.1-sol",
+  "label": "ask:Cabin: 21.0% O2 at 4.5 psi, material fabric, airflow ventilated (≈20 cm/s), grav",
+  "createdAt": "2026-11-14T23:45:52.530Z",
+  "output": {
+    "text": "The retrieved records do not establish fabric fire behavior at your specified cabin condition: 21.0% O₂, 4.5 psi, approximately 20 cm/s airflow, and microgravity. A microgravity fabric investigation at that pressure, oxygen concentration and airflow would be needed.\n\nThe closest relevant evidence is:\n\n- Saffire-I tested SIBAL fabric at 20 cm/s and 14.5 psi. One run records 21.6% O₂ and “burned,” explicitly stated in the source field. Its pressure is substantially above your specified condition. [saffire-i-s1]\n- The published Saffire IV–VI records cover 7.85–14.5 psi, 22–31% O₂ and 20 cm/s, but those ranges do not include your cabin condition. These values were hand-transcribed from NASA papers, not retrieved from the PSI archive. [saffire-iv-vi]\n- A cotton-jersey run at 26.2% O₂, 10.25 psi and 20 cm/s records “burned” on a source-field basis; it is not a test of your proposed atmosphere. [saffire-v-2]\n\nThese tests do not support declaring your fabric safe or predicting flame spread. Material-specific testing is needed; this coverage assessment does not replace NASA-STD-6001 or certified material testing.\n\nIf “god ayya” was a separate question, please clarify what you meant."
+  }
+}

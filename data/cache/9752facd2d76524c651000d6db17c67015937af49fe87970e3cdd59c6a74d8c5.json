@@ -1,0 +1,10 @@
+{
+  "key": "9752facd2d76524c651000d6db17c67015937af49fe87970e3cdd59c6a74d8c5",
+  "kind": "ask",
+  "model": "gpt-6.1-sol",
+  "label": "ask:Cabin: 21.0% O2 at 4.5 psi, material fabric, airflow ventilated (≈20 cm/s), grav",
+  "createdAt": "2026-11-14T23:45:40.054Z",
+  "output": {
+    "text": "The retrieved records do not directly cover fabric at 21.0% O₂ and 4.5 psi in microgravity. A reduced-pressure microgravity fabric investigation near those conditions, with airflow around 20 cm/s, would address the main gap.\n\nMost relevant, in priority order:\n\n- **Saffire IV–VI:** Most relevant to the pressure gap. Its recorded conditions span 7.85–14.5 psi and 22–31% O₂ at 20 cm/s, but do not reach your cabin pressure. These are hand-transcribed published results, not PSI-archive runs [saffire-iv-vi]. The cotton-jersey example burned at 26.2% O₂ and 10.25 psi; “burned” is a source-field outcome [saffire-v-2].\n- **Saffire-I:** Strong fabric-and-airflow match: SIBAL fabric at 20 cm/s and 14.5 psi. One run records 21.6% O₂, the midpoint of a reported range, and a source-field “burned” outcome. Pressure is substantially above your cabin’s [saffire-i-s1].\n- **BASS:** Useful complementary coverage of solid-fuel burning and suppression in microgravity, including fabrics. Recorded O₂ spans 15.9–22.72%, but pressure remains 14.26–14.82 psi; airflow and outcomes are missing for some runs [bass].\n\nThese experiments support engineering judgment, not predictions at 4.5 psi or replacement of certified material testing."
+  }
+}
