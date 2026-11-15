@@ -22,7 +22,6 @@ FireSight supports engineering judgment. It does **not** replace NASA flammabili
 
 ---
 ## Deployed website: [FireSight](https://firesight-gamma.vercel.app/)
----
 
 ## Contents
 
